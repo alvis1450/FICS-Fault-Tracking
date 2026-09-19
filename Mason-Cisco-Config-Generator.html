@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Mason Cisco Engineering Toolkit v2.3 Final｜Troubleshooting · Network · Voice</title>
+<title>Mason Cisco Engineering Toolkit v2.5｜Routing · BGP</title>
 <style>
 :root{
   --bg:#07111f;--side:#081522;--panel:#0e1d31;--panel2:#10243b;--line:#263f62;
@@ -1593,7 +1593,7 @@ pre{
 
 
 /* =========================================================
-   Mason Cisco Engineering Toolkit v2.3
+   Mason Cisco Engineering Toolkit v2.4
    Troubleshooting + Validation engineering workspace
    ========================================================= */
 :root{
@@ -1692,6 +1692,274 @@ body.guide-off .variable-group .row{padding-bottom:7px}
 @media(max-width:1180px){.analysis-layout{grid-template-columns:1fr}.diff-grid{grid-template-columns:1fr}}
 @media(max-width:900px){.task-grid{grid-template-columns:1fr 1fr}.checklist-grid{grid-template-columns:1fr}}
 @media(max-width:560px){.task-grid{grid-template-columns:1fr}.analysis-result{padding:10px}.trouble-step{grid-template-columns:28px minmax(0,1fr)}}
+
+
+/* =========================================================
+   Mason Cisco Engineering Toolkit v2.4.2 - Sidebar Clean UX
+   ========================================================= */
+.smart-paste-card{padding:16px 17px;border-color:#35627e;background:linear-gradient(135deg,rgba(76,201,240,.075),rgba(121,223,178,.025)),rgba(11,26,41,.97)}
+.smart-paste-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:11px}
+.smart-paste-head h3{margin:0 0 4px;font-size:16px}.smart-paste-head p{margin:0;color:var(--muted);font-size:11.8px;line-height:1.55}
+.smart-paste-area{min-height:138px;resize:vertical;font:12.2px/1.55 "SFMono-Regular",Consolas,"Liberation Mono",monospace;background:#050f19}
+.smart-paste-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:9px;align-items:center}
+.smart-result{margin-top:11px;display:none;border:1px solid #31516d;border-radius:11px;background:#081824;overflow:hidden}
+.smart-result.show{display:block}.smart-result-head{display:flex;align-items:center;gap:9px;padding:10px 12px;border-bottom:1px solid #24435f;background:#0e2435}
+.smart-result-head b{font-size:13px}.smart-result-head span{font-size:10.5px;color:#92abc3;margin-left:auto}
+.smart-result-body{padding:11px 12px}.smart-result-body p{margin:0 0 8px;color:#a9bdcf;font-size:11.8px;line-height:1.6}
+.smart-findings{display:grid;gap:6px}.smart-finding{padding:8px 9px;border:1px solid #294861;border-radius:9px;background:#071622;font-size:11.5px;line-height:1.5}
+.smart-finding.good{border-color:#2f6c58;color:#b9efd6}.smart-finding.warn{border-color:#715f31;color:#f3d88e}.smart-finding.bad{border-color:#75404a;color:#ffbcc5}.smart-finding.info{color:#b9d5e9}
+.workspace-memory{display:grid;grid-template-columns:1fr 1fr;gap:12px}.memory-card{padding:15px}.memory-head{display:flex;align-items:center;justify-content:space-between;gap:9px;margin-bottom:9px}.memory-head h3{margin:0;font-size:14px}.memory-list{display:grid;gap:7px}.memory-item{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center;padding:9px 10px;border:1px solid #294861;border-radius:9px;background:#091a28}.memory-item button.open{border:0;background:transparent;color:inherit;text-align:left;padding:0;min-width:0;cursor:pointer}.memory-item b{display:block;font-size:12px}.memory-item small{display:block;color:#829db7;font-size:10.5px;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.memory-star{width:34px;height:34px;border:1px solid #31516d;border-radius:8px;background:#0c2131;color:#f5ca68;font-size:15px}.memory-empty{padding:12px;border:1px dashed #31506b;border-radius:9px;color:#7f98b1;font-size:11.5px}
+.trouble-workspace{display:grid;grid-template-columns:minmax(300px,.72fr) minmax(460px,1.28fr);gap:12px}.trouble-control{align-self:start}.trouble-progress{display:flex;align-items:center;gap:7px;margin:10px 0}.trouble-progress-bar{height:6px;flex:1;background:#07131f;border-radius:99px;overflow:hidden;border:1px solid #24435e}.trouble-progress-bar span{display:block;height:100%;background:linear-gradient(90deg,#4cc9f0,#79dfb2);transition:width .2s}.trouble-progress small{color:#91aac1;font-size:10.5px;white-space:nowrap}
+.trouble-step-v24{display:grid;grid-template-columns:34px minmax(0,1fr);gap:10px;padding:12px;border:1px solid #294965;border-radius:11px;background:#081824;margin-bottom:8px;opacity:.55}.trouble-step-v24.active{opacity:1;border-color:#4a7f9c;box-shadow:0 0 0 2px rgba(76,201,240,.06)}.trouble-step-v24.done{opacity:.88}.trouble-step-v24.bad{border-color:#75404a;background:#21151c}.trouble-step-v24.ok{border-color:#2f6c58;background:#0b251f}.trouble-step-v24.skip{border-color:#625b43}.trouble-step-v24 .step-num{width:30px;height:30px}.trouble-step-v24 code{display:block;margin:5px 0 4px;padding:7px 8px;border-radius:7px;background:#050e17;color:#c3f4dd;white-space:pre-wrap;font-size:11.5px}.trouble-step-v24 p{margin:0;color:#9db2c5;font-size:11.3px;line-height:1.55}.trouble-step-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px}.trouble-step-actions .btn{min-height:35px;padding:6px 9px;font-size:11px}.trouble-output{margin-top:8px}.trouble-output textarea{min-height:115px;font-size:12px}.trouble-diagnosis{margin-top:9px;padding:10px;border-radius:9px;border:1px solid #75404a;background:#2b1820;color:#ffc0c7;font-size:11.5px;line-height:1.6}.trouble-diagnosis.good{border-color:#2f6c58;background:#0c2a23;color:#c0f3db}.trouble-diagnosis.warn{border-color:#6b5c30;background:#282313;color:#f6dc95}
+.audit-status-badge{display:inline-flex;align-items:center;border-radius:999px;padding:5px 9px;font-size:10.8px;font-weight:900;white-space:nowrap}.audit-status-badge.block{background:#351a23;border:1px solid #75404a;color:#ffb8c1}.audit-status-badge.review{background:#2c2514;border:1px solid #725f31;color:#f7da91}.audit-status-badge.pass{background:#0d2d26;border:1px solid #2f6c58;color:#bdf2da}
+.audit-counts{display:flex;gap:6px;flex-wrap:wrap}.audit-count{border:1px solid #31506a;border-radius:8px;padding:5px 8px;font-size:10.5px;background:#091827}.audit-count.critical{border-color:#75404a;color:#ffb8c1}.audit-count.warning{border-color:#725f31;color:#f7da91}.audit-count.info{color:#acd4eb}.audit-count.pass{border-color:#2f6c58;color:#bdf2da}
+.audit-item-v24{padding:9px 10px;border:1px solid #294861;border-radius:9px;background:#081824}.audit-item-v24+.audit-item-v24{margin-top:6px}.audit-item-v24 b{display:block;font-size:11.8px}.audit-item-v24 small{display:block;color:#8fa8bf;font-size:10.6px;line-height:1.5;margin-top:3px}.audit-item-v24.critical{border-color:#75404a}.audit-item-v24.warning{border-color:#715f31}.audit-item-v24.pass{border-color:#2f6c58}.audit-item-v24.info{border-color:#315772}
+@media(max-width:1000px){.workspace-memory,.trouble-workspace{grid-template-columns:1fr}}
+@media(max-width:560px){.smart-paste-head{flex-direction:column}.smart-paste-actions .btn{flex:1 1 120px}.memory-item{grid-template-columns:minmax(0,1fr) 38px}}
+
+
+
+/* =========================================================
+   v2.4.2 Sidebar Clean - simplified primary navigation
+   ========================================================= */
+body{
+  --module-accent:#4cc9f0;
+  --module-accent-soft:rgba(76,201,240,.10);
+}
+body[data-active-module="home"]{--module-accent:#60a5fa;--module-accent-soft:rgba(96,165,250,.10)}
+body[data-active-module="config"]{--module-accent:#a78bfa;--module-accent-soft:rgba(167,139,250,.10)}
+body[data-active-module="planning"]{--module-accent:#34d399;--module-accent-soft:rgba(52,211,153,.10)}
+body[data-active-module="troubleshoot"]{--module-accent:#f5b94c;--module-accent-soft:rgba(245,185,76,.10)}
+body[data-active-module="toolkit"]{--module-accent:#4cc9f0;--module-accent-soft:rgba(76,201,240,.10)}
+body[data-active-module="voice"]{--module-accent:#c084fc;--module-accent-soft:rgba(192,132,252,.10)}
+
+.sidebar .primary-nav{position:relative;padding-left:18px!important;overflow:hidden}
+.sidebar .primary-nav::before{
+  content:"";position:absolute;left:7px;top:50%;width:4px;height:22px;border-radius:999px;
+  transform:translateY(-50%);background:var(--nav-accent,#4cc9f0);opacity:.48;
+}
+.sidebar .primary-nav[data-nav-group="home"]{--nav-accent:#60a5fa}
+.sidebar .primary-nav[data-nav-group="config"]{--nav-accent:#a78bfa}
+.sidebar .primary-nav[data-nav-group="planning"]{--nav-accent:#34d399}
+.sidebar .primary-nav[data-nav-group="troubleshoot"]{--nav-accent:#f5b94c}
+.sidebar .primary-nav[data-nav-group="toolkit"]{--nav-accent:#4cc9f0}
+.sidebar .primary-nav[data-nav-group="voice"]{--nav-accent:#c084fc}
+.sidebar .primary-nav.active{
+  border-color:var(--nav-accent)!important;
+  box-shadow:inset 3px 0 0 var(--nav-accent),0 6px 16px rgba(0,0,0,.12)!important;
+  background:color-mix(in srgb,var(--nav-accent) 11%,#0b1c2a)!important;
+}
+.sidebar .primary-nav.active::before{opacity:1;height:30px}
+.sidebar .primary-nav:hover::before{opacity:.82}
+
+.context-panel.active{border-color:color-mix(in srgb,var(--module-accent) 58%,#294965)!important}
+.context-panel.active .context-head{
+  border-bottom-color:color-mix(in srgb,var(--module-accent) 35%,#24435f)!important;
+  background:linear-gradient(135deg,var(--module-accent-soft),rgba(121,223,178,.015))!important;
+}
+.context-panel.active .context-breadcrumb,
+.context-panel.active .context-label{color:color-mix(in srgb,var(--module-accent) 82%,#dcecff)!important}
+.context-panel.active .context-btn.active{
+  border-color:var(--module-accent)!important;
+  background:var(--module-accent-soft)!important;
+  box-shadow:inset 3px 0 0 var(--module-accent)!important;
+}
+.context-panel.active .context-btn.featured{border-color:color-mix(in srgb,var(--module-accent) 58%,#31516d)}
+.context-panel.active .context-btn.featured:hover{border-color:var(--module-accent)}
+.view-guide{border-left:3px solid var(--module-accent)}
+
+/* Network Toolkit: sub-groups are easier to scan without turning the UI into a rainbow. */
+#context-toolkit .context-body>.context-group:first-child{--section-accent:#4cc9f0}
+#toolkitAnalyze{--section-accent:#f5ca68}
+#toolkitAdvanced{--section-accent:#79dfb2}
+#context-toolkit .context-body>.context-group:first-child .context-label,
+#toolkitAnalyze .context-label,#toolkitAnalyze>summary,
+#toolkitAdvanced .context-label,#toolkitAdvanced>summary{color:var(--section-accent)!important}
+#toolkitAnalyze .context-btn,#toolkitAdvanced .context-btn,
+#context-toolkit .context-body>.context-group:first-child .context-btn{box-shadow:inset 2px 0 0 color-mix(in srgb,var(--section-accent) 72%,transparent)}
+
+/* Troubleshooting uses symptom categories, but every shortcut stays in the same primary module. */
+.trouble-group{--section-accent:#f5b94c}
+.trouble-guide{--section-accent:#f5b94c}
+.trouble-connectivity{--section-accent:#63b3ed}
+.trouble-services{--section-accent:#79dfb2}
+.trouble-voice{--section-accent:#c084fc}
+#context-troubleshoot .trouble-group .context-label{color:var(--section-accent)!important}
+#context-troubleshoot .trouble-group .context-btn{box-shadow:inset 2px 0 0 color-mix(in srgb,var(--section-accent) 72%,transparent)}
+#context-troubleshoot .context-btn[data-trouble-symptom].active{
+  border-color:var(--section-accent)!important;
+  background:color-mix(in srgb,var(--section-accent) 10%,#0b1c2a)!important;
+  box-shadow:inset 3px 0 0 var(--section-accent)!important;
+}
+
+@media(max-width:900px){
+  .sidebar .primary-nav{padding-left:19px!important}
+  .sidebar .primary-nav::before{left:7px;height:24px}
+}
+
+
+
+/* =========================================================
+   v2.4.2 Sidebar Clean
+   Simplify primary navigation: one label per item, larger type,
+   tighter vertical rhythm, less visual noise.
+   ========================================================= */
+.app{grid-template-columns:224px minmax(0,1fr)}
+.sidebar{padding:18px 12px}
+.sidebar .brand{
+  gap:11px;
+  padding:4px 7px 20px;
+  align-items:center;
+}
+.sidebar .logo{
+  width:48px;
+  height:48px;
+  flex:0 0 48px;
+  border-radius:13px;
+  font-size:14px;
+  letter-spacing:.04em;
+  line-height:1;
+}
+.sidebar .brand h1{
+  font-size:16.5px;
+  line-height:1.34;
+  font-weight:850;
+  letter-spacing:-.015em;
+}
+/* Hide descriptive subtitle under the product name and all primary nav labels. */
+.sidebar .brand p,
+.sidebar .primary-nav small{display:none!important}
+.sidebar .side-title{
+  margin:17px 10px 7px;
+  padding-top:13px;
+  font-size:11px;
+  line-height:1.2;
+  letter-spacing:.08em;
+}
+.sidebar .side-title:first-of-type{margin-top:8px}
+.sidebar .primary-nav{
+  min-height:48px;
+  margin:3px 0;
+  padding:11px 12px 11px 20px!important;
+  display:flex;
+  align-items:center;
+  border-radius:11px;
+}
+.sidebar .primary-nav b{
+  display:block;
+  font-size:15px;
+  line-height:1.25;
+  font-weight:800;
+  letter-spacing:.005em;
+}
+.sidebar .primary-nav::before{
+  left:8px;
+  width:4px;
+  height:20px;
+}
+.sidebar .primary-nav.active::before{height:28px}
+.sidebar .side-note{
+  margin-top:18px;
+  padding:11px 9px;
+  font-size:10.5px;
+  line-height:1.55;
+}
+@media(max-width:1180px){.app{grid-template-columns:216px minmax(0,1fr)}}
+@media(max-width:900px){
+  .sidebar{width:min(82vw,286px);padding:14px 12px 24px}
+  .sidebar .primary-nav{min-height:50px;padding:12px 12px 12px 21px!important}
+  .sidebar .primary-nav b{font-size:15.5px}
+  .sidebar .primary-nav::before{left:8px}
+}
+
+
+/* =========================================================
+   v2.4.3 Minimal UI
+   Remove redundant navigation copy and tighten typography.
+   ========================================================= */
+.hero.app-header-compact{
+  padding:11px 16px!important;
+}
+.hero.app-header-compact .hero-top{
+  align-items:center!important;
+}
+.hero.app-header-compact h2{
+  margin:0!important;
+  font-size:25px!important;
+  line-height:1.18!important;
+  letter-spacing:-.025em!important;
+}
+.hero.app-header-compact p{display:none!important}
+.hero-v2-actions{align-items:center}
+.hero-v2-actions .ver{font-size:10.5px!important;padding:6px 9px!important}
+
+/* Sidebar = primary choices only. */
+.sidebar .brand h1{
+  font-size:16px!important;
+  line-height:1.25!important;
+}
+.sidebar .side-note{display:none!important}
+.sidebar .primary-nav{
+  min-height:46px!important;
+  padding-top:10px!important;
+  padding-bottom:10px!important;
+}
+.sidebar .primary-nav b{
+  font-size:15.5px!important;
+  line-height:1.2!important;
+}
+.sidebar .side-title{
+  font-size:10.5px!important;
+  margin-bottom:6px!important;
+}
+
+/* Context navigation: remove duplicated explanations / English subtitles. */
+.context-head{
+  padding:11px 14px 10px!important;
+}
+.context-head .guide-detail{display:none!important}
+.context-breadcrumb{
+  margin-bottom:4px!important;
+  font-size:11.5px!important;
+  letter-spacing:.035em!important;
+}
+.context-head h3{
+  font-size:16px!important;
+  line-height:1.3!important;
+}
+.context-body{padding:11px 14px 13px!important}
+.context-group + .context-group{
+  margin-top:11px!important;
+  padding-top:10px!important;
+}
+.context-label{
+  margin-bottom:6px!important;
+  font-size:11px!important;
+}
+.context-btn{
+  min-height:40px!important;
+  padding:8px 12px!important;
+  font-size:13.5px!important;
+  line-height:1.2!important;
+}
+.context-btn small{display:none!important}
+.context-advanced>summary{
+  min-height:42px;
+  font-size:12.5px!important;
+}
+.context-advanced>summary small{display:none!important}
+
+/* Keep the workspace readable but stop helper text from dominating in professional mode. */
+body.guide-off .view-guide,
+body.guide-off .guide-detail{display:none!important}
+
+@media(max-width:900px){
+  .hero.app-header-compact{padding:10px 12px!important}
+  .hero.app-header-compact h2{font-size:20px!important}
+  .sidebar .primary-nav b{font-size:15px!important}
+  .context-head h3{font-size:15px!important}
+  .context-btn{font-size:13px!important}
+}
 </style>
 </head>
 <body>
@@ -1705,15 +1973,15 @@ body.guide-off .variable-group .row{padding-bottom:7px}
     <b>Mason Toolkit</b>
     <span id="mobileViewTitle">Dashboard</span>
   </div>
-  <span class="mobile-version">v2.3 F</span>
+  <span class="mobile-version">v2.5</span>
 </div>
 <div id="mobileNavBackdrop" class="mobile-nav-backdrop"></div>
 
 <div class="app">
   <aside class="sidebar">
     <div class="brand">
-      <div class="logo">NET</div>
-      <div><h1>Mason Cisco Engineering Toolkit</h1><p>Configuration · Planning · Troubleshooting · Network · Voice</p></div>
+      <div class="logo">FSR</div>
+      <div><h1>Mason Cisco<br>Toolkit</h1></div>
     </div>
 
     <div class="side-title">工作區</div>
@@ -1738,9 +2006,6 @@ body.guide-off .variable-group .row{padding-bottom:7px}
       <b>語音工具</b><small>Voice · SIP / Dial Plan / Media</small>
     </button>
 
-    <div class="side-note">
-      所有組態產生、規劃查詢與工程計算均於瀏覽器端執行；不會將組態內容上傳至外部服務。
-    </div>
   </aside>
 
   <main class="main">
@@ -1748,19 +2013,18 @@ body.guide-off .variable-group .row{padding-bottom:7px}
       <div class="hero-top">
         <div>
           <h2>Mason Cisco Engineering Toolkit</h2>
-          <p>新手容易上手，資深工程師快速操作｜Configuration · Planning · Troubleshooting · Network · Voice</p>
         </div>
         <div class="hero-v2-actions">
           <button id="guideModeBtn" class="guide-mode-btn" type="button" onclick="toggleGuideMode()" aria-pressed="true">🎓 工程導引：開啟</button>
           <button class="global-search-btn" type="button" onclick="openGlobalSearch()">⌕ 全域搜尋 <kbd>Ctrl K</kbd></button>
-          <div class="ver">v2.3 Final</div>
+          <div class="ver">v2.5</div>
         </div>
       </div>
     </section>
 
 
     <section id="context-config" class="context-panel">
-      <div class="context-head"><div><span class="context-breadcrumb">組態產生 / Configuration</span><h3>1 選設備 → 2 確認參數 → 3 檢查並產生</h3><p class="guide-detail">日常作業先選設備與站點，確認自動帶入參數，再看右側 Configuration Check；進階 Template 管理預設收起。</p></div></div>
+      <div class="context-head"><div><span class="context-breadcrumb">組態產生</span><h3>1 選設備 → 2 確認參數 → 3 檢查並產生</h3><p class="guide-detail">日常作業先選設備與站點，確認自動帶入參數，再看右側 Configuration Check；進階 Template 管理預設收起。</p></div></div>
       <div class="context-body">
         <div class="context-group"><div class="context-label">先選設備 Template</div><div id="deviceNav" class="device-nav config-device-nav"></div></div>
         <div class="context-group"><div class="context-label">選擇工作模式</div><div class="secondary-nav">
@@ -1770,7 +2034,7 @@ body.guide-off .variable-group .row{padding-bottom:7px}
     </section>
 
     <section id="context-planning" class="context-panel">
-      <div class="context-head"><div><span class="context-breadcrumb">網路規劃 / Planning</span><h3>不知道資料在哪裡？先用 Site Lookup</h3><p class="guide-detail">輸入 Site、Hostname、IP 或電話即可跨資料查詢；需要看原始規劃表時再展開進階區。</p></div></div>
+      <div class="context-head"><div><span class="context-breadcrumb">網路規劃</span><h3>不知道資料在哪裡？先用 Site Lookup</h3><p class="guide-detail">輸入 Site、Hostname、IP 或電話即可跨資料查詢；需要看原始規劃表時再展開進階區。</p></div></div>
       <div class="context-body">
         <div class="context-group"><div class="context-label">最常用</div><div class="secondary-nav"><button class="context-btn featured" data-view="sitelookup"><span>查設備 / IP / 電話</span><small>Site Lookup</small></button></div></div>
         <details id="planningAdvanced" class="context-advanced"><summary>原始規劃表 <small>IP / Phone / CN / DWBK / NMS</small></summary><div class="context-advanced-body"><div class="secondary-nav">
@@ -1780,28 +2044,36 @@ body.guide-off .variable-group .row{padding-bottom:7px}
     </section>
 
     <section id="context-troubleshoot" class="context-panel">
-      <div class="context-head"><div><span class="context-breadcrumb">故障排除 / Troubleshooting Center</span><h3>先選症狀，再依 Layer / Call Flow 逐步檢查</h3><p class="guide-detail">新手可以照檢查順序走；熟悉的工程師可直接複製 Command、貼 Show / SIP Trace 做快速判讀。</p></div></div>
+      <div class="context-head"><div><span class="context-breadcrumb">故障排除</span><h3>從症狀開始，在同一模組內逐層排查</h3><p class="guide-detail">右側所有項目都屬於「故障排除」。選擇症狀後只更新 Troubleshooting 工作區，不會自動切換到網路工具或語音工具。</p></div></div>
       <div class="context-body">
-        <div class="context-group"><div class="context-label">導引式故障排除</div><div class="secondary-nav">
-          <button class="context-btn featured" data-view="troubleshoot"><span>從症狀開始</span><small>網路 / 語音導引</small></button>
+        <div class="context-group trouble-group trouble-guide"><div class="context-label">導引式故障排除</div><div class="secondary-nav">
+          <button class="context-btn featured" data-view="troubleshoot"><span>從症狀開始</span><small>Interactive Decision Tree</small></button>
         </div></div>
-        <div class="context-group"><div class="context-label">網路常見故障</div><div class="secondary-nav">
-          <button class="context-btn" data-view="ospfanalyzer"><span>OSPF 鄰居問題</span><small>鄰居分析</small></button>
-          <button class="context-btn" data-view="l2analyzer"><span>Interface / STP / EtherChannel</span><small>Layer 1 / 2 分析</small></button>
-          <button class="context-btn" data-view="aclflow"><span>ACL 是否擋流量</span><small>ACL Flow Tester</small></button>
-          <button class="context-btn" data-view="servicescheck"><span>DHCP / DNS / NTP</span><small>服務檢查</small></button>
+        <div class="context-group trouble-group trouble-connectivity"><div class="context-label">連線 / Routing</div><div class="secondary-nav">
+          <button class="context-btn" data-trouble-symptom="samevlan" onclick="openTroubleSymptom('samevlan')"><span>同 VLAN 主機不通</span><small>Layer 1 / 2 / ARP</small></button>
+          <button class="context-btn" data-trouble-symptom="intervlan" onclick="openTroubleSymptom('intervlan')"><span>跨 VLAN / Gateway 不通</span><small>SVI / Routing / ACL</small></button>
+          <button class="context-btn" data-trouble-symptom="wan" onclick="openTroubleSymptom('wan')"><span>WAN / 遠端網段不通</span><small>Route / Next-Hop / Return Path</small></button>
+          <button class="context-btn" data-trouble-symptom="routeissue" onclick="openTroubleSymptom('routeissue')"><span>路由存在但走錯 / 找不到路由</span><small>Longest Match / Next-Hop / VRF</small></button>
+          <button class="context-btn" data-trouble-symptom="bgp" onclick="openTroubleSymptom('bgp')"><span>BGP Neighbor 不正常</span><small>TCP 179 / AS / Update-Source</small></button>
+          <button class="context-btn" data-trouble-symptom="ospf" onclick="openTroubleSymptom('ospf')"><span>OSPF Neighbor 不正常</span><small>Area / Timer / MTU / Auth</small></button>
+          <button class="context-btn" data-trouble-symptom="l2" onclick="openTroubleSymptom('l2')"><span>Port Up 但流量異常 / Loop</span><small>Interface / STP / EtherChannel</small></button>
         </div></div>
-        <div class="context-group"><div class="context-label">語音常見故障</div><div class="secondary-nav">
-          <button class="context-btn" data-view="siptrace"><span>SIP 呼叫失敗</span><small>SIP Trace Analyzer</small></button>
-          <button class="context-btn" data-view="rtpaudio"><span>單向 / 無語音</span><small>RTP Media Path</small></button>
-          <button class="context-btn" data-view="dtmf"><span>IVR 按鍵沒反應</span><small>DTMF Analyzer</small></button>
-          <button class="context-btn" data-view="translation"><span>號碼轉換錯誤</span><small>Translation Tester</small></button>
+        <div class="context-group trouble-group trouble-services"><div class="context-label">Network Services</div><div class="secondary-nav">
+          <button class="context-btn" data-trouble-symptom="dhcp" onclick="openTroubleSymptom('dhcp')"><span>Client 取不到 DHCP</span><small>VLAN / Relay / Pool</small></button>
+          <button class="context-btn" data-trouble-symptom="dns" onclick="openTroubleSymptom('dns')"><span>IP 通但名稱解析失敗</span><small>DNS / Route / UDP-TCP 53</small></button>
+        </div></div>
+        <div class="context-group trouble-group trouble-voice"><div class="context-label">Voice 故障</div><div class="secondary-nav">
+          <button class="context-btn" data-trouble-symptom="callout" onclick="openTroubleSymptom('callout')"><span>電話打不出去</span><small>Dial Plan / SIP / Media</small></button>
+          <button class="context-btn" data-trouble-symptom="callin" onclick="openTroubleSymptom('callin')"><span>電話打不進來</span><small>INVITE / Incoming DP / CUCM</small></button>
+          <button class="context-btn" data-trouble-symptom="siperror" onclick="openTroubleSymptom('siperror')"><span>SIP 4xx / 5xx</span><small>Response / Auth / Codec</small></button>
+          <button class="context-btn" data-trouble-symptom="oneway" onclick="openTroubleSymptom('oneway')"><span>One-Way / No Audio</span><small>SDP / RTP / NAT</small></button>
+          <button class="context-btn" data-trouble-symptom="dtmfissue" onclick="openTroubleSymptom('dtmfissue')"><span>IVR DTMF 沒反應</span><small>RTP-NTE / SIP INFO / KPML</small></button>
         </div></div>
       </div>
     </section>
 
     <section id="context-toolkit" class="context-panel">
-      <div class="context-head"><div><span class="context-breadcrumb">網路工具 / Network Toolkit</span><h3>計算、驗證、分析一次集中</h3><p class="guide-detail">常用 IP 工具直接顯示；分析器與進階規劃則依工作類型分組收納，讓新手容易找到、資深工程師也能快速切換。</p></div></div>
+      <div class="context-head"><div><span class="context-breadcrumb">網路工具</span><h3>計算、驗證、分析一次集中</h3><p class="guide-detail">常用 IP 工具直接顯示；分析器與進階規劃則依工作類型分組收納，讓新手容易找到、資深工程師也能快速切換。</p></div></div>
       <div class="context-body">
         <div class="context-group"><div class="context-label">常用</div><div class="secondary-nav">
           <button class="context-btn featured" data-view="subnetcalc"><span>計算子網路</span><small>Subnet Calculator</small></button>
@@ -1811,6 +2083,8 @@ body.guide-off .variable-group .row{padding-bottom:7px}
         </div></div>
         <details id="toolkitAnalyze" class="context-advanced"><summary>分析 / 驗證 <small>OSPF / L2 / Diff / NAT / Services</small></summary><div class="context-advanced-body">
           <div class="context-group"><div class="context-label">路由 / Layer 2</div><div class="secondary-nav">
+            <button class="context-btn" data-view="routeanalyzer"><span>Routing Table 判讀</span><small>Longest Prefix Match</small></button>
+            <button class="context-btn" data-view="bgpanalyzer"><span>BGP Neighbor 判讀</span><small>BGP Summary Analyzer</small></button>
             <button class="context-btn" data-view="ospfanalyzer"><span>OSPF 鄰居判讀</span><small>OSPF Analyzer</small></button>
             <button class="context-btn" data-view="l2analyzer"><span>Interface / STP / EtherChannel</span><small>L1/L2 Analyzer</small></button>
           </div></div>
@@ -1837,7 +2111,7 @@ body.guide-off .variable-group .row{padding-bottom:7px}
     </section>
 
     <section id="context-voice" class="context-panel">
-      <div class="context-head"><div><span class="context-breadcrumb">語音工具 / Voice &amp; Collaboration</span><h3>從 Signaling、Dial Plan、Media 三條路徑判讀</h3><p class="guide-detail">先看 SIP Trace 是否成功，再看號碼路由 / Translation，最後檢查 RTP、Codec 與 DTMF。</p></div></div>
+      <div class="context-head"><div><span class="context-breadcrumb">語音工具</span><h3>從 Signaling、Dial Plan、Media 三條路徑判讀</h3><p class="guide-detail">先看 SIP Trace 是否成功，再看號碼路由 / Translation，最後檢查 RTP、Codec 與 DTMF。</p></div></div>
       <div class="context-body">
         <div class="context-group"><div class="context-label">最常用</div><div class="secondary-nav">
           <button class="context-btn featured" data-view="siptrace"><span>解析 SIP Trace</span><small>SIP Trace Analyzer</small></button>
@@ -1873,6 +2147,16 @@ body.guide-off .variable-group .row{padding-bottom:7px}
           <button class="task-card" data-view="troubleshoot"><span class="task-no">03</span><span class="task-icon">FIX</span><b>我要排除故障</b><small>從 Ping、OSPF、VLAN、SIP、單向語音或 DTMF 症狀開始逐步檢查。</small><em>開始故障排除 →</em></button>
           <button class="task-card" data-view="subnetcalc"><span class="task-no">04</span><span class="task-icon">NET</span><b>我要計算或驗證網路</b><small>Subnet、ACL Flow、IP Check、VLAN / DHCP、IPv6、QoS。</small><em>開啟網路工具 →</em></button>
           <button class="task-card" data-view="siptrace"><span class="task-no">05</span><span class="task-icon">VOIP</span><b>我要處理 Voice / SIP</b><small>SIP Trace、Dial Plan、Translation、RTP、SDP / Codec、DTMF。</small><em>開啟語音工具 →</em></button>
+        </div>
+        <div class="card smart-paste-card">
+          <div class="smart-paste-head"><div><span class="welcome-kicker">SMART PASTE</span><h3>手上有 Show / Debug？直接貼，不用先找工具</h3><p>自動辨識 OSPF、Interface / STP / EtherChannel、SIP、ACL、NAT、DHCP / NTP、Routing 與 Cisco Config，先整理重點，再導向最適合的分析器。</p></div><span class="tool-badge">Local Analysis</span></div>
+          <textarea id="smartPasteInput" class="smart-paste-area" placeholder="例如：貼上 show ip ospf neighbor、show interfaces、show spanning-tree、debug ccsip messages…"></textarea>
+          <div class="smart-paste-actions"><button class="btn primary" onclick="analyzeSmartPaste()">Analyze</button><button class="btn ghost" onclick="setSmartPasteExample()">載入 OSPF 範例</button><button class="btn ghost" onclick="clearSmartPaste()">清除</button></div>
+          <div id="smartPasteResult" class="smart-result"></div>
+        </div>
+        <div class="workspace-memory">
+          <div class="card memory-card"><div class="memory-head"><h3>最近使用</h3><span class="chip">Recent</span></div><div id="recentToolsList" class="memory-list"></div></div>
+          <div class="card memory-card"><div class="memory-head"><h3>釘選工具</h3><span class="chip">Pinned</span></div><div id="favoriteToolsList" class="memory-list"></div></div>
         </div>
         <div class="card common-tools-card"><div class="stitle"><div><h3>常用工具</h3><p class="desc guide-detail" style="margin:3px 0 0">熟悉後可直接點工具，或按 Ctrl+K 搜尋。</p></div><span class="chip">快速入口</span></div><div class="quick-grid recommended-quick">
           <button class="quick-tile" data-view="subnetcalc">子網路計算<small>Subnet Calculator</small></button>
@@ -1939,9 +2223,13 @@ P2P,2</textarea><label style="margin-top:8px;display:flex;align-items:center;gap
     </section>
 
     <section id="view-troubleshoot" class="view">
-      <div class="card tool-shell"><div class="output-head"><div class="output-title"><b>故障排除中心</b><span>Troubleshooting Center｜Network / Voice 症狀導向排障流程</span></div><span class="tool-badge">Guided Workflow</span></div>
-        <div class="tool-body"><div class="analysis-layout">
-          <div class="tool-panel"><h3>你現在遇到什麼問題？</h3><p>先選症狀，不需要先知道是哪一層故障。系統會列出檢查順序、建議指令與每一步要觀察的重點。</p><label>問題類型</label><select id="troubleSymptom" onchange="renderTroubleshooting()"><optgroup label="Network"><option value="samevlan">同 VLAN 主機不通</option><option value="intervlan">跨 VLAN / Gateway 不通</option><option value="wan">WAN / 遠端網段不通</option><option value="ospf">OSPF Neighbor 不正常</option><option value="l2">Port Up 但流量異常 / Loop</option><option value="dhcp">Client 取不到 DHCP</option><option value="dns">IP 通但名稱解析失敗</option></optgroup><optgroup label="Voice"><option value="callout">電話打不出去</option><option value="callin">電話打不進來</option><option value="siperror">SIP 4xx / 5xx</option><option value="oneway">One-Way / No Audio</option><option value="dtmfissue">IVR DTMF 沒反應</option></optgroup></select><div class="tool-mini-actions"><button class="btn primary" onclick="renderTroubleshooting()">產生檢查流程</button><button class="btn ghost" onclick="switchView('siptrace')">貼 SIP Trace</button></div><div class="tool-note">此流程是故障排除檢查清單（Checklist），不會取代實機狀態判讀。每一步都應依實際拓撲、IOS/IOS-XE 與安全政策判斷。</div></div>
+      <div class="card tool-shell"><div class="output-head"><div class="output-title"><b>故障排除中心</b><span>Troubleshooting Center 2.0｜症狀導向 + 互動式 Decision Tree + Show Output 快速判讀</span></div><span class="tool-badge">Interactive Workflow</span></div>
+        <div class="tool-body"><div class="trouble-workspace">
+          <div class="tool-panel trouble-control"><h3>1｜選擇症狀</h3><p>先選最接近的現象。系統依 Layer / Call Flow 排出檢查順序；每一步可標記正常、異常或略過。</p><label>問題類型</label><select id="troubleSymptom" onchange="renderTroubleshooting(true)"><optgroup label="Network"><option value="samevlan">同 VLAN 主機不通</option><option value="intervlan">跨 VLAN / Gateway 不通</option><option value="wan">WAN / 遠端網段不通</option><option value="routeissue">路由存在但走錯 / 找不到路由</option><option value="bgp">BGP Neighbor 不正常</option><option value="ospf">OSPF Neighbor 不正常</option><option value="l2">Port Up 但流量異常 / Loop</option><option value="dhcp">Client 取不到 DHCP</option><option value="dns">IP 通但名稱解析失敗</option></optgroup><optgroup label="Voice"><option value="callout">電話打不出去</option><option value="callin">電話打不進來</option><option value="siperror">SIP 4xx / 5xx</option><option value="oneway">One-Way / No Audio</option><option value="dtmfissue">IVR DTMF 沒反應</option></optgroup></select>
+            <div class="tool-mini-actions"><button class="btn primary" onclick="renderTroubleshooting(true)">重新開始</button></div>
+            <div class="trouble-progress"><div class="trouble-progress-bar"><span id="troubleProgressBar" style="width:0%"></span></div><small id="troubleProgressText">0 / 0</small></div>
+            <div id="troubleDecisionSummary" class="tool-note">從第一步開始，先驗證最靠近問題來源的 Layer，再逐層往上。</div>
+          </div>
           <div class="tool-panel"><h3 id="troubleTitle">檢查流程</h3><div id="troubleSummary" class="tool-status"></div><div id="troubleSteps" class="trouble-steps"></div></div>
         </div></div>
       </div>
@@ -1951,6 +2239,29 @@ P2P,2</textarea><label style="margin-top:8px;display:flex;align-items:center;gap
       <div class="card tool-shell"><div class="output-head"><div class="output-title"><b>ACL 流量測試</b><span>ACL Flow Tester｜以來源、目的、協定與連接埠模擬 ACL 第一筆匹配</span></div><span class="tool-badge">ACL Decision</span></div>
         <div class="tool-body"><div class="analysis-layout"><div class="tool-panel"><h3>測試封包</h3><div class="tool-inline-grid two"><div><label>來源 IP / Source</label><input id="aclSrc" value="10.10.10.25" oninput="testAclFlow()"></div><div><label>目的 IP / Destination</label><input id="aclDst" value="172.16.20.10" oninput="testAclFlow()"></div></div><div class="tool-inline-grid two" style="margin-top:9px"><div><label>協定 / Protocol</label><select id="aclProto" onchange="testAclFlow()"><option>tcp</option><option>udp</option><option>icmp</option><option>ip</option></select></div><div><label>目的連接埠 / Destination Port</label><input id="aclPort" value="443" oninput="testAclFlow()"></div></div><label style="margin-top:10px">ACL 規則</label><textarea id="aclFlowText" class="validator-textarea" oninput="testAclFlow()">10 permit tcp 10.10.10.0 0.0.0.255 host 172.16.20.10 eq 443
 20 deny ip any any</textarea><div class="tool-mini-actions"><button class="btn primary" onclick="testAclFlow()">測試流量</button><button class="btn ghost" onclick="setAclFlowExample()">載入範例</button></div></div><div class="tool-panel"><h3>判斷結果</h3><div id="aclFlowResult"></div><div class="tool-note">支援常見 Extended ACL：permit/deny + ip/tcp/udp/icmp、any、host、IP wildcard、目的埠 eq。較複雜的 object-group、time-range、established 等條件仍應以實機驗證。</div></div></div></div>
+      </div>
+    </section>
+
+    <section id="view-routeanalyzer" class="view">
+      <div class="card tool-shell"><div class="output-head"><div class="output-title"><b>Routing Table 判讀</b><span>Route Table Analyzer｜解析 show ip route、統計路由來源並執行 Longest Prefix Match</span></div><span class="tool-badge">Routing Analysis</span></div>
+        <div class="tool-body"><div class="analysis-layout"><div class="tool-panel"><h3>貼上 Routing Table</h3><p>支援常見 IOS / IOS-XE <b>show ip route</b> 路由列。可輸入目的 IP，查看實際會命中的最長前綴。</p><textarea id="routeTableText" class="validator-textarea" oninput="analyzeRouteTable()">Gateway of last resort is 10.1.1.1 to network 0.0.0.0
+
+C    10.1.1.0/30 is directly connected, GigabitEthernet0/0
+L    10.1.1.2/32 is directly connected, GigabitEthernet0/0
+O    10.20.0.0/16 [110/20] via 10.1.1.1, 00:03:12, GigabitEthernet0/0
+O IA 10.30.10.0/24 [110/30] via 10.1.1.1, 00:02:04, GigabitEthernet0/0
+S*   0.0.0.0/0 [1/0] via 10.1.1.1</textarea><label style="margin-top:10px">目的 IP / Destination Lookup</label><input id="routeLookupIp" value="10.30.10.88" oninput="analyzeRouteTable()"><div class="tool-mini-actions"><button class="btn primary" onclick="analyzeRouteTable()">分析 Routing Table</button><button class="btn ghost" onclick="setRouteAnalyzerExample()">載入範例</button></div></div><div class="tool-panel"><h3>判讀結果</h3><div id="routeStats" class="tool-result-grid"></div><div id="routeResult" class="analysis-stack" style="margin-top:10px"></div></div></div><div class="tool-table-wrap" style="margin-top:12px"><div id="routeParsedTable"></div></div></div>
+      </div>
+    </section>
+
+    <section id="view-bgpanalyzer" class="view">
+      <div class="card tool-shell"><div class="output-head"><div class="output-title"><b>BGP Neighbor 判讀</b><span>BGP Summary Analyzer｜解析 show ip bgp summary / show bgp ipv4 unicast summary</span></div><span class="tool-badge">BGP Troubleshooting</span></div>
+        <div class="tool-body"><div class="analysis-layout"><div class="tool-panel"><h3>貼上 BGP Summary</h3><p>快速整理 Neighbor、Remote AS、Session State、Prefix Count、InQ / OutQ。State/PfxRcd 為數字時代表 Session 已 Established。</p><textarea id="bgpText" class="validator-textarea" oninput="analyzeBgp()">BGP router identifier 10.255.1.1, local AS number 65001
+BGP table version is 52, main routing table version 52
+
+Neighbor        V           AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd
+10.1.12.2       4        65002    1250    1247       52    0    0 1d02h              48
+10.1.13.3       4        65003       0       0        1    0    0 never          Active</textarea><div class="tool-mini-actions"><button class="btn primary" onclick="analyzeBgp()">分析 BGP</button><button class="btn ghost" onclick="setBgpExample()">載入問題範例</button></div></div><div class="tool-panel"><h3>BGP 分析結果</h3><div id="bgpSummaryStats" class="tool-result-grid"></div><div id="bgpResult" class="analysis-stack" style="margin-top:10px"></div></div></div><div class="tool-table-wrap" style="margin-top:12px"><div id="bgpNeighborTable"></div></div></div>
       </div>
     </section>
 
@@ -2723,7 +3034,7 @@ a=rtpmap:101 telephone-event/8000</textarea></div></div><div id="sdpResult" clas
       </div>
     </section>
 
-    <div class="footer">Mason Cisco Engineering Toolkit V2.3 Final｜Client-side Processing｜Configuration data is not uploaded</div>
+    <div class="footer">Mason Cisco Engineering Toolkit V2.4.1｜Client-side Processing｜Configuration data is not uploaded</div>
   </main>
 </div>
 
@@ -2817,7 +3128,7 @@ const VIEW_GROUPS = {
   config:['single','batch','downloadall'],
   planning:['sitelookup','reference','cnplan','dwbkplan','nmsplan'],
   troubleshoot:['troubleshoot'],
-  toolkit:['subnetcalc','vlsm','vlsmplanner','portref','ipcheck','routesummary','wildcard','vlandhcp','aclflow','ospfanalyzer','l2analyzer','configdiff','qos','ipv6','natflow','servicescheck'],
+  toolkit:['subnetcalc','vlsm','vlsmplanner','portref','ipcheck','routesummary','wildcard','vlandhcp','aclflow','routeanalyzer','bgpanalyzer','ospfanalyzer','l2analyzer','configdiff','qos','ipv6','natflow','servicescheck'],
   voice:['dialpeer','sipflow','codec','siptrace','translation','dialpeersim','rtpaudio','sdpcodec','dtmf']
 };
 
@@ -2826,7 +3137,7 @@ const VIEW_TITLES = {
   sitelookup:'Site Lookup', reference:'IP / 電話規劃', cnplan:'CN 規劃', dwbkplan:'DWBK-User規劃', nmsplan:'NMS 規劃',
   troubleshoot:'Troubleshooting Center',
   subnetcalc:'IPv4 子網路計算', vlsm:'Subnet Splitter', vlsmplanner:'VLSM Planner', portref:'Protocol / Port', ipcheck:'IP / Subnet 檢查', routesummary:'Route Summary', wildcard:'Wildcard / ACL', vlandhcp:'VLAN / SVI / DHCP',
-  aclflow:'ACL Flow Tester', ospfanalyzer:'OSPF Analyzer', l2analyzer:'L1/L2 Analyzer', configdiff:'Config Diff', qos:'QoS Planner', ipv6:'IPv6 Toolkit', natflow:'NAT Flow Analyzer', servicescheck:'DHCP / DNS / NTP',
+  aclflow:'ACL Flow Tester', routeanalyzer:'Routing Table Analyzer', bgpanalyzer:'BGP Analyzer', ospfanalyzer:'OSPF Analyzer', l2analyzer:'L1/L2 Analyzer', configdiff:'Config Diff', qos:'QoS Planner', ipv6:'IPv6 Toolkit', natflow:'NAT Flow Analyzer', servicescheck:'DHCP / DNS / NTP',
   dialpeer:'Dial Peer Analyzer', sipflow:'SIP Call Flow', codec:'Codec Calculator', siptrace:'SIP Trace Analyzer', translation:'Translation Tester', dialpeersim:'Dial Peer Simulator 2.0', rtpaudio:'RTP Audio Analyzer', sdpcodec:'SDP / Codec Analyzer', dtmf:'DTMF Analyzer'
 };
 
@@ -2836,6 +3147,7 @@ function viewGroupOf(v){
 
 function updateContextNavigation(v){
   const group=viewGroupOf(v);
+  document.body.dataset.activeModule=group||'home';
   const config=$('context-config');
   const planning=$('context-planning');
   const troubleshoot=$('context-troubleshoot');
@@ -2872,6 +3184,7 @@ function switchView(v){
   target.classList.add('active');
   updateContextNavigation(v);
   closeMobileNav();
+  if(v!=='dashboard') recordRecentTool(v);
   if(window.innerWidth<=900) window.scrollTo({top:0,behavior:'smooth'});
 }
 
@@ -4467,7 +4780,7 @@ function initNetworkToolkitPhase2(){
 
 
 /* =========================================================
-   Mason Cisco Engineering Toolkit v2.3 - Feature Layer
+   Mason Cisco Engineering Toolkit v2.5 - Feature Layer
    ========================================================= */
 const V2_TOOL_INDEX = [
   ['Configuration','單筆組態 / Config Audit','single','Template CLI audit validation'],
@@ -4479,6 +4792,8 @@ const V2_TOOL_INDEX = [
   ['IP Toolkit','VLSM Planner','vlsmplanner','variable hosts subnet allocation'],
   ['Validation','IP / Subnet Check','ipcheck','duplicate overlap membership'],
   ['Security','ACL Flow Tester','aclflow','permit deny source destination tcp udp port acl simulator'],
+  ['Routing','Routing Table Analyzer','routeanalyzer','show ip route longest prefix match next hop administrative distance metric'],
+  ['Routing','BGP Analyzer','bgpanalyzer','bgp neighbor summary active idle established remote as tcp 179'],
   ['Routing','OSPF Analyzer','ospfanalyzer','ospf neighbor full exstart init mtu area'],
   ['Layer2','Interface / STP / EtherChannel Analyzer','l2analyzer','crc errors spanning tree port channel lacp'],
   ['Change','Config Diff / Change Review','configdiff','before after configuration risk review'],
@@ -4501,9 +4816,60 @@ const V2_TOOL_INDEX = [
   ['Voice','Codec Calculator','codec','G711 G729 bandwidth RTP QoS']
 ];
 
+
+const TOOL_LABELS={dashboard:['首頁','Dashboard'],single:['組態產生','Configuration'],batch:['批次組態','Batch'],downloadall:['全部組態 ZIP','Configuration'],sitelookup:['設備 / IP / 電話查詢','Planning'],troubleshoot:['故障排除','Troubleshooting'],subnetcalc:['Subnet Calculator','IP Toolkit'],vlsmplanner:['VLSM Planner','IP Toolkit'],ipcheck:['IP / Subnet Check','Validation'],aclflow:['ACL Flow Tester','Security'],routeanalyzer:['Routing Table Analyzer','Routing'],bgpanalyzer:['BGP Analyzer','Routing'],ospfanalyzer:['OSPF Analyzer','Routing'],l2analyzer:['Interface / STP / EtherChannel','Layer 2'],configdiff:['Config Diff','Change'],routesummary:['Route Summary','Routing'],wildcard:['Wildcard / ACL','Security'],vlandhcp:['VLAN / SVI / DHCP','LAN'],qos:['QoS Planner','WAN'],ipv6:['IPv6 Toolkit','IP Toolkit'],natflow:['NAT Flow Analyzer','Flow'],servicescheck:['DHCP / DNS / NTP','Services'],portref:['Protocol / Port','Reference'],siptrace:['SIP Trace Analyzer','Voice'],dialpeersim:['Dial Peer Simulator 2.0','Voice'],dialpeer:['Dial Peer Analyzer','Voice'],translation:['Translation Tester','Voice'],rtpaudio:['RTP Audio Analyzer','Voice'],sdpcodec:['SDP / Codec Analyzer','Voice'],dtmf:['DTMF Analyzer','Voice'],sipflow:['SIP Call Flow','Voice'],codec:['Codec Calculator','Voice']};
+const DEFAULT_FAVORITES=['troubleshoot','sitelookup','subnetcalc','siptrace'];
+function storageGet(k,fallback){try{const v=JSON.parse(localStorage.getItem(k));return v??fallback}catch(e){return fallback}}
+function storageSet(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+function recordRecentTool(v){if(!TOOL_LABELS[v])return;let a=storageGet('masonRecentTools',[]).filter(x=>x!==v);a.unshift(v);storageSet('masonRecentTools',a.slice(0,7));renderWorkspaceMemory()}
+function getFavorites(){return storageGet('masonFavoriteTools',DEFAULT_FAVORITES.slice())}
+function toggleFavoriteTool(v){let a=getFavorites();a=a.includes(v)?a.filter(x=>x!==v):[v,...a];storageSet('masonFavoriteTools',a.slice(0,10));renderWorkspaceMemory()}
+function memoryItemHtml(v,fav=false){const x=TOOL_LABELS[v]||[v,'Tool'];const isFav=getFavorites().includes(v);return `<div class="memory-item"><button class="open" onclick="switchView('${v}')"><b>${esc(x[0])}</b><small>${esc(x[1])}</small></button><button class="memory-star" title="${isFav?'取消釘選':'加入釘選'}" onclick="toggleFavoriteTool('${v}')">${isFav?'★':'☆'}</button></div>`}
+function renderWorkspaceMemory(){const r=$('recentToolsList'),f=$('favoriteToolsList');if(r){const a=storageGet('masonRecentTools',[]);r.innerHTML=a.length?a.map(v=>memoryItemHtml(v)).join(''):'<div class="memory-empty">尚無使用紀錄。開啟任何工程工具後會自動出現在這裡。</div>'}if(f){const a=getFavorites();f.innerHTML=a.length?a.map(v=>memoryItemHtml(v,true)).join(''):'<div class="memory-empty">尚未釘選工具。可從「最近使用」點 ☆ 加入。</div>'}}
+function quickCliFindings(txt){
+  const s=String(txt||''),a=[];
+  if(/\b(EXSTART|EXCHANGE|INIT|DOWN|ATTEMPT)\b/i.test(s))a.push({level:'bad',text:'偵測到非 FULL 的 OSPF Neighbor State；優先看 MTU、Timer、Area、Auth、Network Type。'});
+  if(/\bFULL\//i.test(s)||/\bFULL\b/i.test(s))a.push({level:'good',text:'偵測到 OSPF FULL 狀態。'});
+  if(/err-disabled|notconnect|administratively down|line protocol is down/i.test(s))a.push({level:'bad',text:'偵測到 Interface Down / Err-disabled / Notconnect 關鍵字。'});
+  if(/\bconnected\b/i.test(s)&&!/notconnect/i.test(s))a.push({level:'good',text:'偵測到 Connected / Up 類狀態；仍需確認 VLAN、Errors 與上層協定。'});
+  const crc=[...s.matchAll(/(\d+)\s+(?:input errors|CRC)/gi)].map(m=>Number(m[1]));if(crc.some(n=>n>0))a.push({level:'warn',text:'偵測到 Input Error / CRC 非零，優先檢查實體層、SFP/Cable、Speed/Duplex。'});
+  if(/MACFLAP|SPANTREE.*(?:CHANGE|LOOP)|loop guard/i.test(s))a.push({level:'warn',text:'偵測到 MAC Flap / STP 變動關鍵字，需排查 Loop 或不穩定鏈路。'});
+  const sip=s.match(/SIP\/2\.0\s+([45]\d\d)\s+([^\r\n]*)/i);if(sip)a.push({level:'bad',text:`SIP ${sip[1]} ${sip[2].trim()}；請對照 Call-ID、Dial Plan、Auth、SDP 或 Peer 狀態。`});
+  if(/SIP\/2\.0\s+200\s+OK/i.test(s))a.push({level:'good',text:'偵測到 SIP 200 OK；若仍無聲音，Signaling 成功後應轉查 SDP / RTP Media Path。'});
+  if(/Clock is synchronized/i.test(s))a.push({level:'good',text:'NTP 顯示 Clock is synchronized。'});if(/Clock is unsynchronized/i.test(s))a.push({level:'warn',text:'NTP 顯示 Clock is unsynchronized。'});
+  if(/deny\s+(?:ip|tcp|udp|icmp)\s+/i.test(s))a.push({level:'info',text:'內容包含 ACL deny ACE；是否阻擋實際 Flow 仍需 Source / Destination / Protocol / Port 才能判定。'});
+  if(/ip nat (?:inside|outside)|translations/i.test(s))a.push({level:'info',text:'偵測到 NAT 設定 / Translation 資訊，需同時核對 Inside/Outside、ACL 與 Return Path。'});
+  if(/Gateway of last resort is not set/i.test(s))a.push({level:'warn',text:'Routing Table 顯示沒有 Gateway of Last Resort。是否異常取決於網路設計。'});
+  if(/local AS number|State\/PfxRcd|BGP neighbor/i.test(s)){
+    if(/(?:Idle|Active|Connect|OpenSent|OpenConfirm)/i.test(s))a.push({level:'bad',text:'偵測到 BGP Neighbor 尚未 Established；優先檢查 TCP/179、Remote-AS、Update-Source、Route/ACL 與對端設定。'});
+    if(/State\/PfxRcd/i.test(s)&&/^\s*(?:\d{1,3}\.){3}\d{1,3}\s+\d+\s+[\d.]+(?:\s+\d+){5}\s+\S+\s+\d+\s*$/m.test(s))a.push({level:'good',text:'偵測到至少一個 BGP Neighbor 以 Prefix Count 顯示，代表該 Session 已 Established。'});
+  }
+  if(/\{\{[^}]+\}\}/.test(s))a.push({level:'bad',text:'偵測到未替換的 Template 變數。'});
+  return a;
+}
+function detectSmartPaste(txt){
+  const s=String(txt||'');let type='Generic Cisco CLI',view='troubleshoot',title='Cisco CLI / Show Output',why='已辨識為一般 Cisco CLI；先整理關鍵字，再從 Troubleshooting Center 繼續。';
+  if(/show\s+(?:ip\s+)?bgp(?:\s+ipv4\s+unicast)?\s+summary|BGP router identifier|State\/PfxRcd|local AS number/i.test(s)){type='BGP';view='bgpanalyzer';title='BGP Summary';why='內容包含 BGP Router ID、Local AS 或 Neighbor Summary 特徵。'}
+  else if(/show\s+ip\s+ospf\s+neighbor|Neighbor ID\s+Pri\s+State|\bEXSTART\b|\bFULL\//i.test(s)){type='OSPF';view='ospfanalyzer';title='OSPF Neighbor Output';why='內容包含 OSPF Neighbor / State 特徵。'}
+  else if(/debug ccsip|SIP\/2\.0|^INVITE\s+sip:|Call-ID:|m=audio/i.test(s)){type='SIP / SDP';view='siptrace';title='SIP Trace';why='內容包含 SIP Message、Call-ID 或 SDP Media 資訊。'}
+  else if(/show\s+(?:interfaces|spanning-tree|etherchannel)|line protocol is|CRC|input errors|Port-channel|Gi\d|Te\d/i.test(s)){type='Layer 1 / 2';view='l2analyzer';title='Interface / STP / EtherChannel Output';why='內容包含 Interface、STP、EtherChannel 或 Error Counter 特徵。'}
+  else if(/access-list|\bpermit\s+(?:ip|tcp|udp|icmp)|\bdeny\s+(?:ip|tcp|udp|icmp)/i.test(s)){type='ACL';view='aclflow';title='Access List';why='內容包含 Cisco ACL ACE。'}
+  else if(/show\s+ip\s+nat|ip nat (?:inside|outside)|Pro\s+Inside global/i.test(s)){type='NAT';view='natflow';title='NAT Output / Config';why='內容包含 NAT Role、Statement 或 Translation。'}
+  else if(/show\s+ip\s+dhcp|dhcp binding|Clock is (?:syn|un)synchronized|show\s+ntp/i.test(s)){type='Network Services';view='servicescheck';title='DHCP / NTP Output';why='內容包含 DHCP / NTP 服務狀態。'}
+  else if(/show\s+ip\s+route|Gateway of last resort|\bO(?:\s+IA|\s+E[12])?\s+\d+\.\d+\.\d+\.\d+\/\d+/i.test(s)){type='Routing';view='routeanalyzer';title='Routing Table';why='內容包含 IPv4 Routing Table 特徵，可直接執行路由來源統計與 Longest Prefix Match。'}
+  else if(/^hostname\s+\S+/mi.test(s)&&/(?:^interface\s|^router\s|^ip route\s|^vlan\s)/mi.test(s)){type='Cisco Configuration';view='single';title='Running Configuration';why='內容看起來是 Cisco IOS / IOS-XE Configuration。'}
+  return {type,view,title,why};
+}
+let smartPasteLast=null;
+function analyzeSmartPaste(){const el=$('smartPasteInput'),root=$('smartPasteResult');if(!el||!root)return;const txt=el.value.trim();if(!txt){root.className='smart-result show';root.innerHTML='<div class="smart-result-body"><div class="smart-finding warn">請先貼上 Cisco show / debug / configuration 內容。</div></div>';return}const d=detectSmartPaste(txt),findings=quickCliFindings(txt);smartPasteLast={...d,text:txt};root.className='smart-result show';root.innerHTML=`<div class="smart-result-head"><b>${esc(d.title)}</b><span>Detected: ${esc(d.type)}</span></div><div class="smart-result-body"><p>${esc(d.why)}</p><div class="smart-findings">${(findings.length?findings:[{level:'info',text:'目前沒有辨識到明顯故障關鍵字；可開啟建議工具做進一步分析。'}]).map(x=>`<div class="smart-finding ${x.level}">${x.level==='bad'?'✕':x.level==='warn'?'⚠':x.level==='good'?'✓':'ℹ'} ${esc(x.text)}</div>`).join('')}</div><div class="smart-paste-actions"><button class="btn primary" onclick="openSmartPasteTarget()">開啟建議分析器 →</button><button class="btn ghost" onclick="toggleFavoriteTool('${d.view}')">☆ 釘選此工具</button></div></div>`}
+function openSmartPasteTarget(){if(!smartPasteLast)return;const {view,text}=smartPasteLast;switchView(view);setTimeout(()=>{if(view==='routeanalyzer'&&$('routeTableText')){$('routeTableText').value=text;analyzeRouteTable()}else if(view==='bgpanalyzer'&&$('bgpText')){$('bgpText').value=text;analyzeBgp()}else if(view==='ospfanalyzer'&&$('ospfText')){$('ospfText').value=text;analyzeOspf()}else if(view==='l2analyzer'&&$('l2Text')){$('l2Text').value=text;analyzeL2()}else if(view==='siptrace'&&$('sipTraceText')){$('sipTraceText').value=text;analyzeSipTrace()}else if(view==='aclflow'&&$('aclFlowText')){$('aclFlowText').value=text;testAclFlow()}else if(view==='servicescheck'&&$('svcShow')){$('svcShow').value=text;analyzeServices()}else if(view==='natflow'){const ta=$('natText')||$('natConfig');if(ta){ta.value=text;analyzeNat()}}else if(view==='troubleshoot'){const s=$('troubleSymptom');if(s){s.value='wan';renderTroubleshooting(true)}}},0)}
+function setSmartPasteExample(){if(!$('smartPasteInput'))return;$('smartPasteInput').value='Router#show ip ospf neighbor\\nNeighbor ID     Pri   State           Dead Time   Address         Interface\\n10.10.10.2        1   EXSTART/DR      00:00:34    10.1.12.2       Gi0/0';analyzeSmartPaste()}
+function clearSmartPaste(){if($('smartPasteInput'))$('smartPasteInput').value='';const r=$('smartPasteResult');if(r){r.className='smart-result';r.innerHTML=''}smartPasteLast=null}
+
 function initV2(){
   initGuideMode();
   initDashboard();
+  renderWorkspaceMemory();
   renderSiteLookup();
   calcVlsmPlanner();
   analyzeDialPeers();
@@ -4513,6 +4879,8 @@ function initV2(){
   initGlobalSearch();
   renderTroubleshooting();
   testAclFlow();
+  analyzeRouteTable();
+  analyzeBgp();
   analyzeOspf();
   analyzeL2();
   runConfigDiff();
@@ -4595,28 +4963,6 @@ function jumpCliSection(term){
 }
 function toggleAuditPanel(){const p=$('configAuditPanel');if(p)p.classList.toggle('show')}
 
-function renderConfigAudit(txt){
-  const out=$('configAuditContent');if(!out)return;
-  const checks=[];let score=100;
-  const miss=unresolved(txt);
-  if(miss.length){checks.push(['err',`未完成 Template 變數：${miss.join('、')}`]);score-=35}else checks.push(['ok','所有 Template 變數已完成替換']);
-  const hm=txt.match(/^hostname\s+(\S+)/mi);if(hm)checks.push(['ok',`Hostname：${hm[1]}`]);else{checks.push(['err','找不到 hostname 設定']);score-=15}
-  const badIps=[];const ipTokens=txt.match(/\b(?:\d{1,3}\.){3}\d{1,3}\b/g)||[];[...new Set(ipTokens)].forEach(ip=>{if(ipv4ToInt(ip)===null)badIps.push(ip)});
-  if(badIps.length){checks.push(['err',`發現無效 IPv4：${badIps.slice(0,5).join(', ')}`]);score-=25}else checks.push(['ok',`IPv4 基本語法檢查通過（${new Set(ipTokens).size} 個唯一位址）`]);
-  const addrLines=[...txt.matchAll(/^\s*ip address\s+((?:\d{1,3}\.){3}\d{1,3})\s+((?:\d{1,3}\.){3}\d{1,3})/gmi)].map(m=>m[1]+' '+m[2]);
-  const dupAddr=[...new Set(addrLines.filter((v,i,a)=>a.indexOf(v)!==i))];
-  if(dupAddr.length){checks.push(['warn',`重複 Interface IP/Mask：${dupAddr.slice(0,3).join(', ')}`]);score-=8}else checks.push(['ok','未發現重複的 interface ip address / mask']);
-  const patterns=[...txt.matchAll(/^\s*destination-pattern\s+(.+)$/gmi)].map(m=>m[1].trim());
-  const dupPat=[...new Set(patterns.filter((v,i,a)=>a.indexOf(v)!==i))];
-  if(dupPat.length){checks.push(['warn',`重複 destination-pattern：${dupPat.join(', ')}`]);score-=8}else if(patterns.length)checks.push(['ok',`Voice destination-pattern：${patterns.length} 條，未發現完全重複`]);
-  if(/^no aaa new-model$/mi.test(txt)){checks.push(['warn','存在 no aaa new-model；正式部署請依安全基線確認 AAA']);score-=5}
-  if(/transport input[^\n]*telnet/i.test(txt)){checks.push(['warn','VTY 允許 Telnet；建議依安全政策確認']);score-=8}
-  if(/session transport udp/i.test(txt))checks.push(['info','SIP dial-peer 使用 UDP transport；請確認 Carrier / Firewall / Security Policy']);
-  score=Math.max(0,Math.min(100,score));const cls=score>=90?'good':score>=70?'warn':'bad';
-  const warn=checks.filter(x=>x[0]==='warn').length,err=checks.filter(x=>x[0]==='err').length;
-  out.innerHTML=`<div class="audit-summary"><span class="audit-score ${cls}">${score}/100</span><b>組態檢查</b><span class="chip">${err} 個嚴重問題 · ${warn} 個警告</span></div><div class="audit-items">${checks.map(c=>`<div class="audit-item ${c[0]}">${c[0]==='ok'?'✓':c[0]==='err'?'✕':c[0]==='warn'?'⚠':'ℹ'} ${esc(c[1])}</div>`).join('')}</div>`;
-}
-
 function renderSiteLookup(){
   const q=String($('siteLookupInput')?.value||'').trim().toLowerCase();const root=$('siteLookupResults'),status=$('siteLookupStatus');if(!root)return;
   if(!q){root.innerHTML='<div class="card" style="padding:18px"><div class="note">輸入 Site、Hostname、IP 或電話開始跨資料搜尋。</div></div>';if(status)status.textContent='';return}
@@ -4695,7 +5041,8 @@ function openGlobalSearch(){const o=$('commandOverlay');if(!o)return;o.classList
 function closeGlobalSearch(){const o=$('commandOverlay');if(o)o.classList.remove('show')}
 function globalSearchItems(q){
   q=String(q||'').trim().toLowerCase();const items=[];
-  V2_TOOL_INDEX.forEach(([type,title,view,keys])=>{if(!q||(`${type} ${title} ${keys}`).toLowerCase().includes(q))items.push({type,title,sub:keys,view})});
+  const aliases={routeanalyzer:'route routing 路由 路由表 longest prefix match next hop ad metric show ip route',bgpanalyzer:'bgp neighbor 鄰居 active idle established remote as tcp179 tcp 179',ospfanalyzer:'neighbor 鄰居 full exstart exchange init mtu ospf',l2analyzer:'port 介面 斷線 crc error loop stp etherchannel lacp',rtpaudio:'沒聲音 無聲音 單向語音 one way audio media rtp',siptrace:'電話打不通 sip 4xx 5xx invite call-id 488 503',dtmf:'按鍵 ivr 沒反應 dtmf rfc2833 rtp-nte',troubleshoot:'不通 故障 ping timeout 排障 troubleshooting',servicescheck:'dhcp 取不到ip dns 解析 ntp 時間',aclflow:'acl 擋住 permit deny 防火牆',natflow:'nat pat translation 上網',sitelookup:'查設備 查ip 電話 hostname site'};
+  V2_TOOL_INDEX.forEach(([type,title,view,keys])=>{if(!q||(`${type} ${title} ${keys} ${aliases[view]||''}`).toLowerCase().includes(q))items.push({type,title,sub:keys,view})});
   if(q){let count=0;Object.entries(DATA.devices||{}).forEach(([dk,d])=>(d.presets||[]).forEach((r,idx)=>{if(count>=15)return;if(Object.values(r).join(' ').toLowerCase().includes(q)){items.push({type:'Preset',title:`${r._rowName} · ${d.label}`,sub:`${r.group||'-'} · Open Config`,fn:()=>openPresetFromSite(dk,idx)});count++}}));Object.entries(IP_PLANNING?.regions||{}).forEach(([region,rows])=>rows.forEach(r=>{if(count>=25)return;if(Object.values(r).join(' ').toLowerCase().includes(q)){items.push({type:'Site',title:`${r['車廂號碼']||r['單位']} · ${region}`,sub:`IP ${r['IP規劃']||'-'} · Phone ${r['電話號碼']||'-'}`,fn:()=>{switchView('sitelookup');$('siteLookupInput').value=$('globalSearchInput').value;renderSiteLookup()}});count++}}))}
   return items.slice(0,40)
 }
@@ -4729,6 +5076,8 @@ const VIEW_GUIDES={
   codec:['估算語音頻寬','選 Codec、Packetization、通話數與 L2 Overhead，估算每方向與雙向頻寬。','SRTP、IPv6、GRE/IPsec/MPLS 等額外封裝需另計並保留 QoS 裕度。','先選 Codec，再輸入同時通話數。'],
   troubleshoot:['從症狀建立排障 Checklist','選擇 Network 或 Voice 症狀，依序檢查 Layer、Routing、Signaling 或 Media。','Checklist 是工程流程，不代表設備目前一定有該問題。','先選最接近的症狀。'],
   aclflow:['模擬 ACL 是否 Permit / Deny','輸入 Source、Destination、Protocol、Port，再貼 ACL；系統依第一筆 Match 判斷。','複雜 object-group、remark、time-range 等未完整模擬。','先用一個實際失敗 Flow 測試。'],
+  routeanalyzer:['判讀 IPv4 Routing Table','貼上 show ip route，系統整理路由來源、Default Route、AD/Metric，並可對目的 IP 執行 Longest Prefix Match。','解析以常見 IOS / IOS-XE IPv4 路由列為主；VRF 與 PBR 仍需配合實機 context 判讀。','貼上 show ip route，再輸入一個目的 IP。'],
+  bgpanalyzer:['快速判讀 BGP Neighbor Summary','貼上 show ip bgp summary 或 show bgp ipv4 unicast summary，檢查 Established、Active/Idle、Prefix Count 與 Queue。','Session Established 不代表 Prefix Policy 一定正確；仍需核對 address-family、route-policy/prefix-list 與實際 RIB。','先貼 BGP Summary，找出非 Established Neighbor。'],
   ospfanalyzer:['快速判讀 OSPF Neighbor State','貼 show ip ospf neighbor 輸出；EXSTART/EXCHANGE/INIT 等會附常見檢查方向。','最終仍需確認 Area、Hello/Dead、Auth、MTU、Network Type 與 ACL。','貼上鄰居輸出並找非 FULL 狀態。'],
   l2analyzer:['判讀 Interface / STP / EtherChannel','貼 show interfaces、show spanning-tree 或 show etherchannel summary 關鍵輸出。','CRC、Drops 或 Blocking 都需要配合拓撲判斷，不一定等於故障。','先貼出問題 Port 的 show output。'],
   configdiff:['部署前比對 Config 變更','左右貼 Before / After；系統列出新增、刪除並提示 Routing/ACL/AAA/Shutdown 等風險。','屬文字層 Change Review，不是 IOS semantic parser。','在 Change Window 前先 Review 高風險項。'],
@@ -4744,7 +5093,11 @@ const VIEW_GUIDES={
   dtmf:['找出 DTMF 方法不一致','選擇內外兩個 Call Leg 的 DTMF 方法，判斷是否一致或需 interworking。','不同設備支援方式與 MTP/Transcoder 行為可能不同。','IVR 無反應時先確認 RTP-NTE / SIP INFO 是否一致。']
 };
 function initGuideMode(){
-  let enabled=true;try{enabled=localStorage.getItem('masonGuideMode')!=='off'}catch(e){}
+  let enabled=false;
+  try{
+    const saved=localStorage.getItem('masonGuideMode');
+    enabled=saved==='on';
+  }catch(e){}
   document.body.classList.toggle('guide-off',!enabled);updateGuideButton(enabled);
 }
 function updateGuideButton(enabled){const b=$('guideModeBtn');if(!b)return;b.setAttribute('aria-pressed',String(enabled));b.textContent=enabled?'🎓 工程導引：開啟':'⚡ 專業模式';}
@@ -4772,28 +5125,44 @@ function renderVariableFields(){
   $('variableChip').textContent=`${getDevice().placeholders.length} 個變數`;
 }
 function renderConfigAudit(txt){
-  const out=$('configAuditContent');if(!out)return;const checks=[];let score=100;const add=(level,title,why='',fix='')=>checks.push({level,title,why,fix});
-  const miss=unresolved(txt);if(miss.length){add('err',`尚有 ${miss.length} 個 Template 變數未完成`,`CLI 中仍出現 ${miss.join('、')}，代表組態不是完整最終值。`,'回到 STEP 2，將紅框欄位補齊後再下載。');score-=35}else add('ok','所有 Template 變數已完成替換','目前 CLI 沒有殘留 {{variable}}。','可繼續檢查 IP、安全性與 Voice 相關警告。');
-  const hm=txt.match(/^hostname\s+(\S+)/mi);if(hm)add('ok',`Hostname：${hm[1]}`,'已找到設備 hostname。','確認命名是否符合站點與設備角色。');else{add('err','找不到 hostname 設定','設備缺少 hostname 會影響識別與維運。','確認 Template 是否包含 hostname 指令。');score-=15}
-  const badIps=[];const ipTokens=txt.match(/\b(?:\d{1,3}\.){3}\d{1,3}\b/g)||[];[...new Set(ipTokens)].forEach(ip=>{if(ipv4ToInt(ip)===null)badIps.push(ip)});if(badIps.length){add('err',`發現無效 IPv4：${badIps.slice(0,5).join(', ')}`,'IPv4 每一段必須介於 0–255。','回到參數欄位修正對應 IP。');score-=25}else add('ok',`IPv4 基本語法通過（${new Set(ipTokens).size} 個唯一位址）`,'所有偵測到的 IPv4 都符合基本格式。','仍需依 Addressing Plan 確認位址是否指派正確。');
-  const addrLines=[...txt.matchAll(/^\s*ip address\s+((?:\d{1,3}\.){3}\d{1,3})\s+((?:\d{1,3}\.){3}\d{1,3})/gmi)].map(m=>m[1]+' '+m[2]);const dupAddr=[...new Set(addrLines.filter((v,i,a)=>a.indexOf(v)!==i))];if(dupAddr.length){add('warn',`發現重複 Interface IP/Mask：${dupAddr.slice(0,3).join(', ')}`,'相同 L3 位址出現在多個 interface 可能造成 Address Conflict；某些特定設計則可能是刻意配置。','確認 Interface 與 HA / 特殊設計需求。');score-=8}else add('ok','未發現完全重複的 interface IP / mask','基本重複位址檢查通過。','仍建議搭配規劃資料確認 Subnet 與 Gateway。');
-  const patterns=[...txt.matchAll(/^\s*destination-pattern\s+(.+)$/gmi)].map(m=>m[1].trim());const dupPat=[...new Set(patterns.filter((v,i,a)=>a.indexOf(v)!==i))];if(dupPat.length){add('warn',`重複 destination-pattern：${dupPat.join(', ')}`,'完全相同 Pattern 可能造成 Dial Peer 路由判讀困難。','使用 Dial Peer Analyzer，並以 show dialplan number 在實機驗證。');score-=8}else if(patterns.length)add('ok',`Voice destination-pattern：${patterns.length} 條，未發現完全重複`,'基本 Pattern 重複檢查通過。','若要驗證實際號碼匹配，可開啟 Voice → Dial Peer Analyzer。');
-  if(/^no aaa new-model$/mi.test(txt)){add('warn','偵測到 no aaa new-model','代表目前未啟用 IOS AAA New Model；是否可接受取決於組織安全基線。','正式部署前確認 TACACS+/RADIUS/Local Authentication 設計。');score-=5}
-  if(/transport input[^\n]*telnet/i.test(txt)){add('warn','VTY 允許 Telnet','Telnet 管理流量未加密，通常不適合一般正式環境。','依安全政策評估改為 transport input ssh。');score-=8}
-  if(/session transport udp/i.test(txt))add('info','SIP Dial Peer 使用 UDP transport','UDP 5060 是常見 SIP Transport，但實際需求依 Carrier / CUCM / Security Policy。','確認 Firewall、NAT、SIP Trunk 與對端 Transport 一致。');
-  score=Math.max(0,Math.min(100,score));const cls=score>=90?'good':score>=70?'warn':'bad';const warn=checks.filter(x=>x.level==='warn').length,err=checks.filter(x=>x.level==='err').length;const headline=err?'部署前需要修正':warn?'可產生，但請確認警告':'基本檢查通過';
-  out.innerHTML=`<div class="audit-summary"><span class="audit-score ${cls}">${score}/100</span><span class="audit-label"><b>${esc(headline)}</b><small>組態檢查 · ${err} 個嚴重問題 · ${warn} 個警告</small></span><span class="chip">${err?'先修正嚴重問題':warn?'確認警告內容':'可進行人工複核'}</span></div><details class="audit-details"><summary>查看詳細檢查結果（${checks.length} 項）</summary><div class="audit-items">${checks.map(c=>`<div class="audit-item ${c.level}"><span class="audit-title">${c.level==='ok'?'✓':c.level==='err'?'✕':c.level==='warn'?'⚠':'ℹ'} ${esc(c.title)}</span>${c.why?`<span class="audit-explain guide-detail">為什麼：${esc(c.why)}</span>`:''}${c.fix?`<span class="audit-fix guide-detail">下一步：${esc(c.fix)}</span>`:''}</div>`).join('')}</div></details>`;
+  const out=$('configAuditContent');if(!out)return;
+  const checks=[];
+  const add=(level,title,why='',next='')=>checks.push({level,title,why,next});
+  const miss=unresolved(txt);
+  if(miss.length)add('critical',`未完成 Template 變數：${miss.join('、')}`,'CLI 仍含未替換變數，產出的組態不是最終可部署值。','回到參數區補齊紅框欄位。');
+  else add('pass','所有 Template 變數已完成替換','沒有偵測到殘留 {{variable}}。','');
+  const hm=txt.match(/^hostname\s+(\S+)/mi);
+  if(hm)add('pass',`Hostname：${hm[1]}`,'已找到設備 hostname。','');
+  else add('critical','找不到 hostname 設定','設備識別資訊不完整。','確認 Template 是否包含 hostname。');
+  const ipTokens=txt.match(/\b(?:\d{1,3}\.){3}\d{1,3}\b/g)||[],badIps=[];
+  [...new Set(ipTokens)].forEach(ip=>{if(ipv4ToInt(ip)===null)badIps.push(ip)});
+  if(badIps.length)add('critical',`無效 IPv4：${badIps.slice(0,5).join(', ')}`,'至少一個 IPv4 不符合 0–255 octet 格式。','修正位址後重新檢查。');
+  else add('pass',`IPv4 基本語法通過（${new Set(ipTokens).size} 個唯一位址）`,'位址文字格式未發現明顯錯誤。','');
+  const addrLines=[...txt.matchAll(/^\s*ip address\s+((?:\d{1,3}\.){3}\d{1,3})\s+((?:\d{1,3}\.){3}\d{1,3})/gmi)].map(m=>m[1]+' '+m[2]);
+  const dupAddr=[...new Set(addrLines.filter((v,i,a)=>a.indexOf(v)!==i))];
+  if(dupAddr.length)add('critical',`重複 Interface IP/Mask：${dupAddr.slice(0,3).join(', ')}`,'同一設備多個 L3 Interface 使用完全相同位址通常會造成衝突；特殊設計需人工確認。','確認 Interface、Secondary/HA 設計與 Address Plan。');
+  else add('pass','未發現完全重複的 Interface IP / Mask','基本 Duplicate Address 檢查通過。','');
+  const patterns=[...txt.matchAll(/^\s*destination-pattern\s+(.+)$/gmi)].map(m=>m[1].trim());
+  const dupPat=[...new Set(patterns.filter((v,i,a)=>a.indexOf(v)!==i))];
+  if(dupPat.length)add('warning',`重複 destination-pattern：${dupPat.join(', ')}`,'完全相同 Pattern 可能讓 Dial Peer 路由判讀變得不清楚。','使用 Dial Peer Analyzer，並以 show dialplan number 實機驗證。');
+  else if(patterns.length)add('pass',`Voice destination-pattern：${patterns.length} 條，未發現完全重複`,'基本 Pattern Duplicate 檢查通過。','');
+  if(/^no aaa new-model$/mi.test(txt))add('warning','偵測到 no aaa new-model','目前未啟用 IOS AAA New Model；是否可接受取決於組織安全基線。','確認 TACACS+ / RADIUS / Local Authentication 設計。');
+  if(/transport input[^\n]*telnet/i.test(txt))add('warning','VTY 允許 Telnet','Telnet 管理流量未加密。','依安全政策確認是否改為 transport input ssh。');
+  if(/session transport udp/i.test(txt))add('info','SIP Dial Peer 使用 UDP Transport','UDP 5060 是常見 SIP Transport，但需與對端與防火牆政策一致。','確認 Carrier / CUCM / Firewall / NAT Transport。');
+  const counts={critical:0,warning:0,info:0,pass:0};checks.forEach(c=>counts[c.level]++);
+  const verdict=counts.critical?['block','Not Ready for Deployment','存在需要先修正的 Critical 項目']:counts.warning?['review','Review Required','基本組態可產生，但部署前請確認 Warning']:['pass','Basic Validation Passed','未發現 Critical / Warning'];
+  out.innerHTML=`<div class="audit-summary"><span class="audit-status-badge ${verdict[0]}">${verdict[1]}</span><span class="audit-label"><b>Configuration Health</b><small>${verdict[2]}</small></span><span class="audit-counts"><span class="audit-count critical">Critical ${counts.critical}</span><span class="audit-count warning">Warning ${counts.warning}</span><span class="audit-count info">Info ${counts.info}</span><span class="audit-count pass">Passed ${counts.pass}</span></span></div><details class="audit-details"><summary>查看詳細檢查結果（${checks.length} 項）</summary><div class="audit-items">${checks.map(c=>`<div class="audit-item-v24 ${c.level}"><b>${c.level==='pass'?'✓':c.level==='critical'?'✕':c.level==='warning'?'⚠':'ℹ'} ${esc(c.title)}</b>${c.why?`<small>判讀：${esc(c.why)}</small>`:''}${c.next?`<small>下一步：${esc(c.next)}</small>`:''}</div>`).join('')}</div></details>`;
 }
 
-
-
 /* =========================================================
-   V2.3 Network + Voice Troubleshooting Functions
+   V2.4.1 Network + Voice Troubleshooting Functions
    ========================================================= */
 const TROUBLE_FLOWS={
  samevlan:['同 VLAN 主機不通','先從 L1/L2、VLAN membership、MAC/ARP 開始，不要先看 Routing.',[['實體 / Port 狀態','show interfaces status','確認兩端 Port connected、speed/duplex 正常。'],['VLAN Membership','show vlan brief','確認 Access Port 位於相同 VLAN，VLAN 存在且 active。'],['Trunk（跨交換器）','show interfaces trunk','確認 VLAN 被允許且 Native VLAN / tagging 一致。'],['MAC Learning','show mac address-table dynamic','確認兩台 Host MAC 是否在預期 Port 學到。'],['Host ARP / IP','show ip arp','確認 IP/Mask 相同網段，無 Duplicate IP。']]],
  intervlan:['跨 VLAN / Gateway 不通','依 VLAN → SVI → Routing → ACL 的順序檢查。',[['VLAN / Trunk','show vlan brief\nshow interfaces trunk','確認 VLAN 存在並能跨 Trunk。'],['SVI 狀態','show ip interface brief | include Vlan','SVI 應為 up/up；若 down 檢查 VLAN 是否 active 與是否有 active member port。'],['Gateway / ARP','show ip arp','確認 Client Gateway 與 SVI 位址，ARP 是否正常。'],['Routing','show ip route','確認目的 Subnet Connected / Learned Route 存在。'],['ACL','show access-lists','確認 SVI/Interface ACL 沒有擋掉實際 Flow；可用 ACL Flow Tester。']]],
  wan:['WAN / 遠端網段不通','先確認 Local route，再查 Next-Hop、WAN interface、Return Path / NAT。',[['Local Route','show ip route <destination>','確認有目的路由且 Next-Hop 正確。'],['Next-Hop Reachability','ping <next-hop> source <interface>','確認到下一跳可達。'],['WAN Interface','show interfaces <wan>','查看 line protocol、CRC、drops、MTU。'],['ACL / NAT','show access-lists\nshow ip nat translations','有 Internet/NAT 時確認 ACL 與 translation。'],['Return Path','traceroute <destination>','遠端也需要回程路由；單向 routing 常造成 ping / application failure。']]],
+ routeissue:['路由存在但走錯 / 找不到路由','依目的 IP → Longest Prefix Match → Next-Hop → Recursive Lookup → Return Path / VRF 檢查。',[['確認目的 IP','show ip route <destination>','先確認設備對目的 IP 實際選到哪一條最長前綴，不要只看是否存在較大的 Summary。'],['Longest Prefix Match','show ip route','同時存在 /8、/16、/24 時，最長 Prefix 優先；確認是否有更精確但錯誤的 Route。'],['Next-Hop / Recursive Lookup','show ip route <next-hop>','確認 Next-Hop 本身可解析且出口介面 up/up；Static/BGP recursive route 特別重要。'],['VRF / PBR','show vrf\nshow route-map','確認查詢的是正確 VRF，並排除 Policy-Based Routing 改寫一般 RIB 決策。'],['Return Path','traceroute <destination>\nshow ip route <source>','遠端必須有回程；單向路由常造成 Ping/Application 看似隨機失敗。']]],
+ bgp:['BGP Neighbor 不正常','先判斷 TCP Session，再核對 AS、Source、AFI/SAFI 與 Policy。',[['IP Reachability','ping <neighbor> source <update-source>','BGP 建立前先確保對端 Neighbor IP 可達；eBGP Multihop / Loopback Peering 尤其重要。'],['TCP 179','show tcp brief | include 179\nshow access-lists','Active / Connect 常先查 TCP/179、ACL/Firewall 與路由。'],['Neighbor Config','show run | section router bgp','確認 neighbor IP、remote-as、update-source、ebgp-multihop / password 兩端一致。'],['BGP Summary','show ip bgp summary','State/PfxRcd 為數字通常表示 Established；Idle/Active/OpenSent/OpenConfirm 需依狀態往前查。'],['Address Family / Policy','show bgp ipv4 unicast summary\nshow ip bgp neighbors <peer> advertised-routes','Session 已建立但 Prefix=0 時，再查 address-family activation、prefix-list/route-map 與對端是否真的送路由。']]],
  ospf:['OSPF Neighbor 不正常','非 FULL 狀態先看 Area/Timer/Auth/MTU/Network Type。',[['Interface OSPF','show ip ospf interface <int>','確認 Area、Hello/Dead、Network Type、Cost。'],['Neighbor State','show ip ospf neighbor','INIT 常看單向 Hello；EXSTART/EXCHANGE 常看 MTU / master-slave。'],['MTU','show interfaces <int> | include MTU','兩端 MTU 不一致是 EXSTART 常見方向。'],['Authentication','show run interface <int>','確認 area/interface authentication key 與 type 一致。'],['Router-ID / Duplicate','show ip ospf | include ID','確認 Router ID 唯一。']]],
  l2:['Port Up 但流量異常 / Loop','分析 CRC、Drops、STP Blocking 與 EtherChannel Bundle。',[['Interface Counters','show interfaces <int>','CRC/Input Errors 偏向 L1；Output drops 可能是 congestion/QoS。'],['STP State','show spanning-tree interface <int> detail','確認 Forwarding / Blocking 原因與 Root Path。'],['EtherChannel','show etherchannel summary','P 代表 bundled；I/s/D 等狀態需要檢查一致性。'],['MAC Move / Loop','show logging | include MACFLAP|SPANTREE','大量 MAC flapping / topology change 可能指向 Loop。']]],
  dhcp:['Client 取不到 DHCP','先確認 VLAN / Relay，再檢查 Pool、Excluded、Binding。',[['Client VLAN','show vlan brief\nshow interfaces switchport','確認 Client 在正確 VLAN。'],['SVI / Relay','show run interface Vlan<X>','Server 不在本 Subnet 時確認 ip helper-address。'],['DHCP Pool','show ip dhcp pool','確認 Pool 未耗盡且 Network / Default Router 正確。'],['Bindings / Conflict','show ip dhcp binding\nshow ip dhcp conflict','檢查租約、Conflict 與 Excluded Address。'],['ACL / UDP','show access-lists','DHCP 使用 UDP 67/68；跨網段 relay 流量不可被 ACL 擋住。']]],
@@ -4804,7 +5173,54 @@ const TROUBLE_FLOWS={
  oneway:['One-Way / No Audio','SIP Signaling 成功後，Media 要獨立檢查兩個方向。',[['取 SDP Media IP','c=IN IP4 ...','比較 Offer/Answer 的 c= address 是否可路由。'],['取 RTP Port','m=audio <port>','確認 Firewall/NAT 放行實際 UDP RTP range。'],['CUBE Media Bind','show run | section voice service voip','確認 bind control/media 與介面選擇。'],['RTP Session','show voip rtp connections','確認兩個 call leg 的 remote/local IP/port。'],['Codec / MTP','SDP / show call active voice brief','無共同 Codec、MTP/Transcoder、SRTP mismatch 也可能造成 media 問題。']]],
  dtmfissue:['IVR DTMF 沒反應','通話有聲但按鍵無效時，先比較每個 Call Leg 的 DTMF 方法。',[['CUCM / Internal Leg','查看 SIP SDP / Trunk 設定','確認 RTP-NTE、KPML 或其他 method。'],['CUBE Dial Peer','show dial-peer voice <tag>','檢查 dtmf-relay rtp-nte / sip-info 等設定。'],['Carrier Leg','SIP/SDP 或 Carrier Profile','確認 Carrier 要求的 DTMF 方法。'],['Interworking','MTP / CUBE behavior','兩端不一致時確認是否支援 interworking。'],['DTMF Analyzer','開啟工具','快速比較兩個 Leg。']]]
 };
-function renderTroubleshooting(){const k=$('troubleSymptom')?.value||'samevlan',d=TROUBLE_FLOWS[k],root=$('troubleSteps');if(!d||!root)return;$('troubleTitle').textContent=d[0];$('troubleSummary').textContent=d[1];$('troubleSummary').className='tool-status ok';root.innerHTML=d[2].map((x,i)=>`<div class="trouble-step"><span class="step-num">${i+1}</span><div><b>${esc(x[0])}</b><code>${esc(x[1])}</code><p>${esc(x[2])}</p></div></div>`).join('')}
+let troubleState={key:null,current:0,statuses:{},outputs:{},diagnosis:{}};
+function openTroubleSymptom(key){
+  const sel=$('troubleSymptom');
+  if(sel && [...sel.options].some(o=>o.value===key)) sel.value=key;
+  switchView('troubleshoot');
+  renderTroubleshooting(true);
+}
+function syncTroubleShortcut(){
+  const key=$('troubleSymptom')?.value||'';
+  document.querySelectorAll('#context-troubleshoot [data-trouble-symptom]').forEach(btn=>{
+    btn.classList.toggle('active',btn.dataset.troubleSymptom===key);
+  });
+}
+
+function renderTroubleshooting(force=false){
+  const k=$('troubleSymptom')?.value||'samevlan',d=TROUBLE_FLOWS[k],root=$('troubleSteps');if(!d||!root)return;syncTroubleShortcut();
+  if(force||troubleState.key!==k)troubleState={key:k,current:0,statuses:{},outputs:{},diagnosis:{}};
+  $('troubleTitle').textContent=d[0];$('troubleSummary').textContent=d[1];$('troubleSummary').className='tool-status ok';
+  const steps=d[2],done=Object.keys(troubleState.statuses).length,pct=steps.length?Math.min(100,Math.round(done/steps.length*100)):0;
+  if($('troubleProgressBar'))$('troubleProgressBar').style.width=pct+'%';if($('troubleProgressText'))$('troubleProgressText').textContent=`${done} / ${steps.length}`;
+  const bad=Object.entries(troubleState.statuses).filter(([,v])=>v==='bad').map(([i])=>steps[Number(i)]?.[0]).filter(Boolean);
+  const summary=$('troubleDecisionSummary');if(summary)summary.innerHTML=bad.length?`<b style="color:var(--red)">已發現異常：</b>${esc(bad.join('、'))}<br>保留異常點後可繼續下一層，確認是否還有第二個問題。`:done>=steps.length?'<b style="color:var(--green)">流程完成。</b> 若問題仍存在，建議回看被略過的步驟、雙向 Return Path 與實際拓撲。':'先做目前高亮的步驟；正常就往下一層，異常時先閱讀判讀再決定是否繼續。';
+  root.innerHTML=steps.map((x,i)=>{
+    const st=troubleState.statuses[i]||'',active=i===troubleState.current&&!st,locked=i>troubleState.current&&!st;
+    const cls=st==='normal'?'ok':st==='bad'?'bad':st==='skip'?'skip':active?'active':'';
+    const label=st==='normal'?'✓ 正常':st==='bad'?'✕ 異常':st==='skip'?'— 略過':'';
+    const output=troubleState.outputs[i]||'',diag=troubleState.diagnosis[i]||'';
+    return `<div class="trouble-step-v24 ${cls}"><span class="step-num">${i+1}</span><div><div style="display:flex;justify-content:space-between;gap:8px"><b>${esc(x[0])}</b>${label?`<span class="chip">${label}</span>`:''}</div><code>${esc(x[1])}</code><p>${esc(x[2])}</p>${active?`<div class="trouble-output"><textarea id="troubleOutput${i}" placeholder="可選：貼上這一步的 show / debug 輸出，由工具做快速判讀">${esc(output)}</textarea></div><div class="trouble-step-actions"><button class="btn green" onclick="markTroubleStep('normal')">✓ 正常</button><button class="btn danger" onclick="markTroubleStep('bad')">✕ 異常</button><button class="btn" onclick="analyzeTroubleOutput()">分析貼上內容</button><button class="btn ghost" onclick="markTroubleStep('skip')">略過</button></div>`:''}${diag?`<div class="trouble-diagnosis ${st==='normal'?'good':st==='bad'?'':'warn'}">${diag}</div>${st==='bad'&&i===troubleState.current?`<div class="trouble-step-actions"><button class="btn primary" onclick="continueTroubleStep()">保留異常並繼續下一步 →</button></div>`:''}`:''}${locked?'<small style="color:#67839e">完成前一步後解鎖</small>':''}</div></div>`
+  }).join('');
+}
+function markTroubleStep(status){
+  const d=TROUBLE_FLOWS[troubleState.key];if(!d)return;const i=troubleState.current;if(i>=d[2].length)return;
+  const ta=$('troubleOutput'+i);if(ta)troubleState.outputs[i]=ta.value;
+  troubleState.statuses[i]=status;
+  if(status==='bad'){troubleState.diagnosis[i]=`異常點：${esc(d[2][i][0])}<br>優先檢查：${esc(d[2][i][2])}<br>建議先保留這個證據，再決定是否繼續下一層。`;}
+  else {troubleState.diagnosis[i]=status==='normal'?'此步驟標記正常，繼續下一個檢查點。':'此步驟已略過，後續若沒有找到原因建議回來補查。';troubleState.current=Math.min(i+1,d[2].length);}
+  renderTroubleshooting();
+}
+function continueTroubleStep(){const d=TROUBLE_FLOWS[troubleState.key];if(!d)return;troubleState.current=Math.min(troubleState.current+1,d[2].length);renderTroubleshooting()}
+function analyzeTroubleOutput(){
+  const d=TROUBLE_FLOWS[troubleState.key];if(!d)return;const i=troubleState.current,ta=$('troubleOutput'+i);if(!ta)return;const txt=ta.value.trim();troubleState.outputs[i]=txt;
+  if(!txt){troubleState.diagnosis[i]='尚未貼入輸出。可以直接人工標記正常 / 異常，或貼上 Show / Debug 後再分析。';renderTroubleshooting();return}
+  const a=quickCliFindings(txt),bad=a.some(x=>x.level==='bad'),warn=a.some(x=>x.level==='warn');
+  troubleState.statuses[i]=bad?'bad':warn?'bad':'normal';
+  troubleState.diagnosis[i]=a.map(x=>`${x.level==='bad'?'✕':x.level==='warn'?'⚠':'✓'} ${esc(x.text)}`).join('<br>')||'沒有辨識到明顯異常關鍵字；仍需依實際拓撲人工確認。';
+  if(!bad&&!warn)troubleState.current=Math.min(i+1,d[2].length);
+  renderTroubleshooting();
+}
 
 function aclTokenize(line){return line.trim().replace(/^access-list\s+\S+\s+/i,'').replace(/^\d+\s+/,'').split(/\s+/)}
 function aclAddr(tokens,i){const t=(tokens[i]||'').toLowerCase();if(t==='any')return [{type:'any'},i+1];if(t==='host')return [{type:'host',ip:tokens[i+1]},i+2];if(ipv4ToInt(tokens[i])!==null&&ipv4ToInt(tokens[i+1])!==null)return [{type:'wc',ip:tokens[i],wc:tokens[i+1]},i+2];return [null,i]}
@@ -4813,6 +5229,85 @@ function aclPortValue(x){const names={www:80,http:80,https:443,domain:53,ssh:22,
 function parseAclLine(line){let t=aclTokenize(line);if(!/^(permit|deny)$/i.test(t[0]||''))return null;const action=t[0].toLowerCase(),proto=(t[1]||'ip').toLowerCase();let i=2,[src,ni]=aclAddr(t,i);if(!src)return null;i=ni;let [dst,nj]=aclAddr(t,i);if(!dst&&['ip','tcp','udp','icmp'].includes(proto)){dst={type:'any'};nj=i}i=nj;let op=null,port=null;if((t[i]||'').toLowerCase()==='eq'){op='eq';port=aclPortValue(t[i+1])}return {action,proto,src,dst,op,port,line}}
 function testAclFlow(){const src=$('aclSrc')?.value.trim(),dst=$('aclDst')?.value.trim(),proto=$('aclProto')?.value,port=aclPortValue($('aclPort')?.value),root=$('aclFlowResult');if(!root)return;if(ipv4ToInt(src)===null||ipv4ToInt(dst)===null){root.innerHTML='<div class="analysis-result bad"><h4>IP 格式錯誤</h4><p>請先確認 Source / Destination IPv4。</p></div>';return}const lines=String($('aclFlowText')?.value||'').split(/\r?\n/).filter(x=>x.trim()&&!/^!|^remark/i.test(x.trim()));let match=null,idx=-1;for(let i=0;i<lines.length;i++){const r=parseAclLine(lines[i]);if(!r)continue;const pm=r.proto==='ip'||r.proto===proto;if(pm&&aclAddrMatch(r.src,src)&&aclAddrMatch(r.dst,dst)&&(!r.op||(Number(port)===Number(r.port)))){match=r;idx=i+1;break}}const action=match?match.action:'deny',implicit=!match;root.innerHTML=`<div class="flow-verdict"><span class="verdict-badge ${action}">${action.toUpperCase()}</span><b>${implicit?'隱含拒絕（implicit deny ip any any）':`符合 ACL 第 ${idx}`}</b></div><div class="analysis-result ${action==='permit'?'good':'bad'}"><h4>${match?esc(match.line):'沒有符合的明確 ACE'}</h4><p>${action==='permit'?'此流量符合這條 ACE，因此會被允許。':'此流量會被拒絕。'} Cisco ACL 由上往下第一筆匹配後停止。</p></div>`}
 function setAclFlowExample(){$('aclSrc').value='10.10.10.25';$('aclDst').value='172.16.20.10';$('aclProto').value='tcp';$('aclPort').value='443';$('aclFlowText').value='10 permit tcp 10.10.10.0 0.0.0.255 host 172.16.20.10 eq 443\n20 deny ip any any';testAclFlow()}
+
+function routeProtocolName(code){
+  const c=String(code||'').trim().replace(/\s+/g,' ');
+  if(/^C\b|^L\b/i.test(c))return 'Connected';
+  if(/^S\b/i.test(c))return 'Static';
+  if(/^O\b/i.test(c))return 'OSPF';
+  if(/^B\b/i.test(c))return 'BGP';
+  if(/^D\b/i.test(c))return 'EIGRP';
+  if(/^R\b/i.test(c))return 'RIP';
+  if(/^i\b/i.test(c)||/^L[12]\b/i.test(c))return 'IS-IS';
+  return c||'Other';
+}
+function parseRouteTable(txt){
+  const routes=[];
+  String(txt||'').split(/\r?\n/).forEach((line,idx)=>{
+    const m=line.match(/^\s*([A-Za-z][A-Za-z0-9*+ ]{0,10}?)\s+((?:\d{1,3}\.){3}\d{1,3})\/(\d{1,2})\s+(.+)$/);
+    if(!m)return;
+    const prefix=Number(m[3]),ipInt=ipv4ToInt(m[2]);if(ipInt===null||prefix<0||prefix>32)return;
+    const block=Math.pow(2,32-prefix),networkInt=Math.floor(ipInt/block)*block,network=intToIpv4(networkInt);
+    const rest=m[4].trim(),adm=rest.match(/\[(\d+)\/(\d+)\]/),via=rest.match(/\bvia\s+((?:\d{1,3}\.){3}\d{1,3})/i);
+    let iface='';
+    const direct=rest.match(/is directly connected,\s*([^,]+)$/i);if(direct)iface=direct[1].trim();
+    else {const parts=rest.split(',').map(x=>x.trim());const last=parts[parts.length-1]||'';if(/^(?:Gi|GigabitEthernet|Te|TenGigabitEthernet|Fa|FastEthernet|Eth|Ethernet|Vl|Vlan|Po|Port-channel|Tu|Tunnel|Lo|Loopback|Nu|Null|Se|Serial)/i.test(last))iface=last;}
+    routes.push({line:idx+1,code:m[1].trim(),protocol:routeProtocolName(m[1]),network,prefix,cidr:`${network}/${prefix}`,networkInt,block,ad:adm?Number(adm[1]):null,metric:adm?Number(adm[2]):null,nextHop:via?via[1]:'',iface,raw:line.trim()});
+  });
+  return routes;
+}
+function routeMatchesIp(r,ipInt){return Math.floor(ipInt/r.block)*r.block===r.networkInt}
+function analyzeRouteTable(){
+  const txt=String($('routeTableText')?.value||''),routes=parseRouteTable(txt),stats=$('routeStats'),root=$('routeResult'),table=$('routeParsedTable');if(!stats||!root||!table)return;
+  const by={};routes.forEach(r=>by[r.protocol]=(by[r.protocol]||0)+1);const defaults=routes.filter(r=>r.prefix===0&&r.network==='0.0.0.0');
+  stats.innerHTML=`<div class="tool-stat"><small>Parsed Routes</small><b>${routes.length}</b></div><div class="tool-stat"><small>Routing Sources</small><b>${Object.keys(by).length}</b></div><div class="tool-stat"><small>Default Route</small><b>${defaults.length?'YES':'NO'}</b></div><div class="tool-stat"><small>OSPF / BGP</small><b>${(by.OSPF||0)} / ${(by.BGP||0)}</b></div>`;
+  const items=[];
+  if(!routes.length)items.push(['warn','未辨識到路由列','請貼上 show ip route 的實際路由內容；目前解析常見 IOS / IOS-XE IPv4 格式。']);
+  else items.push(['good','Routing Table 已解析',Object.entries(by).map(([k,v])=>`${k}: ${v}`).join(' · ')]);
+  if(!defaults.length)items.push(['warn','未找到 0.0.0.0/0','這不一定是錯誤；若設備應有 Internet / 上游 Default Route，請確認 Static / Dynamic Route 與 Gateway of Last Resort。']);
+  const target=String($('routeLookupIp')?.value||'').trim(),ti=ipv4ToInt(target);
+  if(target&&ti===null)items.push(['bad','Destination IP 格式錯誤','請輸入單一 IPv4，例如 10.30.10.88。']);
+  if(ti!==null){
+    const matches=routes.filter(r=>routeMatchesIp(r,ti)).sort((a,b)=>b.prefix-a.prefix||(a.ad??999)-(b.ad??999));
+    if(!matches.length)items.push(['bad',`沒有路由可到 ${target}`,'Routing Table 中沒有任何包含此目的 IP 的 Prefix；若也沒有 Default Route，封包通常無法由一般 RIB 轉送。']);
+    else{
+      const bestPrefix=matches[0].prefix,best=matches.filter(r=>r.prefix===bestPrefix),r=best[0];
+      let detail=`Longest Prefix Match：${r.cidr} · ${r.protocol}`;
+      if(r.ad!==null)detail+=` · AD/Metric ${r.ad}/${r.metric}`;
+      if(r.nextHop)detail+=` · Next-Hop ${r.nextHop}`;
+      if(r.iface)detail+=` · ${r.iface}`;
+      items.push([/Null0/i.test(r.iface)?'warn':'good',`${target} → ${r.cidr}`,detail+(best.length>1?` · 同 Prefix 共 ${best.length} 條候選，可能是 ECMP 或多路徑。`:'')]);
+      if(/Null0/i.test(r.iface))items.push(['warn','命中 Null0 / Discard Route','若這不是刻意的 Summary 防環路設計，請確認更精確路由是否遺失。']);
+      if(r.nextHop&&ipv4ToInt(r.nextHop)!==null){const recursive=routes.filter(x=>routeMatchesIp(x,ipv4ToInt(r.nextHop))).sort((a,b)=>b.prefix-a.prefix)[0];if(!recursive)items.push(['warn','Next-Hop 無可見 Recursive Route',`目前解析結果沒有找到可到 Next-Hop ${r.nextHop} 的路由；請確認 Connected/IGP Route 或 VRF Context。`]);}
+    }
+  }
+  root.innerHTML=items.map(x=>`<div class="analysis-result ${x[0]}"><h4>${esc(x[1])}</h4><p>${esc(x[2])}</p></div>`).join('');
+  table.innerHTML=routes.length?`<table class="tool-table"><thead><tr><th>Code</th><th>Protocol</th><th>Prefix</th><th>AD / Metric</th><th>Next-Hop</th><th>Interface</th></tr></thead><tbody>${routes.map(r=>`<tr><td><b>${esc(r.code)}</b></td><td>${esc(r.protocol)}</td><td class="copyable" data-tool-copy="${esc(r.cidr)}">${esc(r.cidr)}</td><td>${r.ad===null?'—':`${r.ad} / ${r.metric}`}</td><td>${esc(r.nextHop||'—')}</td><td>${esc(r.iface||'—')}</td></tr>`).join('')}</tbody></table>`:'<div class="tool-note" style="margin:12px">尚未解析到路由資料。</div>';
+  bindToolCopies(table);
+}
+function setRouteAnalyzerExample(){if($('routeTableText'))$('routeTableText').value='Gateway of last resort is 10.1.1.1 to network 0.0.0.0\n\nC    10.1.1.0/30 is directly connected, GigabitEthernet0/0\nL    10.1.1.2/32 is directly connected, GigabitEthernet0/0\nO    10.20.0.0/16 [110/20] via 10.1.1.1, 00:03:12, GigabitEthernet0/0\nO IA 10.30.0.0/16 [110/30] via 10.1.1.1, 00:02:04, GigabitEthernet0/0\nO    10.30.10.0/24 [110/40] via 10.1.1.1, 00:00:18, GigabitEthernet0/0\nS*   0.0.0.0/0 [1/0] via 10.1.1.1';if($('routeLookupIp'))$('routeLookupIp').value='10.30.10.88';analyzeRouteTable()}
+
+function parseBgpSummary(txt){
+  const s=String(txt||''),rid=(s.match(/BGP router identifier\s+([^,\s]+)/i)||[])[1]||'',localAs=(s.match(/local AS number\s+([^,\s]+)/i)||[])[1]||'',neighbors=[];
+  s.split(/\r?\n/).forEach(line=>{const t=line.trim().split(/\s+/);if(t.length<10)return;const peer=t[0];if(ipv4ToInt(peer)===null&&!peer.includes(':'))return;if(!/^\d+$/.test(t[1]||'')||!/^[\d.]+$/.test(t[2]||''))return;const last=t.slice(9).join(' '),prefix=/^\d+$/.test(last)?Number(last):null;neighbors.push({peer,version:t[1],remoteAs:t[2],msgRcvd:Number(t[3])||0,msgSent:Number(t[4])||0,tblVer:t[5],inQ:Number(t[6])||0,outQ:Number(t[7])||0,upDown:t[8],state:prefix!==null?'Established':last,prefixes:prefix,raw:line.trim()})});
+  return {rid,localAs,neighbors};
+}
+function bgpStateAdvice(state){const s=String(state||'').toLowerCase();if(s.includes('idle'))return 'Idle：確認 neighbor 設定是否啟用、Remote-AS、Admin shutdown、路由與 TCP/179。';if(s.includes('active'))return 'Active：TCP 連線建立失敗，優先查 IP Reachability、TCP/179、ACL/Firewall、Update-Source / eBGP Multihop。';if(s.includes('connect'))return 'Connect：正在等待 TCP Session；若長時間停留，檢查 TCP/179、路由與 Source IP。';if(s.includes('opensent'))return 'OpenSent：TCP 已建立但 OPEN 交換未完成，檢查 Remote-AS、BGP Version、Authentication。';if(s.includes('openconfirm'))return 'OpenConfirm：已完成 OPEN，等待 Keepalive；若卡住，檢查對端狀態、ACL/CoPP 與連線穩定性。';return '非 Established：依目前 State 搭配 show ip bgp neighbors <peer> 與 TCP/179 狀態進一步確認。'}
+function analyzeBgp(){
+  const d=parseBgpSummary($('bgpText')?.value||''),stats=$('bgpSummaryStats'),root=$('bgpResult'),table=$('bgpNeighborTable');if(!stats||!root||!table)return;const n=d.neighbors,est=n.filter(x=>x.state==='Established'),bad=n.filter(x=>x.state!=='Established'),prefixes=est.reduce((a,x)=>a+(x.prefixes||0),0);
+  stats.innerHTML=`<div class="tool-stat"><small>Neighbors</small><b>${n.length}</b></div><div class="tool-stat"><small>Established</small><b>${est.length}</b></div><div class="tool-stat"><small>Non-Established</small><b>${bad.length}</b></div><div class="tool-stat"><small>Prefixes Received</small><b>${prefixes}</b></div>`;
+  const items=[];if(d.rid||d.localAs)items.push(['',`Router ID ${d.rid||'—'} · Local AS ${d.localAs||'—'}`,'BGP Summary Header 已辨識。']);
+  if(!n.length)items.push(['warn','未辨識到 BGP Neighbor 列','請貼 show ip bgp summary 或 show bgp ipv4 unicast summary，需包含 Neighbor 與 State/PfxRcd 欄位。']);
+  else if(!bad.length)items.push(['good','所有已解析 Neighbor 均 Established',`${est.length} 個 Session 已建立；接著仍要確認 Prefix Count、Policy 與實際 Route 是否符合預期。`]);
+  else items.push(['bad',`${bad.length} 個 Neighbor 尚未 Established`,bad.map(x=>`${x.peer}: ${x.state}`).join(' · ')]);
+  bad.forEach(x=>items.push(['bad',`${x.peer} · ${x.state}`,bgpStateAdvice(x.state)]));
+  est.filter(x=>x.prefixes===0).forEach(x=>items.push(['warn',`${x.peer} 已 Established 但 Prefix=0`,'若預期應收到路由，檢查 Address-Family activation、Prefix-List / Route-Map / Policy 與對端 Advertised Routes。']));
+  n.filter(x=>x.inQ>0||x.outQ>0).forEach(x=>items.push(['warn',`${x.peer} Queue 非零`,`InQ ${x.inQ} / OutQ ${x.outQ}；持續累積可能代表處理壅塞、鄰居反應或控制平面問題。`]));
+  root.innerHTML=items.map(x=>`<div class="analysis-result ${x[0]}"><h4>${esc(x[1])}</h4><p>${esc(x[2])}</p></div>`).join('');
+  table.innerHTML=n.length?`<table class="tool-table"><thead><tr><th>Neighbor</th><th>Remote AS</th><th>State</th><th>Prefixes</th><th>Up / Down</th><th>Msg Rcvd / Sent</th><th>InQ / OutQ</th></tr></thead><tbody>${n.map(x=>`<tr><td class="copyable" data-tool-copy="${esc(x.peer)}">${esc(x.peer)}</td><td>${esc(x.remoteAs)}</td><td><b>${esc(x.state)}</b></td><td>${x.prefixes===null?'—':x.prefixes}</td><td>${esc(x.upDown)}</td><td>${x.msgRcvd} / ${x.msgSent}</td><td>${x.inQ} / ${x.outQ}</td></tr>`).join('')}</tbody></table>`:'<div class="tool-note" style="margin:12px">尚未解析到 BGP Neighbor。</div>';
+  bindToolCopies(table);
+}
+function setBgpExample(){if($('bgpText'))$('bgpText').value='BGP router identifier 10.255.1.1, local AS number 65001\nBGP table version is 52, main routing table version 52\n\nNeighbor        V           AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd\n10.1.12.2       4        65002    1250    1247       52    0    0 1d02h              48\n10.1.13.3       4        65003       0       0        1    0    0 never          Active\n10.1.14.4       4        65004      82      80       52    0    0 02:15:11            0';analyzeBgp()}
 
 function analyzeOspf(){const txt=String($('ospfText')?.value||''),root=$('ospfResult');if(!root)return;const states=[...txt.matchAll(/\b(FULL|EXSTART|EXCHANGE|LOADING|INIT|2WAY|2-WAY|DOWN|ATTEMPT)(?:\/\S+)?/gi)].map(m=>m[1].toUpperCase());const counts={};states.forEach(x=>counts[x]=(counts[x]||0)+1);let html='';if(!states.length)html='<div class="analysis-result warn"><h4>未辨識到 OSPF Neighbor State</h4><p>請貼 show ip ospf neighbor 輸出，至少包含 State 欄位。</p></div>';else{const full=counts.FULL||0;html+=`<div class="analysis-result ${full===states.length?'good':'warn'}"><h4>${full}/${states.length} 個 OSPF Neighbor 已達 FULL</h4><p>${Object.entries(counts).map(([k,v])=>`${k}: ${v}`).join(' · ')}</p></div>`;if(counts.EXSTART||counts.EXCHANGE)html+='<div class="analysis-result bad"><h4>EXSTART / EXCHANGE</h4><p>優先檢查 MTU 不一致、Router ID、OSPF Network Type；再看 packet loss / ACL。</p></div>';if(counts.INIT)html+='<div class="analysis-result bad"><h4>INIT</h4><p>通常代表只收到對端 Hello、但對端 Hello 內看不到自己；檢查單向連通、ACL、NBMA neighbor。</p></div>';if(counts['2WAY']||counts['2-WAY'])html+='<div class="analysis-result warn"><h4>2-WAY</h4><p>Broadcast/NBMA 的 DROTHER 之間停在 2-WAY 可能正常；若預期 FULL，確認 DR/BDR 與 Network Type。</p></div>';if(/mtu\s+(?:is\s+)?(\d+)/i.test(txt))html+='<div class="analysis-result"><h4>偵測到 MTU 資訊</h4><p>請比較鄰居兩端 MTU 是否一致。</p></div>'}root.innerHTML=html}
 function setOspfExample(){$('ospfText').value='Neighbor ID     Pri   State           Dead Time   Address         Interface\n10.255.1.2       1   FULL/DR         00:00:33    10.1.12.2       Gi0/0\n10.255.1.3       1   EXSTART/BDR     00:00:36    10.1.13.3       Gi0/1\nMTU 1500 bytes';analyzeOspf()}
