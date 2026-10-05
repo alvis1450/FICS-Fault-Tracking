@@ -1010,6 +1010,19 @@ strong,b{font-weight:650}
 @media(max-width:760px){#worklogModal{align-items:flex-end;padding:0}#worklogModal .worklog-dialog{width:100%;max-height:94dvh;border-radius:18px 18px 0 0}.worklog-head{padding:13px 14px}.worklog-toolbar{padding:9px}.worklog-month-tools,.worklog-action-tools{width:100%}.worklog-month-tools input[type="month"]{flex:1;min-width:145px;font-size:16px}.worklog-action-tools .btn{flex:1}.worklog-body{padding:9px}.worklog-meta-grid{grid-template-columns:1fr}.worklog-summary-grid{grid-template-columns:1fr 1fr}.worklog-summary-grid .worklog-summary-field:last-child{grid-column:1/-1}.worklog-day-table{min-width:760px}.worklog-day-table textarea{font-size:16px}.worklog-footer .btn{flex:1}}
 </style>
 
+
+<style>
+/* ===== Quantity-tracked (no serial number) equipment ===== */
+.no-serial-box{min-width:260px;border:1px dashed #b9c9d9;border-radius:10px;background:#f8fbfd;padding:9px 10px;color:#536d87}
+.no-serial-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 8px;border-radius:999px;background:#eef4fa;border:1px solid #ccdce9;color:#315b83;font-size:10.5px;font-weight:850}
+.no-serial-help{display:block;margin-top:6px;font-size:10.5px;line-height:1.4;color:#7a8da4}
+.no-serial-action{margin-top:7px;height:30px;border:1px solid #cbd9e7;background:#fff;color:#476985;border-radius:8px;padding:0 9px;font-size:10.5px;font-weight:800;cursor:pointer}
+.no-serial-action:hover{background:#edf4fb}
+#rQtyWrap{border:1px solid #d7e4ef;border-radius:11px;background:#f7fbfe;padding:10px 11px}
+#rQtyWrap label{margin:0}
+@media(max-width:760px){.no-serial-box{min-width:300px}.no-serial-action{height:38px;font-size:11px}}
+</style>
+
 </head>
 <body class="auth-pending">
 <div id="authGate" role="dialog" aria-modal="true" aria-labelledby="authTitle">
@@ -1101,7 +1114,8 @@ strong,b{font-weight:650}
 <label>組件<select id="rGroup"></select></label>
 <label>設備<select id="rDevice"></select></label>
 <label id="rOldLabel">故障設備序號 <span id="rOldRequired" class="required">必填</span><input id="rOld" placeholder="請輸入故障設備原序號"><span id="rOldHelp" style="display:block;margin-top:5px;font-size:10.5px;color:#7a8da4;font-weight:600">故障設備原序號屬於現場設備，不會從目前庫存序號扣除。</span></label>
-<label><span id="rNewLabelText">替換設備序號</span> <span class="required">必填</span><select id="rNew"><option value="">請先選擇設備</option></select><span id="rNewHelp" style="display:block;margin-top:5px;font-size:10.5px;color:#7a8da4;font-weight:600">替換設備序號必須從目前庫存序號中選擇；儲存後庫存會自動減 1。</span></label>
+<label id="rNewLabel"><span id="rNewLabelText">替換設備序號</span> <span class="required">必填</span><select id="rNew"><option value="">請先選擇設備</option></select><span id="rNewHelp" style="display:block;margin-top:5px;font-size:10.5px;color:#7a8da4;font-weight:600">替換設備序號必須從目前庫存序號中選擇；儲存後庫存會自動減 1。</span></label>
+<div id="rQtyWrap" style="display:none"><label><span id="rQtyLabelText">使用數量</span> <span class="required">必填</span><input id="rQty" type="number" min="1" step="1" value="1" inputmode="numeric"><span id="rQtyHelp" style="display:block;margin-top:5px;font-size:10.5px;color:#58718b;font-weight:600"></span></label></div>
 <label>備註<textarea id="rNote" placeholder="例如：無法開機、無網路、領用用途"></textarea></label>
 </div><div class="dialog-actions"><button class="btn light" onclick="closeModal()">取消</button><button id="saveReplaceBtn" class="btn primary" onclick="saveReplace()">💾 儲存維修更換紀錄</button></div></div></div>
 
@@ -1847,6 +1861,7 @@ let store=JSON.parse(localStorage.getItem('nmsInventoryV2')||'null') || {groups:
 store.groups=ensureOtherComponents(store.groups);
 migrateCnCatalog(store);
 migrateNmsCatalog(store);
+(store.groups||[]).forEach(g=>(g.items||[]).forEach(x=>{if(!x.trackingMode)x.trackingMode='serial'}));
 /* Built-in catalog migration: add new catalog groups/items without overwriting user-entered data. */
 (function mergeBuiltInCatalog(){
   if(!store || !Array.isArray(store.groups)) store={groups:[],replacements:[],damagedReturns:[],stockMovements:[]};
@@ -2153,7 +2168,7 @@ function render(){
        <div class="comp-body">${rows.length?`<table><thead><tr><th style="width:125px">料號</th><th>設備名稱</th><th style="width:135px">庫存量</th><th style="width:330px">庫存序號</th><th style="width:110px">狀態</th><th style="width:170px">位置</th>${deleteDeviceGroupIndex===gi?'<th style="width:90px">操作</th>':''}</tr></thead><tbody>`+rows.map(x=>{
          const ii=g.items.indexOf(x), serial=(x.serials||[]).join(', '), st=itemStatus(x), qty=Number(x.qty)||0;
          return `<tr class="device-row state-${st} ${qty===0?'qty-zero':''}"><td>${esc(x.part)}</td><td class="device-name">${esc(x.name)}</td><td class="qty"><div class="qty-control"><span class="stock-qty-readonly" aria-label="目前庫存量">${qty}</span>${qty===0?'<span class="zero-stock-label">無庫存</span>':''}</div><div style="margin-top:6px"><button type="button" class="stock-in-btn" onclick="openStockIn(${gi},${ii})">＋ 新增庫存</button><button type="button" class="stock-in-btn" style="margin-left:5px" onclick="modifyStockQty(${gi},${ii})">✎ 修改庫存</button></div></td>
-         <td>${serialTagEditor(x,gi,ii)}</td>
+         <td>${isQuantityTracked(x)?`<div class="no-serial-box"><span class="no-serial-badge">∅ 無序號管理</span><span class="no-serial-help">此品項以數量管理；維修更換／人員領用不需選擇序號。</span><button type="button" class="no-serial-action" onclick="setTrackingMode(${gi},${ii},'serial')">改回序號管理</button></div>`:`${serialTagEditor(x,gi,ii)}${!(x.serials||[]).filter(Boolean).length?`<button type="button" class="no-serial-action" onclick="setTrackingMode(${gi},${ii},'quantity')">設為無序號設備</button>`:''}`}</td>
          <td><span class="inventory-status ${qty<=0?'empty':''}" title="庫存狀態由系統自動判定">${qty>0?'庫存':'無庫存'}</span></td>
          <td><select class="loc" onchange="setLocation(${gi},${ii},this.value)">${locationOptions(x.location||'')}</select></td>${deleteDeviceGroupIndex===gi?`<td><button type="button" class="mini-action" style="border-color:#e7bec4;background:#fff5f6;color:#a82433" onclick="event.stopPropagation();deleteDeviceRow(${gi},${ii})">刪除</button></td>`:''}</tr>`}).join('')+`</tbody></table>`:`<div class="empty">沒有設備</div>`}</div>
      </section>`;
@@ -2162,7 +2177,7 @@ function render(){
  });
  components.innerHTML=html||'<div class="empty">找不到符合資料</div>';
  const fc=document.getElementById('filterCount');if(fc)fc.textContent=`顯示 ${shownGroups} / ${store.groups.length} 個組件`;
- const replacementRows=(store.replacements||[]).map((r,sourceIndex)=>({r,sourceIndex})).reverse();const historyList=document.getElementById('history');if(historyList)historyList.innerHTML=replacementRows.map(({r,sourceIndex})=>{const when=r.dateTime||r.date||'—',isPersonnel=r.actionType==='personnel_issue'||r.cn==='人員領用';return `<div class="history-item"><button type="button" class="history-edit-btn" onclick="editReplacementRecord(${sourceIndex})" title="更正此筆紀錄">✏️ 更正</button><button type="button" class="history-delete-btn" onclick="deleteReplacementRecord(${sourceIndex})" title="刪除此筆紀錄">刪除</button><b>${esc(when)}｜${esc(isPersonnel?'人員領用':'設備維修更換')}｜${esc(r.cn||'—')}｜${esc(r.group)}</b><br><b>設備：</b>${esc(r.device)}${r.part?`｜${esc(r.part)}`:''}<br>${isPersonnel?`<b>領用人員：</b>${esc(r.personnelName||'—')}${r.personnelUnit?`｜<b>單位：</b>${esc(r.personnelUnit)}`:''}<br><b>領用設備序號：</b><span class="detail-serial">${esc(r.next)}</span> <span class="badge installed">${esc(r.newStatus||'已領用')}</span>`:`<b>故障設備序號：</b><span class="detail-serial">${esc(r.old)}</span> <span class="badge broken">${esc(r.damagedStatus||'故障／已換下')}</span>　→　<b>替換設備序號：</b><span class="detail-serial">${esc(r.next)}</span> <span class="badge installed">${esc(r.newStatus||'已安裝／使用')}</span>`}${r.note?'<br><b>備註：</b>'+esc(r.note):''}${Array.isArray(r.corrections)&&r.corrections.length?`<div class="correction-note">✏️ 已更正 ${r.corrections.length} 次｜最後更正：${esc(r.corrections[r.corrections.length-1].correctedAt||'—')}</div>`:''}</div>`}).join('')||'<div class="empty">尚無維修更換／領用紀錄</div>';const hc=document.getElementById('historyCount');if(hc)hc.textContent=`${replacementRows.length} 筆紀錄`;
+ const replacementRows=(store.replacements||[]).map((r,sourceIndex)=>({r,sourceIndex})).reverse();const historyList=document.getElementById('history');if(historyList)historyList.innerHTML=replacementRows.map(({r,sourceIndex})=>{const when=r.dateTime||r.date||'—',isPersonnel=r.actionType==='personnel_issue'||r.cn==='人員領用';return `<div class="history-item"><button type="button" class="history-edit-btn" onclick="editReplacementRecord(${sourceIndex})" title="更正此筆紀錄">✏️ 更正</button><button type="button" class="history-delete-btn" onclick="deleteReplacementRecord(${sourceIndex})" title="刪除此筆紀錄">刪除</button><b>${esc(when)}｜${esc(isPersonnel?'人員領用':'設備維修更換')}｜${esc(r.cn||'—')}｜${esc(r.group)}</b><br><b>設備：</b>${esc(r.device)}${r.part?`｜${esc(r.part)}`:''}<br>${r.trackingMode==='quantity'?(isPersonnel?`<b>領用人員：</b>${esc(r.personnelName||'—')}${r.personnelUnit?`｜<b>單位：</b>${esc(r.personnelUnit)}`:''}<br><b>領用數量：</b>${Number(r.qty)||1} 件 <span class="badge installed">${esc(r.newStatus||'已領用')}</span>`:`<b>無序號設備更換：</b>${Number(r.qty)||1} 件 <span class="badge installed">${esc(r.newStatus||'已安裝／使用')}</span>`):(isPersonnel?`<b>領用人員：</b>${esc(r.personnelName||'—')}${r.personnelUnit?`｜<b>單位：</b>${esc(r.personnelUnit)}`:''}<br><b>領用設備序號：</b><span class="detail-serial">${esc(r.next)}</span> <span class="badge installed">${esc(r.newStatus||'已領用')}</span>`:`<b>故障設備序號：</b><span class="detail-serial">${esc(r.old)}</span> <span class="badge broken">${esc(r.damagedStatus||'故障／已換下')}</span>　→　<b>替換設備序號：</b><span class="detail-serial">${esc(r.next)}</span> <span class="badge installed">${esc(r.newStatus||'已安裝／使用')}</span>`)}${r.note?'<br><b>備註：</b>'+esc(r.note):''}${Array.isArray(r.corrections)&&r.corrections.length?`<div class="correction-note">✏️ 已更正 ${r.corrections.length} 次｜最後更正：${esc(r.corrections[r.corrections.length-1].correctedAt||'—')}</div>`:''}</div>`}).join('')||'<div class="empty">尚無維修更換／領用紀錄</div>';const hc=document.getElementById('historyCount');if(hc)hc.textContent=`${replacementRows.length} 筆紀錄`;
  updateDamagedReturnSummary();
  renderStockHistory();
  updateSummary();
@@ -2178,7 +2193,7 @@ function normalizeStockMovementRecord(m={}){
   type:String(m.type||'adjust'),
   timestamp:dt?dt.toISOString():raw,
   dateTime:String(m.dateTime||'').trim()||(dt?dt.toLocaleString('zh-TW',{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false}):''),
-  system:String(m.system||'').trim(),group:String(m.group||'').trim(),device:String(m.device||'').trim(),part:String(m.part||'').trim(),
+  system:String(m.system||'').trim(),group:String(m.group||'').trim(),device:String(m.device||'').trim(),part:String(m.part||'').trim(),g:Number.isInteger(Number(m.g))?Number(m.g):null,i:Number.isInteger(Number(m.i))?Number(m.i):null,
   qtyChange:Number(m.qtyChange)||0,beforeQty:Math.max(0,Number(m.beforeQty)||0),afterQty:Math.max(0,Number(m.afterQty)||0),
   serials:Array.isArray(m.serials)?m.serials.map(v=>String(v).trim()).filter(Boolean):parseSerialValues(m.serials||''),
   location:String(m.location||'').trim(),reference:String(m.reference||'').trim(),note:String(m.note||'').trim()
@@ -2195,7 +2210,7 @@ function addStockMovement(g,i,{type='adjust',qtyChange=0,beforeQty=0,afterQty=0,
  const movement=normalizeStockMovementRecord({
   id:'M'+now.getTime()+Math.random().toString(36).slice(2,6),type,timestamp:now.toISOString(),
   dateTime:now.toLocaleString('zh-TW',{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false}),
-  system:systemType(group),group:group.name,device:x.name,part:x.part||'',qtyChange,beforeQty,afterQty,serials,location:location||x.location||'',reference,note
+  system:systemType(group),group:group.name,device:x.name,part:x.part||'',g:Number(g),i:Number(i),qtyChange,beforeQty,afterQty,serials,location:location||x.location||'',reference,note
  });
  store.stockMovements.push(movement);
  return movement.id;
@@ -2223,6 +2238,8 @@ function deleteStockMovement(index){
      if(Number(m.qtyChange)>0){x.serials=(x.serials||[]).filter(sn=>!m.serials.includes(sn));}
    }
  }
+ const linkedIndex=(store.replacements||[]).findIndex(r=>r.trackingMode==='quantity'&&(r.movementId===m.id||r.id===m.reference));
+ if(linkedIndex>=0)store.replacements.splice(linkedIndex,1);
  arr.splice(index,1);
  save();render();toggleStockHistoryPanel(true);
  showToast('庫存異動紀錄已刪除，庫存已反向調整','success');
@@ -2279,6 +2296,13 @@ function toggleHistoryPanel(forceOpen){
 }
 function deleteReplacementRecord(index){
  const arr=store.replacements||[],r=arr[index];if(!r)return;
+ if(r.trackingMode==='quantity'){
+  const when=r.dateTime||r.date||'未記錄時間',qty=Math.max(1,Math.floor(Number(r.qty)||1));
+  if(!confirm(`確定刪除這筆${r.actionType==='personnel_issue'?'人員領用':'設備維修更換'}紀錄？\n${when}\n${r.device||'設備'}｜${qty} 件\n\n刪除後將回補 ${qty} 件庫存，並同步移除對應庫存異動。`))return;
+  const found=findReplacementInventoryItem(r);if(found)found.item.qty=(Number(found.item.qty)||0)+qty;
+  const mi=(store.stockMovements||[]).findIndex(m=>m.id===r.movementId||m.reference===r.id);if(mi>=0)store.stockMovements.splice(mi,1);
+  arr.splice(index,1);save();render();toggleHistoryPanel(true);showToast(`紀錄已刪除，已回補 ${qty} 件庫存`,'success');return;
+ }
  const when=r.dateTime||r.date||'未記錄時間',label=`${r.device||'設備'}｜損壞序號 ${r.old||'—'} → 新序號 ${r.next||'—'}`;
  if(!confirm(`確定刪除這筆設備維修更換 / 損壞紀錄？${when}${label}刪除後將同步恢復可回補的庫存資料。`))return;
  const mov=(store.stockMovements||[]).find(m=>m.id===r.movementId);
@@ -2364,6 +2388,17 @@ let serialBatchGI=null,serialBatchII=null;
 function openSerialBatch(g,i){serialBatchGI=g;serialBatchII=i;const x=store.groups[g]?.items?.[i];if(!x)return;serialBatchDevice.value=`${x.name}｜${x.part}`;serialBatchInput.value='';serialBatchModal.classList.add('show');setTimeout(()=>serialBatchInput.focus(),80)}
 function closeSerialBatch(){serialBatchModal.classList.remove('show');serialBatchGI=serialBatchII=null}
 function confirmSerialBatch(){if(serialBatchGI===null)return;const raw=serialBatchInput.value;if(!parseSerialValues(raw).length)return showToast('請貼上至少一個序號','error');const result=addSerialValues(serialBatchGI,serialBatchII,raw,{silent:true});closeSerialBatch();if(result.conflicts.length){alert(`批次加入完成：成功 ${result.added} 筆同設備重複 ${result.duplicates} 筆其他設備已存在 ${result.conflicts.length} 筆已略過：${result.conflicts.slice(0,12).join('')}${result.conflicts.length>12?'…':''}`)}else showToast(`批次加入 ${result.added} 筆${result.duplicates?`，略過重複 ${result.duplicates} 筆`:''}`,'success')}
+// Quantity-tracked equipment is an explicit opt-in so legacy serial-managed items with missing SN are never silently reclassified.
+function isQuantityTracked(x){return String(x?.trackingMode||'serial')==='quantity'}
+function setTrackingMode(g,i,mode){
+ const x=store.groups?.[g]?.items?.[i];if(!x)return;
+ const next=mode==='quantity'?'quantity':'serial';
+ if(next==='quantity'&&(x.serials||[]).filter(Boolean).length){showToast('此設備已有庫存序號，請先清除序號後再改為無序號管理。','error');return}
+ const label=next==='quantity'?'無序號（數量）管理':'序號管理';
+ if(!confirm(`確定將「${x.name}」改為${label}？\n\n此設定只影響此品項後續的維修更換／人員領用方式。`))return;
+ x.trackingMode=next;markDirty();render();showToast(`已切換為${label}，請記得儲存變更`,'success');
+}
+
 // Backward-compatible parser for older inline calls / imported UI state.
 function setSerials(g,i,v){
  const x=store.groups[g].items[i],vals=parseSerialValues(v),clean=[];
@@ -2394,7 +2429,7 @@ function confirmAddDevice(){
  const g=store.groups[addDeviceGroupIndex];if(!g)return;
  const dup=(g.items||[]).some(x=>String(x.part||'').trim().toLowerCase()===part.toLowerCase()&&String(x.name||'').trim().toLowerCase()===name.toLowerCase());
  if(dup){showToast('此組件已有相同設備與料號','error');return}
- g.items.push({part,name,qty:0,serials:[],state:'stock',location:''});openSet.add(addDeviceGroupIndex);markDirty();closeAddDevice();render();showToast('設備已加入清單，請記得儲存','success')
+ g.items.push({part,name,qty:0,serials:[],trackingMode:'serial',state:'stock',location:''});openSet.add(addDeviceGroupIndex);markDirty();closeAddDevice();render();showToast('設備已加入清單，請記得儲存','success')
 }
 let replacementEditIndex=null;
 function findReplacementInventoryItem(r){
@@ -2416,15 +2451,22 @@ function findMovementForReplacement(r){
 }
 function editReplacementRecord(index){
  normalizeReplacementHistory();const r=(store.replacements||[])[index];if(!r)return;replacementEditIndex=index;
- const isPersonnel=r.actionType==='personnel_issue',title=document.getElementById('replacementModalTitle'),notice=document.getElementById('replacementEditNotice'),at=document.getElementById('rActionType');
+ const isPersonnel=r.actionType==='personnel_issue',quantityRecord=r.trackingMode==='quantity',title=document.getElementById('replacementModalTitle'),notice=document.getElementById('replacementEditNotice'),at=document.getElementById('rActionType');
  if(title)title.textContent=isPersonnel?'更正人員領用紀錄':'更正設備維修更換紀錄';
- if(notice){notice.className='show';notice.innerHTML='✏️ <b>更正模式：</b>一般欄位可直接修正；若更換「已領出設備序號」，系統會把原序號放回庫存，再從目前庫存扣除新選擇的序號，庫存總數不變。'}
+ if(notice){notice.className='show';notice.innerHTML=quantityRecord?'✏️ <b>更正模式：</b>此筆為無序號設備，可修正位置、人員、數量與備註；數量差額會同步回補或扣除庫存。':'✏️ <b>更正模式：</b>一般欄位可直接修正；若更換「已領出設備序號」，系統會把原序號放回庫存，再從目前庫存扣除新選擇的序號，庫存總數不變。'}
  if(at){at.value=isPersonnel?'personnel_issue':'replacement';at.disabled=true}
  rCN.innerHTML=unitIds.map(v=>`<option value="${esc(v)}">${esc(v)}</option>`).join('');if(!unitIds.includes(r.cn||''))rCN.innerHTML=`<option value="${esc(r.cn||'')}">${esc(r.cn||'')}</option>`+rCN.innerHTML;rCN.value=r.cn||'';
  const found=findReplacementInventoryItem(r);rGroup.innerHTML=`<option value="${found?found.gi:''}">${esc(r.group||'—')}</option>`;rGroup.disabled=true;rDevice.innerHTML=`<option value="${found?found.ii:''}">${esc(r.device||'—')}｜${esc(r.part||'')}</option>`;rDevice.disabled=true;
- rOld.value=isPersonnel?'':(r.old||'');rNote.value=r.note||'';const pn=document.getElementById('rPersonnelName'),pu=document.getElementById('rPersonnelUnit');if(pn)pn.value=r.personnelName||'';if(pu)pu.value=r.personnelUnit||'';updateReplacementMode();if(r.cn&&!Array.from(rCN.options).some(o=>o.value===r.cn))rCN.insertAdjacentHTML('beforeend',`<option value="${esc(r.cn)}">${esc(r.cn)}</option>`);rCN.value=r.cn||'';
- const current=String(r.next||'').trim(),stockSerials=found?(found.item.serials||[]).map(v=>String(v).trim()).filter(Boolean):[],choices=[current,...stockSerials.filter(v=>v.toLowerCase()!==current.toLowerCase())];
- rNew.disabled=false;rNew.innerHTML=choices.map((sn,i)=>`<option value="${esc(sn)}">${i===0?'目前紀錄｜':''}${esc(sn)}</option>`).join('');rNew.value=current;const h=document.getElementById('rNewHelp');if(h){h.textContent=found?'可保留原序號，或改選目前仍在庫存中的其他序號。變更時系統會自動交換庫存序號，庫存總量不變。':'找不到原設備庫存項目，因此目前只能更正其他欄位，不能變更已領出序號。';h.style.color=found?'#58718b':'#b42336'}if(!found)rNew.disabled=true;
+ rOld.value=isPersonnel?'':(r.old||'');rNote.value=r.note||'';const pn=document.getElementById('rPersonnelName'),pu=document.getElementById('rPersonnelUnit');if(pn)pn.value=r.personnelName||'';if(pu)pu.value=r.personnelUnit||'';
+ if(quantityRecord&&found)found.item.trackingMode='quantity';
+ const qi=document.getElementById('rQty');if(qi)qi.value=String(Math.max(1,Number(r.qty)||1));
+ updateReplacementMode();if(r.cn&&!Array.from(rCN.options).some(o=>o.value===r.cn))rCN.insertAdjacentHTML('beforeend',`<option value="${esc(r.cn)}">${esc(r.cn)}</option>`);rCN.value=r.cn||'';
+ if(!quantityRecord){
+  const current=String(r.next||'').trim(),stockSerials=found?(found.item.serials||[]).map(v=>String(v).trim()).filter(Boolean):[],choices=[current,...stockSerials.filter(v=>v.toLowerCase()!==current.toLowerCase())];
+  rNew.disabled=false;rNew.innerHTML=choices.map((sn,i)=>`<option value="${esc(sn)}">${i===0?'目前紀錄｜':''}${esc(sn)}</option>`).join('');rNew.value=current;const h=document.getElementById('rNewHelp');if(h){h.textContent=found?'可保留原序號，或改選目前仍在庫存中的其他序號。變更時系統會自動交換庫存序號，庫存總量不變。':'找不到原設備庫存項目，因此目前只能更正其他欄位，不能變更已領出序號。';h.style.color=found?'#58718b':'#b42336'}if(!found)rNew.disabled=true;
+ }else{
+  rNew.disabled=true;rNew.innerHTML='<option value="">無序號設備，以數量管理</option>';const h=document.getElementById('rQtyHelp');if(h)h.textContent=found?`原紀錄 ${Math.max(1,Number(r.qty)||1)} 件｜目前可用庫存 ${Number(found.item.qty)||0} 件；修改數量後會同步調整庫存。`:'找不到原設備庫存項目，無法安全修改數量。';if(qi)qi.disabled=!found;
+ }
  const btn=document.getElementById('saveReplaceBtn');if(btn)btn.textContent='💾 儲存更正';const detail=document.getElementById('summaryDetailModal');if(detail)detail.classList.remove('show');modal.classList.add('show');modal.style.zIndex='20000';document.body.style.overflow='hidden';setTimeout(()=>{window.scrollTo({top:0,behavior:'instant'});const dlg=modal.querySelector('.dialog'),form=modal.querySelector('.form');if(dlg)dlg.scrollTop=0;if(form)form.scrollTop=0;},80);
 }
 function openReplace(){
@@ -2453,26 +2495,29 @@ function openReplace(){
 function updateReplacementMode(){
  const action=document.getElementById('rActionType')?.value||'replacement';
  const isPersonnelIssue=action==='personnel_issue';
+ const gi=Number(rGroup?.value),ii=Number(rDevice?.value),x=store.groups?.[gi]?.items?.[ii];
+ const quantityMode=isQuantityTracked(x);
  const required=document.getElementById('rOldRequired'),help=document.getElementById('rOldHelp'),btn=document.getElementById('saveReplaceBtn');
- const oldLabel=document.getElementById('rOldLabel'),newLabel=document.getElementById('rNewLabelText'),locLabel=document.getElementById('rLocationLabel'),personWrap=document.getElementById('rPersonnelWrap');
+ const oldLabel=document.getElementById('rOldLabel'),newSerialLabel=document.getElementById('rNewLabel'),newLabel=document.getElementById('rNewLabelText'),locLabel=document.getElementById('rLocationLabel'),personWrap=document.getElementById('rPersonnelWrap');
+ const qtyWrap=document.getElementById('rQtyWrap'),qtyInput=document.getElementById('rQty'),qtyLabel=document.getElementById('rQtyLabelText'),qtyHelp=document.getElementById('rQtyHelp');
  setReplacementLocationOptions(isPersonnelIssue);
- if(required)required.style.display=isPersonnelIssue?'none':'';
- if(oldLabel)oldLabel.style.display=isPersonnelIssue?'none':'block';
+ if(required)required.style.display=(isPersonnelIssue||quantityMode)?'none':'';
+ if(oldLabel)oldLabel.style.display=(isPersonnelIssue||quantityMode)?'none':'block';
+ if(newSerialLabel)newSerialLabel.style.display=quantityMode?'none':'block';
+ if(qtyWrap)qtyWrap.style.display=quantityMode?'block':'none';
  if(personWrap)personWrap.style.display=isPersonnelIssue?'grid':'none';
  if(locLabel)locLabel.textContent=isPersonnelIssue?'領用位置':'更換位置';
  if(newLabel)newLabel.textContent=isPersonnelIssue?'領用設備序號':'替換設備序號';
- if(rOld){
-  rOld.disabled=isPersonnelIssue;
-  rOld.required=!isPersonnelIssue;
-  rOld.placeholder='請輸入故障設備原序號';
-  if(isPersonnelIssue)rOld.value='';
- }
- if(help){
-  help.textContent='故障設備原序號屬於現場設備，不會從目前庫存序號扣除。';
-  help.style.color='#7a8da4';
- }
+ if(rOld){rOld.disabled=isPersonnelIssue||quantityMode;rOld.required=!isPersonnelIssue&&!quantityMode;rOld.placeholder='請輸入故障設備原序號';if(isPersonnelIssue||quantityMode)rOld.value=''}
+ if(help){help.textContent='故障設備原序號屬於現場設備，不會從目前庫存序號扣除。';help.style.color='#7a8da4'}
  const newHelp=document.getElementById('rNewHelp');
  if(newHelp && !rNew?.disabled)newHelp.textContent=isPersonnelIssue?'領用設備序號必須從目前庫存序號中選擇；儲存後庫存會自動減 1。':'替換設備序號必須從目前庫存序號中選擇；儲存後庫存會自動減 1。';
+ if(quantityMode){
+   const stock=Number(x?.qty)||0,q=Math.max(1,Math.floor(Number(qtyInput?.value)||1));
+   if(qtyInput){qtyInput.max=String(stock);if(q>stock&&stock>0)qtyInput.value=String(stock)}
+   if(qtyLabel)qtyLabel.textContent=isPersonnelIssue?'領用數量':'更換數量';
+   if(qtyHelp)qtyHelp.textContent=`無序號設備｜目前庫存 ${stock} 件；儲存後將依數量直接扣庫存。`;
+ }
  if(btn)btn.textContent=isPersonnelIssue?'💾 儲存領用紀錄':'💾 儲存維修更換紀錄';
 }
 function refreshDevices(){
@@ -2494,22 +2539,40 @@ function refreshReplacementStockSerials(){
  const gi=Number(rGroup.value)||0,ii=Number(rDevice.value)||0,x=store.groups[gi]?.items?.[ii];
  const serials=(x?.serials||[]).map(s=>String(s).trim()).filter(Boolean);
  const qty=Number(x?.qty)||0,help=document.getElementById('rNewHelp');
+ if(isQuantityTracked(x)){
+  rNew.innerHTML='<option value="">無序號設備，以數量領出</option>';rNew.disabled=true;
+  const q=document.getElementById('rQty');if(q){q.value='1';q.max=String(Math.max(1,qty));q.oninput=updateReplacementMode}
+  if(help){help.textContent=`此品項為無序號管理，目前庫存 ${qty} 件。`;help.style.color='#58718b'}
+  updateReplacementMode();return;
+ }
  if(qty<=0){
   rNew.innerHTML='<option value="">目前庫存為 0，無法更換</option>';rNew.disabled=true;
   if(help){help.textContent='此設備目前沒有庫存，無法執行設備維修更換。';help.style.color='#b42336'}
  }else if(!serials.length){
   rNew.innerHTML='<option value="">庫存尚未登記序號</option>';rNew.disabled=true;
-  if(help){help.textContent=`目前庫存 ${qty} 件，但沒有庫存序號。請先回主畫面登記新設備序號。`;help.style.color='#b42336'}
+  if(help){help.textContent=`目前庫存 ${qty} 件，但沒有庫存序號。若此品項本來就沒有序號，請先在主清單點「設為無序號設備」；否則請先登記新設備序號。`;help.style.color='#b42336'}
  }else{
   rNew.disabled=false;rNew.innerHTML='<option value="">請選擇要從庫存領出的新序號</option>'+serials.map(sn=>`<option value="${esc(sn)}">${esc(sn)}</option>`).join('');
   if(help){help.textContent=`目前庫存 ${qty} 件 / ${serials.length} 個已登記庫存序號。選定後儲存會扣除 1 件庫存。`;help.style.color='#7a8da4'}
  }
+ updateReplacementMode();
 }
-function closeModal(){modal.classList.remove('show');replacementEditIndex=null;const at=document.getElementById('rActionType');if(at)at.disabled=false;rGroup.disabled=false;rDevice.disabled=false;const title=document.getElementById('replacementModalTitle'),notice=document.getElementById('replacementEditNotice');if(title)title.textContent='設備維修更換／人員領用';if(notice){notice.className='';notice.textContent=''}}
+function closeModal(){modal.classList.remove('show');replacementEditIndex=null;const qi=document.getElementById('rQty');if(qi)qi.disabled=false;const at=document.getElementById('rActionType');if(at)at.disabled=false;rGroup.disabled=false;rDevice.disabled=false;const title=document.getElementById('replacementModalTitle'),notice=document.getElementById('replacementEditNotice');if(title)title.textContent='設備維修更換／人員領用';if(notice){notice.className='';notice.textContent=''}}
 function saveReplace(){
  if(replacementEditIndex!==null){
   normalizeReplacementHistory();const r=(store.replacements||[])[replacementEditIndex];if(!r)return showToast('找不到要更正的紀錄','error');
   const isPersonnel=r.actionType==='personnel_issue',cn=rCN.value.trim(),old=String(rOld.value||'').trim(),next=String(rNew.value||'').trim(),personnelName=String(document.getElementById('rPersonnelName')?.value||'').trim(),personnelUnit=String(document.getElementById('rPersonnelUnit')?.value||'').trim(),note=rNote.value.trim();
+  if(r.trackingMode==='quantity'){
+   const found=findReplacementInventoryItem(r),newQty=Math.max(0,Math.floor(Number(document.getElementById('rQty')?.value)||0)),oldQty=Math.max(1,Math.floor(Number(r.qty)||1));
+   if(!cn||(isPersonnel&&!personnelName))return showToast(isPersonnel?'請完整填寫領用位置與領用人員':'請選擇更換位置','error');
+   if(newQty<=0)return showToast('數量至少要 1','error');
+   if(!found)return showToast('找不到原設備庫存項目，無法安全修改數量','error');
+   const diff=newQty-oldQty,current=Number(found.item.qty)||0;if(diff>current)return showToast(`庫存不足；本次再增加 ${diff} 件，但目前只剩 ${current} 件`,'error');
+   found.item.qty=current-diff;
+   const movement=findMovementForReplacement(r);if(movement){movement.qtyChange=-newQty;movement.afterQty=found.item.qty;movement.beforeQty=found.item.qty+newQty;movement.location=cn;movement.reference=r.id;movement.note=isPersonnel?`無序號設備人員領用；領用人員：${personnelName}${personnelUnit?`；單位：${personnelUnit}`:''}`:`無序號設備維修更換領出；數量：${newQty}`;if(!r.movementId)r.movementId=movement.id||''}
+   const now=new Date(),correctedAt=now.toLocaleString('zh-TW',{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false});if(!Array.isArray(r.corrections))r.corrections=[];r.corrections.push({correctedAt,from:{cn:r.cn||'',qty:oldQty,personnelName:r.personnelName||'',personnelUnit:r.personnelUnit||'',note:r.note||''},to:{cn,qty:newQty,personnelName,personnelUnit,note}});r.cn=cn;r.qty=newQty;r.personnelName=personnelName;r.personnelUnit=personnelUnit;r.note=note;
+   save();closeModal();const qi=document.getElementById('rQty');if(qi)qi.disabled=false;render();toggleHistoryPanel(true);document.getElementById('historyPanel')?.scrollIntoView({behavior:'smooth',block:'start'});showToast(`更正完成：數量 ${oldQty} → ${newQty}，庫存已同步調整`,'success');return;
+  }
   if(!cn||!next||(!isPersonnel&&!old)||(isPersonnel&&!personnelName))return showToast(isPersonnel?'請完整填寫領用位置、領用人員與設備序號':'請完整填寫更換位置、故障設備序號與替換設備序號','error');if(old&&old.toLowerCase()===next.toLowerCase())return showToast('故障設備序號與替換設備序號不可相同','error');
   const original={cn:r.cn||'',old:r.old||'',next:r.next||'',personnelName:r.personnelName||'',personnelUnit:r.personnelUnit||'',note:r.note||''},serialChanged=String(original.next).toLowerCase()!==next.toLowerCase(),found=findReplacementInventoryItem(r);
   if(serialChanged){if(!found)return showToast('找不到原設備庫存項目，無法安全更正已領出序號','error');const x=found.item,serials=(x.serials||[]).map(v=>String(v).trim()).filter(Boolean),newIdx=serials.findIndex(sn=>sn.toLowerCase()===next.toLowerCase());if(newIdx<0)return showToast('新的設備序號目前不在庫存中，請重新選擇','error');const conflict=findSerialOwner(original.next,found.gi,found.ii);if(conflict)return showToast(`原序號 ${original.next} 已存在其他庫存項目，無法自動放回庫存`,'error');const updated=serials.filter((_,i)=>i!==newIdx);updated.push(original.next);x.serials=sortSerialsNatural([...new Set(updated.filter(Boolean))])}
@@ -2522,9 +2585,25 @@ function saveReplace(){
  const isPersonnelIssue=action==='personnel_issue';
  const personnelName=String(document.getElementById('rPersonnelName')?.value||'').trim();
  const personnelUnit=String(document.getElementById('rPersonnelUnit')?.value||'').trim();
+ const g=store.groups[gi],x=g?.items?.[ii];if(!x)return showToast('找不到指定設備','error');
+ if(isQuantityTracked(x)){
+  const qty=Number(x.qty)||0,issueQty=Math.max(0,Math.floor(Number(document.getElementById('rQty')?.value)||0));
+  if(!cn||(isPersonnelIssue&&!personnelName))return showToast(isPersonnelIssue?'請選擇領用位置並填寫領用人員':'請選擇更換位置','error');
+  if(issueQty<=0)return showToast('數量至少要 1','error');
+  if(issueQty>qty)return showToast(`庫存不足，目前僅剩 ${qty} 件`,'error');
+  const recordId='R'+Date.now().toString(36)+Math.random().toString(36).slice(2,8),after=qty-issueQty;
+  x.qty=after;
+  const movementNote=isPersonnelIssue?`無序號設備人員領用；領用人員：${personnelName}${personnelUnit?`；單位：${personnelUnit}`:''}`:`無序號設備維修更換領出；數量：${issueQty}`;
+  const movementId=addStockMovement(gi,ii,{type:isPersonnelIssue?'personnel_issue':'replacement_out',qtyChange:-issueQty,beforeQty:qty,afterQty:after,serials:[],location:cn,reference:recordId,note:movementNote});
+  const changedAt=new Date();
+  store.replacements.push({id:recordId,timestamp:changedAt.toISOString(),date:changedAt.toLocaleDateString('zh-TW'),dateTime:changedAt.toLocaleString('zh-TW',{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false}),actionType:isPersonnelIssue?'personnel_issue':'replacement',trackingMode:'quantity',qty:issueQty,movementId,corrections:[],cn,personnelName,personnelUnit,group:g.name,device:x.name,part:x.part||'',old:'',next:'',note:rNote.value.trim(),damagedStatus:isPersonnelIssue?'不適用':'無序號設備／已換下',newStatus:isPersonnelIssue?'已領用':'已安裝／使用'});
+  save();closeModal();render();
+  rCN.value='';rOld.value='';rNew.innerHTML='<option value="">請先選擇設備</option>';rNote.value='';const qi=document.getElementById('rQty');if(qi)qi.value='1';
+  const at=document.getElementById('rActionType');if(at)at.value='replacement';const pn=document.getElementById('rPersonnelName'),pu=document.getElementById('rPersonnelUnit');if(pn)pn.value='';if(pu)pu.value='';updateReplacementMode();
+  toggleHistoryPanel(true);document.getElementById('historyPanel')?.scrollIntoView({behavior:'smooth',block:'start'});showToast(`${isPersonnelIssue?'人員領用':'設備維修更換'}完成：無序號設備 ${issueQty} 件，庫存剩 ${after} 件`,'success');return;
+ }
  if(!cn||!next||(!isPersonnelIssue&&!old)||(isPersonnelIssue&&!personnelName))return showToast(isPersonnelIssue?'請選擇領用位置、設備與庫存序號，並填寫領用人員':'請完整填寫更換位置、故障設備序號，並選擇替換設備序號','error');
  if(old&&old.toLowerCase()===next.toLowerCase())return showToast('故障設備序號與替換設備序號不可相同','error');
- const g=store.groups[gi],x=g?.items?.[ii];if(!x)return showToast('找不到指定設備','error');
  const qty=Number(x.qty)||0,serials=(x.serials||[]).map(s=>String(s).trim()).filter(Boolean);
  if(qty<=0)return showToast(`目前庫存為 0，無法執行${isPersonnelIssue?'人員領用':'設備維修更換'}`,'error');
  const newIndex=serials.findIndex(sn=>sn.toLowerCase()===next.toLowerCase());
@@ -2573,6 +2652,7 @@ function normalizeReplacementRecord(r={}){
   date:date||(dt?dt.toLocaleDateString('zh-TW'):''),
   dateTime:dateTime||(dt?dt.toLocaleString('zh-TW',{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false}):date),
   actionType,
+  trackingMode:String(r.trackingMode||'serial')==='quantity'?'quantity':'serial',qty:Math.max(1,Math.floor(Number(r.qty)||1)),
   cn:String(r.cn||'').trim(),personnelName,personnelUnit,group:String(r.group||'').trim(),device:String(r.device||'').trim(),part:String(r.part||'').trim(),
   old:legacyPersonnel?'':String(r.old||'').trim(),next:String(r.next||'').trim(),note:String(r.note||'').trim(),
   movementId:String(r.movementId||'').trim(),corrections:Array.isArray(r.corrections)?r.corrections.map(c=>({...c})):[],
