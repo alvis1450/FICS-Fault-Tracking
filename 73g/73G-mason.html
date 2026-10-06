@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>73G裝備庫存管理</title>
+<!-- v48 no-serial damaged-return quantity linkage -->
 <!-- v47 CN.xlsx canonical catalog correction / preserve inventory linkage -->
 <!-- v46 delete linkage correction -->
 <!-- v39 per-record action buttons --><!-- v37 delete quantity linkage patch -->
@@ -1129,11 +1130,12 @@ strong,b{font-weight:650}
 </div>
 <div id="drDirectFields" style="display:none;gap:10px">
 <label>組件 <span class="required">必填</span><select id="drDirectGroup" onchange="refreshDirectDamagedDevices()"><option value="">請選擇組件</option></select></label>
-<label>設備 <span class="required">必填</span><select id="drDirectDevice"><option value="">請先選擇組件</option></select></label>
-<label>損壞設備序號 <span class="required">必填</span><input id="drDirectSerial" placeholder="請輸入損壞設備序號"></label>
+<label>設備 <span class="required">必填</span><select id="drDirectDevice" onchange="updateDirectDamagedTracking()"><option value="">請先選擇組件</option></select></label>
+<label id="drDirectSerialWrap">損壞設備序號 <span class="required">必填</span><input id="drDirectSerial" placeholder="請輸入損壞設備序號"></label>
 <label>原使用位置 <span class="required">必填</span><select id="drDirectOriginalLocation"><option value="">請選擇原使用位置</option></select></label>
 <div class="damaged-return-info"><b>直接繳回：</b>此裝備沒有領用新設備替換，因此不會建立設備維修更換紀錄，也不會產生庫存異動。</div>
 </div>
+<div id="drQtyWrap" style="display:none"><label><span id="drQtyLabelText">本次繳回數量</span> <span class="required">必填</span><input id="drQty" type="number" min="1" step="1" value="1" inputmode="numeric"><span id="drQtyHelp" style="display:block;margin-top:5px;font-size:10.5px;color:#58718b;font-weight:600"></span></label></div>
 <label>損壞裝備繳回 <span class="required">必填</span><select id="drLocation">
 <option value="">請選擇繳回地點</option><option value="73G-FSR">73G-FSR</option><option value="74G-FSR">74G-FSR</option><option value="75G-FSR">75G-FSR</option><option value="基修中心">基修中心</option>
 </select></label>
@@ -2688,7 +2690,8 @@ function normalizeDamagedReturnRecord(d={},target=store){
   returnLocation:String(d.returnLocation||d.location||'').trim(),note:String(d.note||'').trim(),
   repairDateTime:sourceType==='linked'&&rep?(rep.dateTime||rep.date||''):String(d.repairDateTime||'').trim(),repairLocation:sourceType==='linked'&&rep?(rep.cn||''):String(d.repairLocation||d.originalLocation||'').trim(),
   group:sourceType==='linked'&&rep?(rep.group||''):String(d.group||'').trim(),device:sourceType==='linked'&&rep?(rep.device||''):String(d.device||'').trim(),part:sourceType==='linked'&&rep?(rep.part||''):String(d.part||'').trim(),
-  oldSerial:sourceType==='linked'&&rep?(rep.old||''):String(d.oldSerial||d.serial||'').trim(),system:String(d.system||'').trim()
+  oldSerial:sourceType==='linked'&&rep?(rep.old||''):String(d.oldSerial||d.serial||'').trim(),system:String(d.system||'').trim(),
+  trackingMode:(sourceType==='linked'&&rep?rep.trackingMode:d.trackingMode)==='quantity'?'quantity':'serial',qty:Math.max(1,Math.floor(Number(d.qty)||1))
  };
 }
 function normalizeDamagedReturns(target=store){
@@ -2698,10 +2701,20 @@ function normalizeDamagedReturns(target=store){
 }
 function damagedReturnSourceText(d){return d?.sourceType==='direct'?'直接繳回':'更換後繳回'}
 function damagedReturnForReplacement(repId){return (store.damagedReturns||[]).find(d=>d.sourceType!=='direct'&&String(d.replacementId||'')===String(repId||''))||null}
+function returnedQtyForReplacement(repId,excludeIndex=null){
+ return (store.damagedReturns||[]).reduce((sum,d,idx)=>{
+  if(idx===excludeIndex||d.sourceType==='direct'||String(d.replacementId||'')!==String(repId||''))return sum;
+  return sum+(d.trackingMode==='quantity'?Math.max(1,Math.floor(Number(d.qty)||1)):1);
+ },0);
+}
+function pendingQtyForReplacement(rep,excludeIndex=null){
+ if(!rep||rep.actionType==='personnel_issue')return 0;
+ if(rep.trackingMode==='quantity')return Math.max(0,Math.max(1,Math.floor(Number(rep.qty)||1))-returnedQtyForReplacement(rep.id,excludeIndex));
+ return String(rep.old||'').trim()&&!damagedReturnForReplacement(rep.id)?1:0;
+}
 function pendingDamagedReplacementRows(){
  normalizeReplacementHistory();normalizeDamagedReturns();
- const returned=new Set((store.damagedReturns||[]).filter(d=>d.sourceType!=='direct').map(d=>String(d.replacementId||'')).filter(Boolean));
- return (store.replacements||[]).map((r,index)=>({r,index})).filter(({r})=>r.actionType!=='personnel_issue'&&String(r.old||'').trim()&&!returned.has(String(r.id||''))).reverse();
+ return (store.replacements||[]).map((r,index)=>({r,index,pendingQty:pendingQtyForReplacement(r)})).filter(({r,pendingQty})=>r.actionType!=='personnel_issue'&&pendingQty>0).reverse();
 }
 function updateDamagedReturnSummary(){
  normalizeReplacementHistory();normalizeDamagedReturns();
@@ -2712,7 +2725,7 @@ function fillDamagedReturnSelect(selectedId=''){
  const sel=document.getElementById('drReplacement');if(!sel)return;
  let rows=pendingDamagedReplacementRows();
  if(selectedId){const rep=(store.replacements||[]).find(r=>String(r.id||'')===String(selectedId));if(rep&&!rows.some(x=>x.r.id===rep.id))rows=[{r:rep,index:(store.replacements||[]).indexOf(rep)},...rows]}
- sel.innerHTML='<option value="">請選擇待繳回裝備</option>'+rows.map(({r})=>`<option value="${esc(r.id)}">${esc(r.dateTime||r.date||'—')}｜${esc(r.device||'設備')}｜損壞序號 ${esc(r.old||'—')}</option>`).join('');
+ sel.innerHTML='<option value="">請選擇待繳回裝備</option>'+rows.map(({r,pendingQty})=>`<option value="${esc(r.id)}">${esc(r.dateTime||r.date||'—')}｜${esc(r.device||'設備')}｜${r.trackingMode==='quantity'?`無序號｜待繳回 ${pendingQty??pendingQtyForReplacement(r)} 件`:`損壞序號 ${esc(r.old||'—')}`}</option>`).join('');
  sel.value=selectedId||'';
 }
 function fillDirectDamagedGroups(selectedIndex=''){
@@ -2725,8 +2738,16 @@ function refreshDirectDamagedDevices(selectedIndex=''){
  const gi=Number(document.getElementById('drDirectGroup')?.value),sel=document.getElementById('drDirectDevice');if(!sel)return;
  const g=Number.isInteger(gi)?store.groups?.[gi]:null;
  if(!g){sel.innerHTML='<option value="">請先選擇組件</option>';sel.disabled=true;return}
- sel.innerHTML='<option value="">請選擇設備</option>'+((g.items||[]).map((x,i)=>`<option value="${i}">${esc(x.name||'設備')}${x.part?`｜${esc(x.part)}`:''}</option>`).join(''));
+ sel.innerHTML='<option value="">請選擇設備</option>'+((g.items||[]).map((x,i)=>`<option value="${i}">${esc(x.name||'設備')}${x.part?`｜${esc(x.part)}`:''}${isQuantityTracked(x)?'｜∅ 無序號':''}</option>`).join(''));
  sel.disabled=!(g.items||[]).length;if(String(selectedIndex)!==''&&[...sel.options].some(o=>o.value===String(selectedIndex)))sel.value=String(selectedIndex);
+ updateDirectDamagedTracking();
+}
+function updateDirectDamagedTracking(){
+ const gi=Number(document.getElementById('drDirectGroup')?.value),ii=Number(document.getElementById('drDirectDevice')?.value);
+ const g=Number.isInteger(gi)?store.groups?.[gi]:null,x=Number.isInteger(ii)?g?.items?.[ii]:null,isQty=!!x&&isQuantityTracked(x);
+ const serialWrap=document.getElementById('drDirectSerialWrap'),qtyWrap=document.getElementById('drQtyWrap'),qty=document.getElementById('drQty'),help=document.getElementById('drQtyHelp');
+ if(serialWrap)serialWrap.style.display=isQty?'none':'block';if(qtyWrap)qtyWrap.style.display=isQty?'block':'none';
+ if(isQty){if(qty)qty.value=Math.max(1,Math.floor(Number(qty.value)||1));if(help)help.textContent='此設備採無序號數量管理；請填寫本次實際繳回件數。'}
 }
 function fillDirectOriginalLocations(current=''){
  const sel=document.getElementById('drDirectOriginalLocation');if(!sel)return;
@@ -2736,19 +2757,27 @@ function fillDirectOriginalLocations(current=''){
 function updateDamagedReturnMode(){
  const mode=document.getElementById('drSourceMode')?.value||'linked',linked=document.getElementById('drLinkedFields'),direct=document.getElementById('drDirectFields');
  if(linked)linked.style.display=mode==='linked'?'block':'none';if(direct)direct.style.display=mode==='direct'?'grid':'none';
- if(mode==='linked')updateDamagedReturnEquipmentInfo();
+ if(mode==='linked')updateDamagedReturnEquipmentInfo();else updateDirectDamagedTracking();
 }
 function updateDamagedReturnEquipmentInfo(){
- const id=document.getElementById('drReplacement')?.value||'',box=document.getElementById('drEquipmentInfo');if(!box)return;
+ const id=document.getElementById('drReplacement')?.value||'',box=document.getElementById('drEquipmentInfo'),qtyWrap=document.getElementById('drQtyWrap'),serialWrap=document.getElementById('drDirectSerialWrap'),qty=document.getElementById('drQty'),help=document.getElementById('drQtyHelp');if(!box)return;
  const r=(store.replacements||[]).find(x=>String(x.id||'')===String(id));
- if(!r){box.textContent=pendingDamagedReplacementRows().length?'請先選擇待繳回損壞裝備。':'目前沒有「維修更換後待繳回」的裝備；可改選「未更換，直接繳回損壞裝備」。';return}
- box.innerHTML=`<b>設備：</b>${esc(r.device||'—')} ${r.part?`｜${esc(r.part)}`:''}<br><b>組件：</b>${esc(r.group||'—')}<br><b>損壞設備序號：</b><span class="serial">${esc(r.old||'—')}</span><br><b>原設備維修更換：</b>${esc(r.dateTime||r.date||'—')}｜${esc(r.cn||'—')}`;
+ if(!r){box.textContent=pendingDamagedReplacementRows().length?'請先選擇待繳回損壞裝備。':'目前沒有「維修更換後待繳回」的裝備；可改選「未更換，直接繳回損壞裝備」。';if(qtyWrap)qtyWrap.style.display='none';return}
+ if(r.trackingMode==='quantity'){
+  const total=Math.max(1,Math.floor(Number(r.qty)||1)),returned=returnedQtyForReplacement(r.id,damagedReturnEditIndex),pending=Math.max(0,total-returned);
+  box.innerHTML=`<b>設備：</b>${esc(r.device||'—')} ${r.part?`｜${esc(r.part)}`:''}<br><b>組件：</b>${esc(r.group||'—')}<br><b>管理方式：</b>∅ 無序號設備<br><b>損壞數量：</b>${total} 件｜<b>已繳回：</b>${returned} 件｜<b>待繳回：</b>${pending} 件<br><b>原設備維修更換：</b>${esc(r.dateTime||r.date||'—')}｜${esc(r.cn||'—')}`;
+  if(qtyWrap)qtyWrap.style.display='block';if(qty){qty.max=String(Math.max(1,pending));qty.value=Math.min(Math.max(1,Math.floor(Number(qty.value)||1)),Math.max(1,pending))}if(help)help.textContent=`本次最多可繳回 ${pending} 件；可分批繳回。`;
+ }else{
+  box.innerHTML=`<b>設備：</b>${esc(r.device||'—')} ${r.part?`｜${esc(r.part)}`:''}<br><b>組件：</b>${esc(r.group||'—')}<br><b>損壞設備序號：</b><span class="serial">${esc(r.old||'—')}</span><br><b>原設備維修更換：</b>${esc(r.dateTime||r.date||'—')}｜${esc(r.cn||'—')}`;
+  if(qtyWrap)qtyWrap.style.display='none';
+ }
+ if(serialWrap)serialWrap.style.display='block';
 }
 function resetDamagedReturnForm(){
  const mode=document.getElementById('drSourceMode');if(mode){mode.value='linked';mode.disabled=false}
  fillDamagedReturnSelect('');const sel=document.getElementById('drReplacement');if(sel)sel.disabled=false;
  fillDirectDamagedGroups('');refreshDirectDamagedDevices('');fillDirectOriginalLocations('');
- const serial=document.getElementById('drDirectSerial');if(serial)serial.value='';
+ const serial=document.getElementById('drDirectSerial');if(serial)serial.value='';const qty=document.getElementById('drQty');if(qty){qty.value='1';qty.removeAttribute('max')}const qtyWrap=document.getElementById('drQtyWrap');if(qtyWrap)qtyWrap.style.display='none';
  document.getElementById('drLocation').value='';document.getElementById('drTime').value=localDateTimeInputValue(new Date());document.getElementById('drNote').value='';updateDamagedReturnMode();
 }
 function openDamagedReturn(){
@@ -2767,15 +2796,27 @@ function saveDamagedReturn(){
  if(mode==='linked'){
   const repId=document.getElementById('drReplacement')?.value||'',rep=(store.replacements||[]).find(r=>String(r.id||'')===String(repId));
   if(!rep)return showToast('請選擇待繳回的損壞裝備','error');
-  if(damagedReturnEditIndex===null&&damagedReturnForReplacement(repId))return showToast('此損壞裝備已經有繳回紀錄','error');
-  payload.replacementId=repId;
+  if(rep.trackingMode==='quantity'){
+   const returnQty=Math.max(0,Math.floor(Number(document.getElementById('drQty')?.value)||0)),available=pendingQtyForReplacement(rep,damagedReturnEditIndex);
+   if(returnQty<=0)return showToast('本次繳回數量至少要 1','error');if(returnQty>available)return showToast(`本次最多可繳回 ${available} 件，請重新確認數量`,'error');
+   payload={...payload,replacementId:repId,trackingMode:'quantity',qty:returnQty,oldSerial:''};
+  }else{
+   if(damagedReturnEditIndex===null&&damagedReturnForReplacement(repId))return showToast('此損壞裝備已經有繳回紀錄','error');
+   payload={...payload,replacementId:repId,trackingMode:'serial',qty:1};
+  }
  }else{
   const gi=Number(document.getElementById('drDirectGroup')?.value),ii=Number(document.getElementById('drDirectDevice')?.value),serial=String(document.getElementById('drDirectSerial')?.value||'').trim(),originalLocation=document.getElementById('drDirectOriginalLocation')?.value||'';
-  const g=Number.isInteger(gi)?store.groups?.[gi]:null,x=Number.isInteger(ii)?g?.items?.[ii]:null;
-  if(!g||!x)return showToast('請選擇損壞裝備的組件與設備','error');if(!serial)return showToast('請輸入損壞設備序號','error');if(!originalLocation)return showToast('請選擇原使用位置','error');
-  const duplicate=(store.damagedReturns||[]).some((d,idx)=>idx!==damagedReturnEditIndex&&String(d.oldSerial||'').trim().toLowerCase()===serial.toLowerCase());
-  if(duplicate)return showToast('此損壞設備序號已有繳回紀錄，請先確認','error');
-  payload={...payload,replacementId:'',group:g.name||'',device:x.name||'',part:x.part||'',oldSerial:serial,repairLocation:originalLocation,repairDateTime:'',system:systemType(g)};
+  const g=Number.isInteger(gi)?store.groups?.[gi]:null,x=Number.isInteger(ii)?g?.items?.[ii]:null,isQty=!!x&&isQuantityTracked(x);
+  if(!g||!x)return showToast('請選擇損壞裝備的組件與設備','error');if(!originalLocation)return showToast('請選擇原使用位置','error');
+  if(isQty){
+   const returnQty=Math.max(0,Math.floor(Number(document.getElementById('drQty')?.value)||0));if(returnQty<=0)return showToast('本次繳回數量至少要 1','error');
+   payload={...payload,replacementId:'',group:g.name||'',device:x.name||'',part:x.part||'',oldSerial:'',trackingMode:'quantity',qty:returnQty,repairLocation:originalLocation,repairDateTime:'',system:systemType(g)};
+  }else{
+   if(!serial)return showToast('請輸入損壞設備序號','error');
+   const duplicate=(store.damagedReturns||[]).some((d,idx)=>idx!==damagedReturnEditIndex&&d.trackingMode!=='quantity'&&String(d.oldSerial||'').trim().toLowerCase()===serial.toLowerCase());
+   if(duplicate)return showToast('此損壞設備序號已有繳回紀錄，請先確認','error');
+   payload={...payload,replacementId:'',group:g.name||'',device:x.name||'',part:x.part||'',oldSerial:serial,trackingMode:'serial',qty:1,repairLocation:originalLocation,repairDateTime:'',system:systemType(g)};
+  }
  }
  if(damagedReturnEditIndex!==null){
   const d=(store.damagedReturns||[])[damagedReturnEditIndex];if(!d)return showToast('找不到要更正的繳回紀錄','error');
@@ -2793,15 +2834,16 @@ function editDamagedReturnRecord(index){
  }else{
   const gi=(store.groups||[]).findIndex(g=>String(g.name||'')===String(d.group||'')&&systemType(g)===(d.system||systemType(g)));
   fillDirectDamagedGroups(gi>=0?gi:'');let ii='';if(gi>=0)ii=(store.groups[gi].items||[]).findIndex(x=>String(x.name||'')===String(d.device||'')&&String(x.part||'')===String(d.part||''));refreshDirectDamagedDevices(ii>=0?ii:'');
-  document.getElementById('drDirectSerial').value=d.oldSerial||'';fillDirectOriginalLocations(d.repairLocation||'');
+  document.getElementById('drDirectSerial').value=d.oldSerial||'';fillDirectOriginalLocations(d.repairLocation||'');updateDirectDamagedTracking();
  }
- updateDamagedReturnMode();document.getElementById('drLocation').value=d.returnLocation||'';document.getElementById('drTime').value=d.returnTimeInput||localDateTimeInputValue(d.returnTimestamp||new Date());document.getElementById('drNote').value=d.note||'';
+ updateDamagedReturnMode();const qty=document.getElementById('drQty');if(qty)qty.value=String(Math.max(1,Math.floor(Number(d.qty)||1)));if(mode==='linked')updateDamagedReturnEquipmentInfo();document.getElementById('drLocation').value=d.returnLocation||'';document.getElementById('drTime').value=d.returnTimeInput||localDateTimeInputValue(d.returnTimestamp||new Date());document.getElementById('drNote').value=d.note||'';
  const title=document.getElementById('damagedReturnModalTitle'),btn=document.getElementById('saveDamagedReturnBtn');if(title)title.textContent='更正損壞裝備繳回紀錄';if(btn)btn.textContent='💾 儲存更正';
  document.getElementById('summaryDetailModal')?.classList.remove('show');document.getElementById('damagedReturnModal')?.classList.add('show');document.body.style.overflow='hidden';
 }
 function deleteDamagedReturnRecord(index){
  normalizeDamagedReturns();const d=(store.damagedReturns||[])[index];if(!d)return;const direct=d.sourceType==='direct';
- const msg=direct?`確定刪除此筆「直接繳回」紀錄？\n${d.device||'設備'}｜${d.oldSerial||'—'}\n此操作不影響庫存，也不會產生待繳回紀錄。`:`確定刪除此筆損壞裝備繳回紀錄？\n${d.device||'設備'}｜${d.oldSerial||'—'}\n刪除後該損壞裝備會重新列為「待繳回」，庫存數量不受影響。`;
+ const itemText=d.trackingMode==='quantity'?`${d.device||'設備'}｜無序號 ${d.qty||1} 件`:`${d.device||'設備'}｜${d.oldSerial||'—'}`;
+ const msg=direct?`確定刪除此筆「直接繳回」紀錄？\n${itemText}\n此操作不影響庫存，也不會產生待繳回紀錄。`:`確定刪除此筆損壞裝備繳回紀錄？\n${itemText}\n刪除後該損壞裝備會重新列為「待繳回」，庫存數量不受影響。`;
  if(!confirm(msg))return;store.damagedReturns.splice(index,1);save();render();openHistoryDetail('damagedReturn');showToast(direct?'直接繳回紀錄已刪除':'繳回紀錄已刪除，設備恢復為待繳回','success');
 }
 function inventoryStats(target=store){
@@ -2861,7 +2903,7 @@ function openReport(){
  html+=`<h4 style="margin:20px 0 8px;color:#9c2c38">設備維修更換 / 人員領用紀錄 <span style="font-size:11px;color:#71849c;font-weight:600">${reps.length} 筆</span></h4>`;
  html+=reps.length?`<div style="overflow:auto"><table><thead><tr><th>更換時間</th><th>位置</th><th>組件</th><th>設備</th><th>料號</th><th>故障設備序號</th><th>替換設備序號</th><th>損壞設備狀態</th><th>新設備狀態</th><th>備註</th></tr></thead><tbody>${reps.map(r=>`<tr><td>${esc(r.dateTime||r.date||'—')}</td><td>${esc(r.cn||'—')}</td><td>${esc(r.group||'—')}</td><td>${esc(r.device||'—')}</td><td>${esc(r.part||'—')}</td><td class="detail-serial">${esc(r.old||'—')}</td><td class="detail-serial">${esc(r.next||'—')}</td><td>${esc(r.damagedStatus||'損壞／已換下')}</td><td>${esc(r.newStatus||'已安裝／使用')}</td><td>${esc(r.note||'')}</td></tr>`).join('')}</tbody></table></div>`:`<div class="empty">尚無設備維修更換 / 人員領用紀錄</div>`;
  html+=`<h4 style="margin:20px 0 8px;color:#845400">損壞裝備繳回紀錄 <span style="font-size:11px;color:#71849c;font-weight:600">${returns.length} 筆</span></h4>`;
- html+=returns.length?`<div style="overflow:auto"><table><thead><tr><th>繳回時間</th><th>類型</th><th>設備</th><th>料號</th><th>損壞設備序號</th><th>原使用／更換位置</th><th>損壞裝備繳回</th><th>關聯維修時間</th><th>備註</th></tr></thead><tbody>${returns.map(d=>`<tr><td>${esc(d.returnDateTime||'—')}</td><td>${esc(damagedReturnSourceText(d))}</td><td>${esc(d.device||'—')}</td><td>${esc(d.part||'—')}</td><td class="detail-serial">${esc(d.oldSerial||'—')}</td><td>${esc(d.repairLocation||'—')}</td><td>${esc(d.returnLocation||'—')}</td><td>${esc(d.repairDateTime||'—')}</td><td>${esc(d.note||'')}</td></tr>`).join('')}</tbody></table></div>`:`<div class="empty">尚無損壞裝備繳回紀錄</div>`;
+ html+=returns.length?`<div style="overflow:auto"><table><thead><tr><th>繳回時間</th><th>類型</th><th>設備</th><th>料號</th><th>損壞設備序號</th><th>繳回數量</th><th>原使用／更換位置</th><th>損壞裝備繳回</th><th>關聯維修時間</th><th>備註</th></tr></thead><tbody>${returns.map(d=>`<tr><td>${esc(d.returnDateTime||'—')}</td><td>${esc(damagedReturnSourceText(d))}</td><td>${esc(d.device||'—')}</td><td>${esc(d.part||'—')}</td><td class="detail-serial">${d.trackingMode==='quantity'?'∅ 無序號':esc(d.oldSerial||'—')}</td><td>${d.trackingMode==='quantity'?`${d.qty||1} 件`:'1 件'}</td><td>${esc(d.repairLocation||'—')}</td><td>${esc(d.returnLocation||'—')}</td><td>${esc(d.repairDateTime||'—')}</td><td>${esc(d.note||'')}</td></tr>`).join('')}</tbody></table></div>`:`<div class="empty">尚無損壞裝備繳回紀錄</div>`;
  reportContent.innerHTML=html;reportModal.classList.add('show');
 }
 function handleReportExportSelect(el){
@@ -2884,7 +2926,7 @@ function exportReportWord(mode='full'){
    return `<h2>${type} 庫存明細</h2><p class="meta">${data.length} 種設備｜${qty} 件庫存｜${sns} 個庫存序號</p><table class="inventory-table"><colgroup><col style="width:14%"><col style="width:14%"><col style="width:23%"><col style="width:7%"><col style="width:25%"><col style="width:7%"><col style="width:10%"></colgroup><thead><tr><th>組件</th><th>料號</th><th>設備名稱</th><th>庫存量</th><th>庫存序號</th><th>狀態</th><th>位置</th></tr></thead><tbody>${data.map(x=>`<tr><td>${esc(x.group)}</td><td class="part-cell">${esc(x.part)}</td><td>${esc(x.name)}</td><td class="num qty-cell">${x.qty}</td><td class="serial-cell">${esc(x.serial||'—')}</td><td class="center-cell">${esc(x.state)}</td><td class="center-cell location-cell">${esc(x.location||'—')}</td></tr>`).join('')}</tbody></table>`;
  }).join('');
  const replacementTable=reps.length?`<table class="replacement-table"><colgroup><col style="width:10%"><col style="width:8%"><col style="width:8%"><col style="width:10%"><col style="width:10%"><col style="width:12%"><col style="width:9%"><col style="width:10%"><col style="width:10%"><col style="width:7%"><col style="width:6%"></colgroup><thead><tr><th>作業時間</th><th>作業類型</th><th>位置</th><th>領用人員／單位</th><th>組件</th><th>設備</th><th>料號</th><th>故障設備序號</th><th>替換／領用序號</th><th>狀態</th><th>備註</th></tr></thead><tbody>${reps.map(r=>{const isPersonnel=r.actionType==='personnel_issue'||!!String(r.personnelName||'').trim()||r.newStatus==='已領用';const who=isPersonnel?[r.personnelName||'',r.personnelUnit||''].filter(Boolean).join('／'):'—';const status=isPersonnel?(r.newStatus||'已領用'):(r.newStatus||'已安裝／使用');return `<tr><td>${esc(r.dateTime||r.date||'—')}</td><td>${isPersonnel?'人員領用':'設備維修更換'}</td><td>${esc(r.cn||'—')}</td><td>${esc(who)}</td><td>${esc(r.group||'—')}</td><td>${esc(r.device||'—')}</td><td>${esc(r.part||'—')}</td><td>${esc(isPersonnel?'—':(r.old||'—'))}</td><td>${esc(r.next||'—')}</td><td>${esc(status)}</td><td>${esc(r.note||'')}</td></tr>`}).join('')}</tbody></table>`:'<p>尚無設備維修更換／人員領用紀錄。</p>';
- const returnTable=returns.length?`<table class="replacement-table"><colgroup><col style="width:10%"><col style="width:9%"><col style="width:14%"><col style="width:11%"><col style="width:13%"><col style="width:11%"><col style="width:11%"><col style="width:11%"><col style="width:10%"></colgroup><thead><tr><th>繳回時間</th><th>繳回類型</th><th>設備</th><th>料號</th><th>損壞設備序號</th><th>原使用／更換位置</th><th>損壞裝備繳回</th><th>關聯維修時間</th><th>備註</th></tr></thead><tbody>${returns.map(d=>`<tr><td>${esc(d.returnDateTime||'—')}</td><td>${esc(damagedReturnSourceText(d))}</td><td>${esc(d.device||'—')}</td><td>${esc(d.part||'—')}</td><td>${esc(d.oldSerial||'—')}</td><td>${esc(d.repairLocation||'—')}</td><td>${esc(d.returnLocation||'—')}</td><td>${esc(d.repairDateTime||'—')}</td><td>${esc(d.note||'')}</td></tr>`).join('')}</tbody></table>`:'<p>尚無損壞裝備繳回紀錄。</p>';
+ const returnTable=returns.length?`<table class="replacement-table"><colgroup><col style="width:9%"><col style="width:8%"><col style="width:13%"><col style="width:10%"><col style="width:12%"><col style="width:7%"><col style="width:10%"><col style="width:10%"><col style="width:11%"><col style="width:10%"></colgroup><thead><tr><th>繳回時間</th><th>繳回類型</th><th>設備</th><th>料號</th><th>損壞設備序號</th><th>繳回數量</th><th>原使用／更換位置</th><th>損壞裝備繳回</th><th>關聯維修時間</th><th>備註</th></tr></thead><tbody>${returns.map(d=>`<tr><td>${esc(d.returnDateTime||'—')}</td><td>${esc(damagedReturnSourceText(d))}</td><td>${esc(d.device||'—')}</td><td>${esc(d.part||'—')}</td><td>${d.trackingMode==='quantity'?'∅ 無序號':esc(d.oldSerial||'—')}</td><td>${d.trackingMode==='quantity'?`${d.qty||1} 件`:'1 件'}</td><td>${esc(d.repairLocation||'—')}</td><td>${esc(d.returnLocation||'—')}</td><td>${esc(d.repairDateTime||'—')}</td><td>${esc(d.note||'')}</td></tr>`).join('')}</tbody></table>`:'<p>尚無損壞裝備繳回紀錄。</p>';
  const movementRows=(store.stockMovements||[]).slice().reverse();
  const movementTable=movementRows.length?`<table class="movement-table"><colgroup><col style="width:10%"><col style="width:7%"><col style="width:5%"><col style="width:10%"><col style="width:13%"><col style="width:9%"><col style="width:5%"><col style="width:5%"><col style="width:5%"><col style="width:14%"><col style="width:7%"><col style="width:6%"><col style="width:4%"></colgroup><thead><tr><th>異動時間</th><th>類型</th><th>系統</th><th>組件</th><th>設備</th><th>料號</th><th>數量異動</th><th>異動前</th><th>異動後</th><th>本次序號</th><th>位置</th><th>來源</th><th>備註</th></tr></thead><tbody>${movementRows.map(m=>`<tr><td>${esc(m.dateTime||'—')}</td><td>${esc(stockMovementTypeText(m.type))}</td><td>${esc(m.system||'—')}</td><td>${esc(m.group||'—')}</td><td>${esc(m.device||'—')}</td><td>${esc(m.part||'—')}</td><td class="num">${m.qtyChange>0?'+'+m.qtyChange:m.qtyChange}</td><td class="num">${m.beforeQty}</td><td class="num">${m.afterQty}</td><td>${esc((m.serials||[]).join('、')||'—')}</td><td>${esc(m.location||'—')}</td><td>${esc(m.reference||'')}</td><td>${esc(m.note||'')}</td></tr>`).join('')}</tbody></table>`:'<p>尚無庫存異動紀錄。</p>';
  const wordHead=`<!DOCTYPE html><html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="UTF-8"><meta name="ProgId" content="Word.Document"><meta name="Generator" content="73G裝備庫存管理"><style>
@@ -3009,7 +3051,7 @@ function exportReportCSV(){
  csv+=(store.replacements||[]).slice().reverse().map(r=>[r.dateTime||r.date||'',r.cn,r.group,r.device,r.part||'',r.old,r.next,r.damagedStatus||'損壞／已換下',r.note||''].map(csvCell).join(',')).join('');
  csv+=''+['損壞裝備繳回紀錄'].map(csvCell).join(',')+'';
  csv+=['繳回時間','繳回類型','設備','料號','損壞設備序號','原使用/更換位置','損壞裝備繳回','關聯維修時間','備註'].map(csvCell).join(',')+'';
- csv+=(store.damagedReturns||[]).slice().reverse().map(d=>[d.returnDateTime||'',damagedReturnSourceText(d),d.device||'',d.part||'',d.oldSerial||'',d.repairLocation||'',d.returnLocation||'',d.repairDateTime||'',d.note||''].map(csvCell).join(',')).join('');
+ csv+=(store.damagedReturns||[]).slice().reverse().map(d=>[d.returnDateTime||'',damagedReturnSourceText(d),d.device||'',d.part||'',d.trackingMode==='quantity'?'無序號':(d.oldSerial||''),d.trackingMode==='quantity'?(d.qty||1):1,d.repairLocation||'',d.returnLocation||'',d.repairDateTime||'',d.note||''].map(csvCell).join(',')).join('');
  const blob=new Blob([csv],{type:'text/csv;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`equipment_inventory_v3_report_${new Date().toISOString().slice(0,10)}.csv`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500);showToast('Report CSV 已匯出','success');
 }
 function printReport(){
@@ -3714,7 +3756,7 @@ function openHistoryDetail(type){
  }else if(type==='damagedReturn'){
   normalizeDamagedReturns();heading.textContent='損壞裝備繳回紀錄明細';
   const rows=(store.damagedReturns||[]).map((r,sourceIndex)=>({r,sourceIndex})).reverse();
-  html=`<div class="detail-toolbar"><div class="detail-title">損壞裝備繳回</div><div class="detail-count">${rows.length} 筆｜待繳回 ${pendingDamagedReplacementRows().length} 筆</div></div><div class="detail-table-wrap"><table><thead><tr><th>繳回時間</th><th>類型</th><th>設備</th><th>料號</th><th>損壞設備序號</th><th>原使用／更換位置</th><th>損壞裝備繳回</th><th>關聯維修時間</th><th>備註</th><th>操作</th></tr></thead><tbody>${rows.map(({r,sourceIndex})=>`<tr><td>${esc(r.returnDateTime||'—')}</td><td>${esc(damagedReturnSourceText(r))}</td><td>${esc(r.device||'—')}</td><td>${esc(r.part||'—')}</td><td class="detail-serial">${esc(r.oldSerial||'—')}</td><td>${esc(r.repairLocation||'—')}</td><td><b>${esc(r.returnLocation||'—')}</b></td><td>${esc(r.repairDateTime||'—')}</td><td>${esc(r.note||'')}</td><td><button class="mini-action" onclick="editDamagedReturnRecord(${sourceIndex})">更正</button> <button class="history-delete-btn" onclick="deleteDamagedReturnRecord(${sourceIndex})">刪除</button></td></tr>`).join('')}</tbody></table></div>`;
+  html=`<div class="detail-toolbar"><div class="detail-title">損壞裝備繳回</div><div class="detail-count">${rows.length} 筆｜待繳回 ${pendingDamagedReplacementRows().length} 筆</div></div><div class="detail-table-wrap"><table><thead><tr><th>繳回時間</th><th>類型</th><th>設備</th><th>料號</th><th>損壞設備序號</th><th>繳回數量</th><th>原使用／更換位置</th><th>損壞裝備繳回</th><th>關聯維修時間</th><th>備註</th><th>操作</th></tr></thead><tbody>${rows.map(({r,sourceIndex})=>`<tr><td>${esc(r.returnDateTime||'—')}</td><td>${esc(damagedReturnSourceText(r))}</td><td>${esc(r.device||'—')}</td><td>${esc(r.part||'—')}</td><td class="detail-serial">${r.trackingMode==='quantity'?'∅ 無序號':esc(r.oldSerial||'—')}</td><td>${r.trackingMode==='quantity'?`${r.qty||1} 件`:'1 件'}</td><td>${esc(r.repairLocation||'—')}</td><td><b>${esc(r.returnLocation||'—')}</b></td><td>${esc(r.repairDateTime||'—')}</td><td>${esc(r.note||'')}</td><td><button class="mini-action" onclick="editDamagedReturnRecord(${sourceIndex})">更正</button> <button class="history-delete-btn" onclick="deleteDamagedReturnRecord(${sourceIndex})">刪除</button></td></tr>`).join('')}</tbody></table></div>`;
  }else{
   heading.textContent='庫存異動紀錄明細';
   const rows=(store.stockMovements||[]).map((r,sourceIndex)=>({r,sourceIndex})).reverse();
