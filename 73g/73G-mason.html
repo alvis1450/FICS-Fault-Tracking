@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>73G裝備庫存管理</title>
+<!-- v49 history records sorted by business date / linkage-safe -->
 <!-- v48 no-serial damaged-return quantity linkage -->
 <!-- v47 CN.xlsx canonical catalog correction / preserve inventory linkage -->
 <!-- v46 delete linkage correction -->
@@ -2179,10 +2180,35 @@ function render(){
  });
  components.innerHTML=html||'<div class="empty">找不到符合資料</div>';
  const fc=document.getElementById('filterCount');if(fc)fc.textContent=`顯示 ${shownGroups} / ${store.groups.length} 個組件`;
- const replacementRows=(store.replacements||[]).map((r,sourceIndex)=>({r,sourceIndex})).reverse();const historyList=document.getElementById('history');if(historyList)historyList.innerHTML=replacementRows.map(({r,sourceIndex})=>{const when=r.dateTime||r.date||'—',isPersonnel=r.actionType==='personnel_issue'||r.cn==='人員領用';return `<div class="history-item"><button type="button" class="history-edit-btn" onclick="editReplacementRecord(${sourceIndex})" title="更正此筆紀錄">✏️ 更正</button><button type="button" class="history-delete-btn" onclick="deleteReplacementRecord(${sourceIndex})" title="刪除此筆紀錄">刪除</button><b>${esc(when)}｜${esc(isPersonnel?'人員領用':'設備維修更換')}｜${esc(r.cn||'—')}｜${esc(r.group)}</b><br><b>設備：</b>${esc(r.device)}${r.part?`｜${esc(r.part)}`:''}<br>${r.trackingMode==='quantity'?(isPersonnel?`<b>領用人員：</b>${esc(r.personnelName||'—')}${r.personnelUnit?`｜<b>單位：</b>${esc(r.personnelUnit)}`:''}<br><b>領用數量：</b>${Number(r.qty)||1} 件 <span class="badge installed">${esc(r.newStatus||'已領用')}</span>`:`<b>無序號設備更換：</b>${Number(r.qty)||1} 件 <span class="badge installed">${esc(r.newStatus||'已安裝／使用')}</span>`):(isPersonnel?`<b>領用人員：</b>${esc(r.personnelName||'—')}${r.personnelUnit?`｜<b>單位：</b>${esc(r.personnelUnit)}`:''}<br><b>領用設備序號：</b><span class="detail-serial">${esc(r.next)}</span> <span class="badge installed">${esc(r.newStatus||'已領用')}</span>`:`<b>故障設備序號：</b><span class="detail-serial">${esc(r.old)}</span> <span class="badge broken">${esc(r.damagedStatus||'故障／已換下')}</span>　→　<b>替換設備序號：</b><span class="detail-serial">${esc(r.next)}</span> <span class="badge installed">${esc(r.newStatus||'已安裝／使用')}</span>`)}${r.note?'<br><b>備註：</b>'+esc(r.note):''}${Array.isArray(r.corrections)&&r.corrections.length?`<div class="correction-note">✏️ 已更正 ${r.corrections.length} 次｜最後更正：${esc(r.corrections[r.corrections.length-1].correctedAt||'—')}</div>`:''}</div>`}).join('')||'<div class="empty">尚無維修更換／領用紀錄</div>';const hc=document.getElementById('historyCount');if(hc)hc.textContent=`${replacementRows.length} 筆紀錄`;
+ const replacementRows=sortedHistoryRows(store.replacements||[],'replacement');const historyList=document.getElementById('history');if(historyList)historyList.innerHTML=replacementRows.map(({r,sourceIndex})=>{const when=r.dateTime||r.date||'—',isPersonnel=r.actionType==='personnel_issue'||r.cn==='人員領用';return `<div class="history-item"><button type="button" class="history-edit-btn" onclick="editReplacementRecord(${sourceIndex})" title="更正此筆紀錄">✏️ 更正</button><button type="button" class="history-delete-btn" onclick="deleteReplacementRecord(${sourceIndex})" title="刪除此筆紀錄">刪除</button><b>${esc(when)}｜${esc(isPersonnel?'人員領用':'設備維修更換')}｜${esc(r.cn||'—')}｜${esc(r.group)}</b><br><b>設備：</b>${esc(r.device)}${r.part?`｜${esc(r.part)}`:''}<br>${r.trackingMode==='quantity'?(isPersonnel?`<b>領用人員：</b>${esc(r.personnelName||'—')}${r.personnelUnit?`｜<b>單位：</b>${esc(r.personnelUnit)}`:''}<br><b>領用數量：</b>${Number(r.qty)||1} 件 <span class="badge installed">${esc(r.newStatus||'已領用')}</span>`:`<b>無序號設備更換：</b>${Number(r.qty)||1} 件 <span class="badge installed">${esc(r.newStatus||'已安裝／使用')}</span>`):(isPersonnel?`<b>領用人員：</b>${esc(r.personnelName||'—')}${r.personnelUnit?`｜<b>單位：</b>${esc(r.personnelUnit)}`:''}<br><b>領用設備序號：</b><span class="detail-serial">${esc(r.next)}</span> <span class="badge installed">${esc(r.newStatus||'已領用')}</span>`:`<b>故障設備序號：</b><span class="detail-serial">${esc(r.old)}</span> <span class="badge broken">${esc(r.damagedStatus||'故障／已換下')}</span>　→　<b>替換設備序號：</b><span class="detail-serial">${esc(r.next)}</span> <span class="badge installed">${esc(r.newStatus||'已安裝／使用')}</span>`)}${r.note?'<br><b>備註：</b>'+esc(r.note):''}${Array.isArray(r.corrections)&&r.corrections.length?`<div class="correction-note">✏️ 已更正 ${r.corrections.length} 次｜最後更正：${esc(r.corrections[r.corrections.length-1].correctedAt||'—')}</div>`:''}</div>`}).join('')||'<div class="empty">尚無維修更換／領用紀錄</div>';const hc=document.getElementById('historyCount');if(hc)hc.textContent=`${replacementRows.length} 筆紀錄`;
  updateDamagedReturnSummary();
  renderStockHistory();
  updateSummary();
+}
+
+// ===== History display sorting: business date first, insertion order only as tie-breaker =====
+function historyDateValue(value){
+ const text=String(value||'').trim();if(!text)return 0;
+ const direct=Date.parse(text);if(!Number.isNaN(direct))return direct;
+ const m=text.match(/(\d{4})[\/\-.](\d{1,2})[\/\-.](\d{1,2})(?:\D+(\d{1,2})(?::(\d{1,2}))?(?::(\d{1,2}))?)?/);
+ if(!m)return 0;
+ const d=new Date(Number(m[1]),Number(m[2])-1,Number(m[3]),Number(m[4]||0),Number(m[5]||0),Number(m[6]||0));
+ return Number.isNaN(d.getTime())?0:d.getTime();
+}
+function historyRecordTime(record,type){
+ const r=record||{};
+ if(type==='damagedReturn')return historyDateValue(r.returnTimeInput)||historyDateValue(r.returnTimestamp)||historyDateValue(r.returnDateTime);
+ if(type==='movement')return historyDateValue(r.dateTime)||historyDateValue(r.timestamp);
+ return historyDateValue(r.dateTime)||historyDateValue(r.date)||historyDateValue(r.timestamp);
+}
+function sortedHistoryRows(records,type){
+ return (records||[]).map((r,sourceIndex)=>({r,sourceIndex,_sortTime:historyRecordTime(r,type)})).sort((a,b)=>{
+   if(b._sortTime!==a._sortTime)return b._sortTime-a._sortTime;
+   return b.sourceIndex-a.sourceIndex;
+ });
+}
+function sortedHistoryRecords(records,type){
+ return sortedHistoryRows(records,type).map(x=>x.r);
 }
 
 function stockMovementTypeText(type){
@@ -2221,7 +2247,7 @@ function renderStockHistory(){
  normalizeStockMovements();
  const box=document.getElementById('stockHistory'),count=document.getElementById('stockHistoryCount');
  if(!box)return;
- const rows=(store.stockMovements||[]).map((m,sourceIndex)=>({m,sourceIndex})).reverse();
+ const rows=sortedHistoryRows(store.stockMovements||[],'movement').map(({r,sourceIndex})=>({m:r,sourceIndex}));
  if(count)count.textContent=`${rows.length} 筆異動`;
  box.innerHTML=rows.length?rows.map(({m,sourceIndex})=>{
    const cls=m.type==='inbound'?'inbound':(m.type==='replacement_out'||m.type==='personnel_issue')?'outbound':'adjust';
@@ -2714,7 +2740,7 @@ function pendingQtyForReplacement(rep,excludeIndex=null){
 }
 function pendingDamagedReplacementRows(){
  normalizeReplacementHistory();normalizeDamagedReturns();
- return (store.replacements||[]).map((r,index)=>({r,index,pendingQty:pendingQtyForReplacement(r)})).filter(({r,pendingQty})=>r.actionType!=='personnel_issue'&&pendingQty>0).reverse();
+ return sortedHistoryRows(store.replacements||[],'replacement').map(({r,sourceIndex:index})=>({r,index,pendingQty:pendingQtyForReplacement(r)})).filter(({r,pendingQty})=>r.actionType!=='personnel_issue'&&pendingQty>0);
 }
 function updateDamagedReturnSummary(){
  normalizeReplacementHistory();normalizeDamagedReturns();
@@ -2894,7 +2920,7 @@ function reportSystemSection(type,rows){
 }
 function openReport(){
  normalizeInventoryStore();normalizeReplacementHistory();normalizeDamagedReturns();normalizeStockMovements();
- const rows=reportRows(),st=inventoryStats(),reps=(store.replacements||[]).slice().reverse(),returns=(store.damagedReturns||[]).slice().reverse();
+ const rows=reportRows(),st=inventoryStats(),reps=sortedHistoryRecords(store.replacements||[],'replacement'),returns=sortedHistoryRecords(store.damagedReturns||[],'damagedReturn');
  let html=`<div style="display:grid;grid-template-columns:repeat(5,minmax(110px,1fr));gap:8px;margin-bottom:14px">
  <div class="card"><b>${st.groups}</b><span>組件分類</span></div><div class="card"><b>${st.types}</b><span>設備種類</span></div><div class="card"><b>${st.qty}</b><span>新設備庫存</span></div><div class="card"><b>${st.serials}</b><span>庫存序號</span></div><div class="card"><b>${st.replacements}</b><span>維修更換 / 領用紀錄</span></div></div>`;
  html+=`<div style="font-size:12px;color:#61758f;margin-bottom:10px">產生時間：${new Date().toLocaleString('zh-TW')}　｜　<strong>庫存量與庫存序號只代表尚未領出的新設備</strong>；已更換領出的新序號會保留於下方更換紀錄，不再計入庫存。</div>`;
@@ -2914,7 +2940,7 @@ function handleReportExportSelect(el){
 }
 function exportReportWord(mode='full'){
  normalizeInventoryStore();normalizeReplacementHistory();normalizeDamagedReturns();normalizeStockMovements();
- const rows=reportRows(),st=inventoryStats(),reps=(store.replacements||[]).slice().reverse(),returns=(store.damagedReturns||[]).slice().reverse();
+ const rows=reportRows(),st=inventoryStats(),reps=sortedHistoryRecords(store.replacements||[],'replacement'),returns=sortedHistoryRecords(store.damagedReturns||[],'damagedReturn');
  const now=new Date(),generated=now.toLocaleString('zh-TW');
  const summaryRows=['CN','NMS','SSS'].map(t=>{const x=st.bySystem[t];return `<tr><td><b>${t}</b></td><td>${x.groups}</td><td>${x.types}</td><td>${x.qty}</td><td>${x.serials}</td></tr>`}).join('');
  const inStockRows=rows.filter(x=>x.qty>0);
@@ -2927,7 +2953,7 @@ function exportReportWord(mode='full'){
  }).join('');
  const replacementTable=reps.length?`<table class="replacement-table"><colgroup><col style="width:10%"><col style="width:8%"><col style="width:8%"><col style="width:10%"><col style="width:10%"><col style="width:12%"><col style="width:9%"><col style="width:10%"><col style="width:10%"><col style="width:7%"><col style="width:6%"></colgroup><thead><tr><th>作業時間</th><th>作業類型</th><th>位置</th><th>領用人員／單位</th><th>組件</th><th>設備</th><th>料號</th><th>故障設備序號</th><th>替換／領用序號</th><th>狀態</th><th>備註</th></tr></thead><tbody>${reps.map(r=>{const isPersonnel=r.actionType==='personnel_issue'||!!String(r.personnelName||'').trim()||r.newStatus==='已領用';const who=isPersonnel?[r.personnelName||'',r.personnelUnit||''].filter(Boolean).join('／'):'—';const status=isPersonnel?(r.newStatus||'已領用'):(r.newStatus||'已安裝／使用');return `<tr><td>${esc(r.dateTime||r.date||'—')}</td><td>${isPersonnel?'人員領用':'設備維修更換'}</td><td>${esc(r.cn||'—')}</td><td>${esc(who)}</td><td>${esc(r.group||'—')}</td><td>${esc(r.device||'—')}</td><td>${esc(r.part||'—')}</td><td>${esc(isPersonnel?'—':(r.old||'—'))}</td><td>${esc(r.next||'—')}</td><td>${esc(status)}</td><td>${esc(r.note||'')}</td></tr>`}).join('')}</tbody></table>`:'<p>尚無設備維修更換／人員領用紀錄。</p>';
  const returnTable=returns.length?`<table class="replacement-table"><colgroup><col style="width:9%"><col style="width:8%"><col style="width:13%"><col style="width:10%"><col style="width:12%"><col style="width:7%"><col style="width:10%"><col style="width:10%"><col style="width:11%"><col style="width:10%"></colgroup><thead><tr><th>繳回時間</th><th>繳回類型</th><th>設備</th><th>料號</th><th>損壞設備序號</th><th>繳回數量</th><th>原使用／更換位置</th><th>損壞裝備繳回</th><th>關聯維修時間</th><th>備註</th></tr></thead><tbody>${returns.map(d=>`<tr><td>${esc(d.returnDateTime||'—')}</td><td>${esc(damagedReturnSourceText(d))}</td><td>${esc(d.device||'—')}</td><td>${esc(d.part||'—')}</td><td>${d.trackingMode==='quantity'?'∅ 無序號':esc(d.oldSerial||'—')}</td><td>${d.trackingMode==='quantity'?`${d.qty||1} 件`:'1 件'}</td><td>${esc(d.repairLocation||'—')}</td><td>${esc(d.returnLocation||'—')}</td><td>${esc(d.repairDateTime||'—')}</td><td>${esc(d.note||'')}</td></tr>`).join('')}</tbody></table>`:'<p>尚無損壞裝備繳回紀錄。</p>';
- const movementRows=(store.stockMovements||[]).slice().reverse();
+ const movementRows=sortedHistoryRecords(store.stockMovements||[],'movement');
  const movementTable=movementRows.length?`<table class="movement-table"><colgroup><col style="width:10%"><col style="width:7%"><col style="width:5%"><col style="width:10%"><col style="width:13%"><col style="width:9%"><col style="width:5%"><col style="width:5%"><col style="width:5%"><col style="width:14%"><col style="width:7%"><col style="width:6%"><col style="width:4%"></colgroup><thead><tr><th>異動時間</th><th>類型</th><th>系統</th><th>組件</th><th>設備</th><th>料號</th><th>數量異動</th><th>異動前</th><th>異動後</th><th>本次序號</th><th>位置</th><th>來源</th><th>備註</th></tr></thead><tbody>${movementRows.map(m=>`<tr><td>${esc(m.dateTime||'—')}</td><td>${esc(stockMovementTypeText(m.type))}</td><td>${esc(m.system||'—')}</td><td>${esc(m.group||'—')}</td><td>${esc(m.device||'—')}</td><td>${esc(m.part||'—')}</td><td class="num">${m.qtyChange>0?'+'+m.qtyChange:m.qtyChange}</td><td class="num">${m.beforeQty}</td><td class="num">${m.afterQty}</td><td>${esc((m.serials||[]).join('、')||'—')}</td><td>${esc(m.location||'—')}</td><td>${esc(m.reference||'')}</td><td>${esc(m.note||'')}</td></tr>`).join('')}</tbody></table>`:'<p>尚無庫存異動紀錄。</p>';
  const wordHead=`<!DOCTYPE html><html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="UTF-8"><meta name="ProgId" content="Word.Document"><meta name="Generator" content="73G裝備庫存管理"><style>
 @page{size:A4 landscape;margin:11mm 10mm 12mm}
@@ -3045,13 +3071,13 @@ function exportReportCSV(){
  csv+=rows.map(x=>[x.system,x.group,x.part,x.name,x.qty,x.serial,x.state,x.location].map(csvCell).join(',')).join('');
  csv+=''+['庫存異動紀錄'].map(csvCell).join(',')+'';
  csv+=['異動時間','類型','系統','組件','設備','料號','數量異動','異動前','異動後','本次序號','位置','來源/單號','備註'].map(csvCell).join(',')+'';
- csv+=(store.stockMovements||[]).slice().reverse().map(m=>[m.dateTime||'',stockMovementTypeText(m.type),m.system,m.group,m.device,m.part,m.qtyChange,m.beforeQty,m.afterQty,(m.serials||[]).join('、'),m.location,m.reference,m.note].map(csvCell).join(',')).join('');
+ csv+=sortedHistoryRecords(store.stockMovements||[],'movement').map(m=>[m.dateTime||'',stockMovementTypeText(m.type),m.system,m.group,m.device,m.part,m.qtyChange,m.beforeQty,m.afterQty,(m.serials||[]).join('、'),m.location,m.reference,m.note].map(csvCell).join(',')).join('');
  csv+=''+['設備維修更換 / 人員領用紀錄'].map(csvCell).join(',')+'';
  csv+=['更換時間','位置','組件','設備','料號','故障設備序號','替換設備序號','損壞狀態','備註'].map(csvCell).join(',')+'';
- csv+=(store.replacements||[]).slice().reverse().map(r=>[r.dateTime||r.date||'',r.cn,r.group,r.device,r.part||'',r.old,r.next,r.damagedStatus||'損壞／已換下',r.note||''].map(csvCell).join(',')).join('');
+ csv+=sortedHistoryRecords(store.replacements||[],'replacement').map(r=>[r.dateTime||r.date||'',r.cn,r.group,r.device,r.part||'',r.old,r.next,r.damagedStatus||'損壞／已換下',r.note||''].map(csvCell).join(',')).join('');
  csv+=''+['損壞裝備繳回紀錄'].map(csvCell).join(',')+'';
  csv+=['繳回時間','繳回類型','設備','料號','損壞設備序號','原使用/更換位置','損壞裝備繳回','關聯維修時間','備註'].map(csvCell).join(',')+'';
- csv+=(store.damagedReturns||[]).slice().reverse().map(d=>[d.returnDateTime||'',damagedReturnSourceText(d),d.device||'',d.part||'',d.trackingMode==='quantity'?'無序號':(d.oldSerial||''),d.trackingMode==='quantity'?(d.qty||1):1,d.repairLocation||'',d.returnLocation||'',d.repairDateTime||'',d.note||''].map(csvCell).join(',')).join('');
+ csv+=sortedHistoryRecords(store.damagedReturns||[],'damagedReturn').map(d=>[d.returnDateTime||'',damagedReturnSourceText(d),d.device||'',d.part||'',d.trackingMode==='quantity'?'無序號':(d.oldSerial||''),d.trackingMode==='quantity'?(d.qty||1):1,d.repairLocation||'',d.returnLocation||'',d.repairDateTime||'',d.note||''].map(csvCell).join(',')).join('');
  const blob=new Blob([csv],{type:'text/csv;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`equipment_inventory_v3_report_${new Date().toISOString().slice(0,10)}.csv`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500);showToast('Report CSV 已匯出','success');
 }
 function printReport(){
@@ -3751,15 +3777,15 @@ function openHistoryDetail(type){
  let html='';
  if(type==='replacement'){
   heading.textContent='設備維修更換／人員領用紀錄明細';
-  const rows=(store.replacements||[]).map((r,sourceIndex)=>({r,sourceIndex})).reverse();
+  const rows=sortedHistoryRows(store.replacements||[],'replacement');
   html=`<div class="detail-toolbar"><div class="detail-title">維修更換／領用紀錄</div><div class="detail-count">${rows.length} 筆</div></div><div class="detail-table-wrap"><table><thead><tr><th>日期</th><th>類型</th><th>設備</th><th>序號</th><th>位置</th><th>人員</th><th>備註</th><th>操作</th></tr></thead><tbody>${rows.map(({r,sourceIndex})=>{const personnel=r.actionType==='personnel_issue'||r.newStatus==='已領用';return `<tr><td>${esc(r.dateTime||r.date||'—')}</td><td>${esc(personnel?'人員領用':'設備維修更換')}</td><td>${esc(r.device||'—')}</td><td>${esc(personnel?(r.next||'—'):(r.old||'—')+' → '+(r.next||'—'))}</td><td>${esc(r.cn||'—')}</td><td>${esc(r.personnelName||'—')}</td><td>${esc(r.note||'')}</td><td><button class="mini-action" onclick="editReplacementRecord(${sourceIndex})">更正</button> <button class="history-delete-btn" onclick="deleteReplacementRecord(${sourceIndex})">刪除</button></td></tr>`}).join('')}</tbody></table></div>`;
  }else if(type==='damagedReturn'){
   normalizeDamagedReturns();heading.textContent='損壞裝備繳回紀錄明細';
-  const rows=(store.damagedReturns||[]).map((r,sourceIndex)=>({r,sourceIndex})).reverse();
+  const rows=sortedHistoryRows(store.damagedReturns||[],'damagedReturn');
   html=`<div class="detail-toolbar"><div class="detail-title">損壞裝備繳回</div><div class="detail-count">${rows.length} 筆｜待繳回 ${pendingDamagedReplacementRows().length} 筆</div></div><div class="detail-table-wrap"><table><thead><tr><th>繳回時間</th><th>類型</th><th>設備</th><th>料號</th><th>損壞設備序號</th><th>繳回數量</th><th>原使用／更換位置</th><th>損壞裝備繳回</th><th>關聯維修時間</th><th>備註</th><th>操作</th></tr></thead><tbody>${rows.map(({r,sourceIndex})=>`<tr><td>${esc(r.returnDateTime||'—')}</td><td>${esc(damagedReturnSourceText(r))}</td><td>${esc(r.device||'—')}</td><td>${esc(r.part||'—')}</td><td class="detail-serial">${r.trackingMode==='quantity'?'∅ 無序號':esc(r.oldSerial||'—')}</td><td>${r.trackingMode==='quantity'?`${r.qty||1} 件`:'1 件'}</td><td>${esc(r.repairLocation||'—')}</td><td><b>${esc(r.returnLocation||'—')}</b></td><td>${esc(r.repairDateTime||'—')}</td><td>${esc(r.note||'')}</td><td><button class="mini-action" onclick="editDamagedReturnRecord(${sourceIndex})">更正</button> <button class="history-delete-btn" onclick="deleteDamagedReturnRecord(${sourceIndex})">刪除</button></td></tr>`).join('')}</tbody></table></div>`;
  }else{
   heading.textContent='庫存異動紀錄明細';
-  const rows=(store.stockMovements||[]).map((r,sourceIndex)=>({r,sourceIndex})).reverse();
+  const rows=sortedHistoryRows(store.stockMovements||[],'movement');
   html=`<div class="detail-toolbar"><div class="detail-title">庫存異動</div><div class="detail-count">${rows.length} 筆</div></div><div class="detail-table-wrap"><table><thead><tr><th>日期</th><th>類型</th><th>系統</th><th>組件</th><th>設備</th><th>料號</th><th>數量</th><th>異動前</th><th>異動後</th><th>序號</th><th>位置</th><th>來源</th><th>備註</th><th>操作</th></tr></thead><tbody>${rows.map(({r,sourceIndex})=>`<tr><td>${esc(r.dateTime||'—')}</td><td>${esc(stockMovementTypeText(r.type))}</td><td>${esc(r.system||'—')}</td><td>${esc(r.group||'—')}</td><td>${esc(r.device||'—')}</td><td>${esc(r.part||'—')}</td><td>${esc(r.qtyChange??'')}</td><td>${esc(r.beforeQty??'')}</td><td>${esc(r.afterQty??'')}</td><td>${esc((r.serials||[]).join('、')||'—')}</td><td>${esc(r.location||'—')}</td><td>${esc(r.reference||'')}</td><td>${esc(r.note||'')}</td><td><button class="mini-action" onclick="editStockMovement(${sourceIndex})">更正</button> <button class="history-delete-btn" onclick="deleteStockMovement(${sourceIndex})">刪除</button></td></tr>`).join('')}</tbody></table></div>`;
  }
  box.innerHTML=html; modal.classList.add('show');
