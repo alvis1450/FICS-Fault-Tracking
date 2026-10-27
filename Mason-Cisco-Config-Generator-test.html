@@ -1971,6 +1971,9 @@ body.guide-off .guide-detail{display:none!important}
   .context-head h3{font-size:15px!important}
   .context-btn{font-size:13px!important}
 }
+/* Smart Lookup 2.0: contained interface, other modules unchanged */
+.smart-shell{margin-top:12px;display:grid;gap:12px}.smart-head{padding:18px}.smart-heading,.smart-head-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.smart-heading h3{font-size:20px;margin:0 0 4px}.smart-heading p{margin:0;color:var(--muted);font-size:12px}.smart-new{font-size:11px;color:#b8efff;background:#18455c;padding:4px 7px;border-radius:9px;vertical-align:middle}.smart-searchline{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:9px;margin:14px 0 12px}.smart-filters{display:flex;flex-wrap:wrap;gap:7px}.smart-filter{padding:8px 12px;border:1px solid #35536c;border-radius:9px;background:#0c2031;color:#bbd1e4;font-size:12px}.smart-filter.active{background:#15506b;border-color:#51afd5;color:white}.smart-filter span{margin-left:4px;opacity:.7}.smart-head-foot{margin-top:10px}.smart-workarea{display:grid;grid-template-columns:minmax(330px,.88fr) minmax(390px,1.12fr);gap:12px;align-items:start}.smart-list-panel,.smart-detail-panel{overflow:hidden}.smart-detail-panel{position:sticky;top:62px}.smart-panel-head{padding:12px 14px;background:#10243b;border-bottom:1px solid #294965;display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:13px}.smart-panel-head span{font-size:11px;color:#97bad1}.smart-result-list{max-height:66vh;overflow-y:auto}.smart-hit-row{width:100%;border:0;border-bottom:1px solid #203b55;padding:12px 14px;background:transparent;text-align:left;color:#d5e5f3;display:flex;align-items:start;gap:10px}.smart-hit-row:hover,.smart-hit-row.active{background:#15354b}.smart-hit-row.active{box-shadow:inset 3px 0 0 #4cc9f0}.smart-hit-row b{display:block;font-size:12.5px;overflow-wrap:anywhere}.smart-hit-row small{display:block;color:#96afc5;font-size:11px;line-height:1.45;margin-top:4px;overflow-wrap:anywhere}.smart-type{font-size:10px;white-space:nowrap;border:1px solid #416580;padding:3px 6px;border-radius:6px;color:#98ddf8}.smart-result-content{min-width:0;flex:1}.smart-pager{display:flex;align-items:center;justify-content:center;gap:9px;padding:11px}.smart-pager span{font-size:11px;color:#a4b8c9}.smart-detail-body{padding:16px;max-height:74vh;overflow:auto}.smart-detail-title{font-size:19px;line-height:1.4;margin:0 0 8px;overflow-wrap:anywhere}.smart-detail-sub{font-size:12px;color:#a5bbcc;margin-bottom:13px}.smart-detail-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.smart-kv{padding:9px 11px;background:#0a1c2a;border:1px solid #23405c;border-radius:9px;min-width:0}.smart-kv small{display:block;color:#829fb6;font-size:10px;margin-bottom:4px;overflow-wrap:anywhere}.smart-kv .smart-val{font-size:12px;overflow-wrap:anywhere}.smart-copy{border:none;background:transparent;color:#86dfff;cursor:pointer;text-align:left;padding:0;overflow-wrap:anywhere}.smart-copy:hover{text-decoration:underline}.smart-detail-actions{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}.smart-overview{margin-top:15px;border-top:1px solid #294965;padding-top:12px}.smart-overview h4{margin:0 0 9px;font-size:14px}.smart-overview-list{display:grid;gap:6px}.smart-overview-item{padding:8px 10px;border:1px solid #24445d;border-radius:8px;background:#0a1b2b;font-size:11px;overflow-wrap:anywhere}.smart-overview-item b{display:block;margin-bottom:3px}.smart-overview-item span{color:#94aec2}.smart-footnote{font-size:11px;color:#91a9bc;padding:0 4px 12px}.smart-empty{padding:25px 15px;text-align:center;color:#9bb1c5;font-size:12px}
+@media(max-width:1100px){.smart-workarea{grid-template-columns:1fr}.smart-detail-panel{position:static}.smart-result-list{max-height:420px}.smart-detail-body{max-height:none}}@media(max-width:600px){.smart-head{padding:12px}.smart-heading h3{font-size:17px}.smart-searchline{grid-template-columns:1fr 1fr}.smart-searchline input{grid-column:1/-1}.smart-detail-grid{grid-template-columns:1fr}.smart-result-list{max-height:330px}}
 </style>
 </head>
 <body>
@@ -2181,16 +2184,18 @@ body.guide-off .guide-detail{display:none!important}
     </section>
 
     <section id="view-sitelookup" class="view">
-      <div class="lookup-layout" style="margin-top:12px">
-        <div class="card lookup-input-card">
-          <div class="stitle"><h3>站點 / 設備快速查詢</h3><span class="tool-badge">Site Lookup</span></div>
-          <p class="desc">搜尋車廂 / Site、Hostname、IP、電話、單位或 Preset，例如 <b>CN301</b>、<b>10.211.1</b>、<b>360000</b>。</p>
-          <label>搜尋關鍵字</label><input id="siteLookupInput" value="CN301" placeholder="例如：CN301、10.211.1、電話號碼或 Hostname" oninput="renderSiteLookup()">
-          <div class="tool-mini-actions"><button class="btn primary" onclick="renderSiteLookup()">搜尋</button><button class="btn ghost" onclick="document.getElementById('siteLookupInput').value='';renderSiteLookup()">清除</button></div>
-          <div id="siteLookupStatus" class="tool-status"></div>
-          <div class="tool-note">資料直接來自本 TEST 檔案內建的設備 Preset、IP / 電話規劃與 CN / DWBK 規劃；不會向外部查詢。</div>
+      <div class="smart-shell">
+        <div class="card smart-head">
+          <div class="smart-heading"><div><h3>Network Smart Lookup <span class="smart-new">2.0</span></h3><p>一次搜尋 Site / Hostname / IP / VLAN / 電話 / Config Preset；點選結果直接查看來源及明細。</p></div><span class="tool-badge">Offline · Local Data</span></div>
+          <div class="smart-searchline"><input id="siteLookupInput" value="CN301" placeholder="例如 CN301、10.211.1.35、VLAN 100、360000" oninput="scheduleSmartLookup()" onkeydown="if(event.key==='Enter')renderSiteLookup()" aria-label="全域規劃搜尋"><button class="btn primary" onclick="renderSiteLookup()">搜尋</button><button class="btn ghost" onclick="clearSmartLookup()">清除</button></div>
+          <div class="smart-filters" id="smartLookupFilters"><button data-type="all" class="smart-filter active" onclick="setSmartFilter('all')">全部 <span id="smartCount-all"></span></button><button data-type="site" class="smart-filter" onclick="setSmartFilter('site')">Site / IP <span id="smartCount-site"></span></button><button data-type="phone" class="smart-filter" onclick="setSmartFilter('phone')">電話 <span id="smartCount-phone"></span></button><button data-type="device" class="smart-filter" onclick="setSmartFilter('device')">Config Preset <span id="smartCount-device"></span></button><button data-type="matrix" class="smart-filter" onclick="setSmartFilter('matrix')">CN / DWBK / NMS <span id="smartCount-matrix"></span></button></div>
+          <div class="smart-head-foot"><span id="siteLookupStatus" class="tool-status"></span><button class="btn ghost" onclick="copySmartResultSet()">複製查詢摘要</button></div>
         </div>
-        <div id="siteLookupResults" class="lookup-results"></div>
+        <div class="smart-workarea">
+          <div class="card smart-list-panel"><div class="smart-panel-head"><b>查詢結果</b><span id="smartShownCount">—</span></div><div id="siteLookupResults" class="smart-result-list" aria-live="polite"></div><div class="smart-pager"><button class="btn ghost" id="smartPrev" onclick="changeSmartPage(-1)">上一頁</button><span id="smartPageInfo"></span><button class="btn ghost" id="smartNext" onclick="changeSmartPage(1)">下一頁</button></div></div>
+          <div class="card smart-detail-panel"><div class="smart-panel-head"><b>資料明細 / Site Overview</b><span id="smartDetailSource" class="tool-badge">內建來源</span></div><div id="smartLookupDetail" class="smart-detail-body"><div class="tool-note">選擇左側結果，這裡會顯示該筆資料的完整欄位和相關站點紀錄。</div></div></div>
+        </div>
+        <div class="smart-footnote">資料只取自本 HTML 內建的原始規劃表與設備 Preset；未提供的 Gateway、關聯設備或更新日期不會自行推測。IP 網段比對僅在存在有效 CIDR/Mask 的記錄上執行。</div>
       </div>
     </section>
 
@@ -5246,21 +5251,103 @@ function jumpCliSection(term){
 }
 function toggleAuditPanel(){const p=$('configAuditPanel');if(p)p.classList.toggle('show')}
 
+// Smart Lookup 2.0: read-only indexed search of the original embedded data.
+let smartIndex=null,smartHits=[],smartFilter='all',smartPage=0,smartSelected=null,smartLookupTimer=null;
+const SMART_PAGE_SIZE=35;
+function buildSmartIndex(){
+  if(smartIndex)return smartIndex;
+  const index=[];let id=0;
+  const add=(type,source,title,fields,open,site)=>{
+    const entries=Object.entries(fields||{}).filter(([k,v])=>v!==null&&v!==undefined&&String(v).trim()!=='');
+    const flat=entries.map(([k,v])=>String(k)+' '+String(v)).join(' ').toLowerCase();
+    const ips=entries.flatMap(([key,val])=>String(val).match(/(?:\d{1,3}\.){3}\d{1,3}(?:\/\d{1,2})?/g)||[]);
+    index.push({id:id++,type,source,title:String(title||'-'),fields:entries,flat,ips,open,site:String(site||'').trim()});
+  };
+  Object.entries(DATA.devices||{}).forEach(([dk,d])=>(d.presets||[]).forEach((r,i)=>add('device','Configuration Presets',`${r._rowName||'Preset'} · ${d.label}`,r,()=>openPresetFromSite(dk,i),r._rowName)));
+  Object.entries(IP_PLANNING?.regions||{}).forEach(([region,rows])=>rows.forEach(r=>add('site',`IP 規劃 · ${region}`,`${r['車廂號碼']||r['單位']||'-'} · ${region}`,r,()=>openPlanningSearch('reference',String($('siteLookupInput')?.value||'')),r['車廂號碼'])));
+  (IP_PLANNING?.phones||[]).forEach(r=>add('phone','Phone Planning',`${r['車廂編號']||'-'} · ${r['電話號碼']||'-'}`,r,()=>openPhoneSearch(String($('siteLookupInput')?.value||'')),r['車廂編號']));
+  // TEST layout: CN and DWBK hold separate geographic groups rather than flat rows.
+  Object.entries(PLANNING?.cn||{}).forEach(([region,d])=>{
+    const heads=Array.isArray(d.headers)?d.headers:[];
+    (d.rows||[]).forEach((r,i)=>{
+      const fields={區域:region};r.forEach((v,n)=>{if(v!==''&&v!==null&&v!==undefined)fields[`${heads[n]||'欄位 '+(n+1)}${fields[heads[n]||'欄位 '+(n+1)]!==undefined?' #'+(n+1):''}`]=v});
+      add('matrix',`CN 規劃 · ${region}`,r.filter(v=>String(v??'').trim()).slice(0,3).join(' · ')||`CN #${i+1}`,fields,()=>openMatrixSearch('cn',String($('siteLookupInput')?.value||''),region),null);
+    });
+  });
+  Object.entries(PLANNING?.dwbk||{}).forEach(([region,d])=>{
+    [['baseRows',d.baseHeaders],['mappingRows',d.mappingHeaders]].forEach(([field,heads])=>{
+      (d[field]||[]).forEach((r,i)=>{
+        const fields={區域:region,資料表:field==='baseRows'?'基礎網路':'DK 對照'};
+        r.forEach((v,n)=>{if(v!==''&&v!==null&&v!==undefined)fields[`${heads?.[n]||'欄位 '+(n+1)}${fields[heads?.[n]||'欄位 '+(n+1)]!==undefined?' #'+(n+1):''}`]=v});
+        add('matrix',`DWBK 規劃 · ${region}`,r.filter(v=>String(v??'').trim()).slice(0,3).join(' · ')||`DWBK #${i+1}`,fields,()=>openMatrixSearch('dwbk',String($('siteLookupInput')?.value||''),region),null);
+      });
+    });
+  });
+  smartIndex=index;return index;
+}
+function scheduleSmartLookup(){clearTimeout(smartLookupTimer);smartLookupTimer=setTimeout(()=>renderSiteLookup(),180)}
+function clearSmartLookup(){$('siteLookupInput').value='';smartSelected=null;renderSiteLookup()}
+function setSmartFilter(t){smartFilter=t;smartPage=0;smartSelected=null;renderSmartResults()}
+function smartMatch(r,q){
+  const exact=r.fields.some(([k,v])=>String(v).trim().toLowerCase()===q)||r.title.toLowerCase()===q;
+  const partial=r.flat.includes(q)||r.title.toLowerCase().includes(q)||r.source.toLowerCase().includes(q);
+  let subnet=false;
+  const target=parseIpv4Cidr(q);
+  if(!target.error&&!target.hasPrefix){
+    subnet=r.fields.some(([k,v],i,all)=>{
+      if(!/(?:\d{1,3}\.){3}\d{1,3}/.test(String(v)))return false;
+      let parsed=parseIpv4Cidr(String(v).trim());
+      if(parsed.error||!parsed.hasPrefix){
+        const mask=all.find(([mk,mv])=>/mask|subnet|遮罩/i.test(mk)&&/^(?:\d{1,3}\.){3}\d{1,3}$/.test(String(mv).trim()));
+        if(mask){const num=ipv4ToInt(String(mask[1]).trim());if(num!==null){const bits=(num>>>0).toString(2);if(/^1*0*$/.test(bits)){const pref=bits.replace(/0/g,'').length;parsed=parseIpv4Cidr(String(v).trim()+'/'+pref)}}}
+      }
+      return !parsed.error&&parsed.hasPrefix&&parsed.prefix<32&&target.ipInt>=parsed.networkInt&&target.ipInt<=parsed.broadcastInt;
+    });
+  }
+  return exact?3:partial?2:subnet?1:0;
+}
 function renderSiteLookup(){
-  const q=String($('siteLookupInput')?.value||'').trim().toLowerCase();const root=$('siteLookupResults'),status=$('siteLookupStatus');if(!root)return;
-  if(!q){root.innerHTML='<div class="card" style="padding:18px"><div class="note">輸入 Site、Hostname、IP 或電話開始跨資料搜尋。</div></div>';if(status)status.textContent='';return}
-  const groups=[];
-  const presets=[];Object.entries(DATA.devices||{}).forEach(([dk,d])=>(d.presets||[]).forEach((r,idx)=>{if(Object.values(r).join(' ').toLowerCase().includes(q))presets.push({dk,d,r,idx})}));
-  if(presets.length)groups.push(['Configuration Presets',presets.slice(0,30).map(x=>({title:`${x.r._rowName} · ${x.d.label}`,sub:`${x.r.group||'-'}｜${Object.entries(x.r).filter(([k,v])=>!k.startsWith('_')&&v).slice(0,4).map(([k,v])=>`${k}: ${v}`).join('｜')}`,action:`openPresetFromSite('${x.dk}',${x.idx})`,label:'開啟 Config'}))]);
-  const regionHits=[];Object.entries(IP_PLANNING?.regions||{}).forEach(([region,rows])=>rows.forEach(r=>{if(Object.values(r).join(' ').toLowerCase().includes(q))regionHits.push({region,r})}));
-  if(regionHits.length)groups.push(['IP 規劃',regionHits.slice(0,30).map(x=>({title:`${x.r['車廂號碼']||x.r['單位']||'-'} · ${x.region}`,sub:`${x.r['單位']||'-'}｜IP ${x.r['IP規劃']||'-'}｜Phone ${x.r['電話號碼']||'-'}｜AP ${x.r['AP']||'-'}`,action:`openPlanningSearch('reference','${jsQuote(String($('siteLookupInput').value))}')`,label:'開啟規劃'}))]);
-  const phoneHits=(IP_PLANNING?.phones||[]).filter(r=>Object.values(r).join(' ').toLowerCase().includes(q)).slice(0,30);
-  if(phoneHits.length)groups.push(['電話規劃',phoneHits.map(r=>({title:`${r['車廂編號']||'-'} · ${r['電話號碼']||'-'}`,sub:`席位：${r['席位']||'-'}`,action:`openPhoneSearch('${jsQuote(String($('siteLookupInput').value))}')`,label:'電話表'}))]);
-
-  Object.entries(PLANNING?.cn||{}).forEach(([region,d])=>{const hits=(d.rows||[]).filter(r=>r.some(v=>String(v??'').toLowerCase().includes(q))).slice(0,20);if(hits.length)groups.push([`CN 規劃 · ${region}`,hits.map(r=>({title:r.filter(v=>String(v??'').trim()).slice(0,3).join(' · '),sub:r.filter(v=>String(v??'').trim()).slice(3,8).join('｜'),action:`openMatrixSearch('cn','${jsQuote(String($('siteLookupInput').value))}','${jsQuote(region)}')`,label:'開啟規劃'}))])});
-  Object.entries(PLANNING?.dwbk||{}).forEach(([region,d])=>{const rows=[...(d.baseRows||[]),...(d.mappingRows||[])];const hits=rows.filter(r=>r.some(v=>String(v??'').toLowerCase().includes(q))).slice(0,20);if(hits.length)groups.push([`DWBK 規劃 · ${region}`,hits.map(r=>({title:r.filter(v=>String(v??'').trim()).slice(0,3).join(' · '),sub:(d.title||'DWBK TEST Planning'),action:`openMatrixSearch('dwbk','${jsQuote(String($('siteLookupInput').value))}','${jsQuote(region)}')`,label:'開啟規劃'}))])});
-  const total=groups.reduce((n,g)=>n+g[1].length,0);if(status){status.textContent=`找到 ${total} 筆可顯示的關聯結果`;status.className=total?'tool-status ok':'tool-status warn'}
-  root.innerHTML=groups.length?groups.map(([name,rows])=>`<div class="lookup-group"><div class="lookup-group-head"><b>${esc(name)}</b><span>${rows.length} 筆</span></div>${rows.map(r=>`<div class="lookup-row"><b>${esc(r.title)}</b><small>${esc(r.sub||'')}</small><button class="btn ghost" onclick="${r.action}">${esc(r.label)}</button></div>`).join('')}</div>`).join(''):'<div class="card" style="padding:18px"><div class="tool-alert warn">沒有找到符合的內建 TEST 資料。</div></div>';
+  const q=String($('siteLookupInput')?.value||'').trim().toLowerCase(),st=$('siteLookupStatus');
+  const records=buildSmartIndex();
+  if(!q){smartHits=[];smartSelected=null;if(st)st.textContent='輸入關鍵字開始查詢。';renderSmartResults();return}
+  smartHits=records.map(r=>({r,score:smartMatch(r,q)})).filter(x=>x.score>0).sort((a,b)=>b.score-a.score||a.r.id-b.r.id).map(x=>x.r);
+  smartPage=0;
+  if(!smartHits.some(r=>r.id===smartSelected))smartSelected=smartHits[0]?.id??null;
+  if(st){st.textContent=`共找到 ${smartHits.length.toLocaleString()} 筆（完整筆數，不截斷） · 比對 ${records.length.toLocaleString()} 筆內建資料`;st.className='tool-status '+(smartHits.length?'ok':'warn')}
+  renderSmartResults();
+}
+function smartFiltered(){return smartFilter==='all'?smartHits:smartHits.filter(r=>r.type===smartFilter)}
+function renderSmartResults(){
+  const counts={all:smartHits.length,site:0,phone:0,device:0,matrix:0};smartHits.forEach(r=>counts[r.type]++);
+  Object.entries(counts).forEach(([k,n])=>{const el=$('smartCount-'+k);if(el)el.textContent=n?`(${n})`:''});
+  document.querySelectorAll('#smartLookupFilters .smart-filter').forEach(b=>b.classList.toggle('active',b.dataset.type===smartFilter));
+  const hits=smartFiltered(),totalPages=Math.max(1,Math.ceil(hits.length/SMART_PAGE_SIZE));smartPage=Math.min(smartPage,totalPages-1);
+  const page=hits.slice(smartPage*SMART_PAGE_SIZE,(smartPage+1)*SMART_PAGE_SIZE);
+  $('siteLookupResults').innerHTML=page.length?page.map(r=>`<button type="button" class="smart-hit-row ${r.id===smartSelected?'active':''}" onclick="selectSmartHit(${r.id})"><span class="smart-type">${esc(r.source)}</span><span class="smart-result-content"><b>${esc(r.title)}</b><small>${esc(r.fields.slice(0,4).map(([k,v])=>k+': '+String(v)).join(' ｜ '))}</small></span></button>`).join(''):'<div class="smart-empty">沒有符合條件的結果。請嘗試其他關鍵字或分類。</div>';
+  $('smartShownCount').textContent=`${hits.length} 筆`;$('smartPageInfo').textContent=`${smartPage+1} / ${totalPages}`;$('smartPrev').disabled=smartPage===0;$('smartNext').disabled=smartPage>=totalPages-1;
+  if(!hits.some(r=>r.id===smartSelected))smartSelected=hits[0]?.id??null;
+  showSmartDetail();
+}
+function changeSmartPage(step){smartPage+=step;smartSelected=null;renderSmartResults()}
+function selectSmartHit(id){smartSelected=id;renderSmartResults()}
+function smartCopy(value){if(navigator.clipboard&&window.isSecureContext)navigator.clipboard.writeText(String(value)).catch(()=>smartFallbackCopy(value));else smartFallbackCopy(value)}
+function smartFallbackCopy(value){const t=document.createElement('textarea');t.value=String(value);t.style.position='fixed';t.style.opacity='0';document.body.appendChild(t);t.select();document.execCommand('copy');t.remove()}
+function copySmartField(i){const r=smartIndex?.find(x=>x.id===smartSelected);if(r&&r.fields[i])smartCopy(r.fields[i][1])}
+function copySmartDetail(){const r=smartIndex?.find(x=>x.id===smartSelected);if(r)smartCopy([r.title,`來源: ${r.source}`,...r.fields.map(([k,v])=>`${k}: ${v}`)].join('\n'))}
+function copySmartResultSet(){smartCopy(smartFiltered().map(r=>`${r.source}\t${r.title}\t${r.fields.map(([k,v])=>k+':'+v).join(' | ')}`).join('\n'))}
+function openSmartSelected(){const r=smartIndex?.find(x=>x.id===smartSelected);if(r&&r.open)r.open()}
+function showSmartDetail(){
+ const el=$('smartLookupDetail'),r=smartIndex?.find(x=>x.id===smartSelected);
+ if(!r){el.innerHTML='<div class="smart-empty">選擇查詢結果即可查看完整資料。</div>';$('smartDetailSource').textContent='內建來源';return}
+ $('smartDetailSource').textContent=r.source;
+ let html=`<h3 class="smart-detail-title">${esc(r.title)}</h3><div class="smart-detail-sub">來源：${esc(r.source)} · 唯讀原始記錄</div><div class="smart-detail-actions"><button class="btn primary" onclick="openSmartSelected()">開啟原始規劃 / Config</button><button class="btn ghost" onclick="copySmartDetail()">複製整筆資料</button></div>`;
+ html+=`<div class="smart-detail-grid">${r.fields.map(([k,v],i)=>`<div class="smart-kv"><small>${esc(k)}</small><button class="smart-val smart-copy" title="複製欄位內容" onclick="copySmartField(${i})">${esc(v)}</button></div>`).join('')}</div>`;
+ const site=r.site||String($('siteLookupInput')?.value||'').trim();
+ if(site&&/^[a-z]{1,8}[- ]?\d{1,6}$/i.test(site)){
+   const linked=buildSmartIndex().filter(x=>x.id!==r.id&&x.type!== 'matrix'&&(x.site.toLowerCase()===site.toLowerCase()||x.fields.some(([k,v])=>/(site|車廂|hostname)/i.test(k)&&String(v).trim().toLowerCase()===site.toLowerCase())));
+   html+=`<div class="smart-overview"><h4>Site Overview · ${esc(site)}</h4><div class="smart-detail-sub">同一站點的明確欄位匹配（不以模糊文字推測設備關係）</div><div class="smart-overview-list">${linked.length?linked.slice(0,35).map(x=>`<div class="smart-overview-item"><b>${esc(x.source)}</b><span>${esc(x.title)}</span></div>`).join(''):'<div class="smart-overview-item">目前找不到其他具有相同 Site 識別值的內建紀錄。</div>'}</div>${linked.length>35?`<div class="tool-note">另外 ${linked.length-35} 筆未展開；可直接搜尋 ${esc(site)} 查看。</div>`:''}</div>`;
+ }
+ el.innerHTML=html;
 }
 function jsQuote(s){return String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/\r?\n/g,' ')}
 function openPresetFromSite(deviceKey,idx){selectDevice(deviceKey);$('groupSelect').value='全部';$('presetSearch').value='';renderPresetSelect();$('presetSelect').value=String(idx);applySelectedPreset();switchView('single')}
