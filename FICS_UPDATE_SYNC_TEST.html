@@ -1,0 +1,715 @@
+<!DOCTYPE html><html lang="zh-TW"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>CN 車廂更新進度管理</title><style>
+:root{--navy:#173b70;--blue:#244f86;--border:#dce5ef;--muted:#6c8099;--bg:#f4f7fb;--ink:#102b53;--green:#147d4d;--red:#a92c35}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px "Segoe UI","Microsoft JhengHei",Arial,sans-serif}.top{background:linear-gradient(115deg,#123263,#1b4279 54%,#315c96);color:#fff;padding:19px max(18px,calc((100vw - 1560px)/2));display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}.top h1{font-size:23px;margin:0 0 6px;letter-spacing:.2px}.top p{margin:0;color:#dbe6f7;font-size:12px}.top-actions,.tools,.buttons{display:flex;flex-wrap:wrap;gap:8px;align-items:center}button{cursor:pointer;font:inherit;border:1px solid #c8d6e7;border-radius:9px;background:#fff;color:#214675;padding:9px 13px;font-weight:650}button:hover{background:#eaf2fc}.top button{background:rgba(255,255,255,.12);color:#fff;border-color:rgba(255,255,255,.25)}.top button:hover{background:rgba(255,255,255,.22)}.container{max-width:1600px;margin:0 auto;padding:14px 14px 42px}.stats{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}.stat{background:#fff;border:1px solid var(--border);border-radius:12px;padding:12px 18px;min-width:150px;box-shadow:0 2px 8px #173b7008}.stat span{color:var(--muted);font-size:12px}.stat strong{display:block;font-size:27px;margin-top:2px;font-variant-numeric:tabular-nums}.stat.green strong{color:var(--green)}.stat.orange strong{color:#a16b12}.panel{border-radius:14px;background:#fff;border:1px solid var(--border);box-shadow:0 4px 18px #173b7008;overflow:hidden}.bar{padding:12px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;border-bottom:1px solid var(--border)}input,select{font:inherit;border:1px solid #cfdbea;border-radius:8px;background:#fff;color:var(--ink);padding:8px 9px;min-width:0}input:focus,select:focus{outline:2px solid #b4d3f3}#search{width:260px;max-width:100%}.note{font-size:12px;color:var(--muted)}.scroll{overflow:auto;max-height:72vh}table{border-collapse:separate;border-spacing:0;width:100%;min-width:720px}thead th{position:sticky;top:0;z-index:3;background:#1d477f;color:#fff;padding:12px 9px;text-align:left;font-size:13px;white-space:nowrap;border-right:1px solid #ffffff20}thead th:nth-child(1){width:44px}thead th:nth-child(2){width:126px}thead th:nth-child(3){width:162px}thead th:nth-child(4){width:152px}thead th:last-child{width:104px}tbody tr:nth-child(even){background:#f9fbfe}tbody tr:hover{background:#edf5fd}td{padding:7px 8px;border-bottom:1px solid #e6edf5}td.num{color:#8495ac;text-align:center;font-size:12px}td.car{font-size:15px;font-weight:800;color:#123d74;white-space:nowrap}td select,td input{width:100%;height:36px;font-size:12px}td.status{text-align:center;min-width:125px}.state{width:112px;max-width:100%;padding:7px 8px;border-radius:10px;font-size:12px;font-weight:800;border:1px solid #c9d9e7;background:#f1f5f9;color:#72839a}.state.done{background:#eaf8f0;border-color:#86d2a7;color:#126a40}.state.no{background:#fff0f1;border-color:#f1a1a8;color:#a91c2a}.state:hover{filter:brightness(.98)}.project-head{display:flex;justify-content:space-between;align-items:center;gap:5px}.project-head button{padding:2px 6px;color:#ecf2fb;background:transparent;border:0;font-size:17px}.project-head button:hover{background:#ffffff25}.addcol{background:#e9f2fc;color:#214675}.footer-note{padding:10px 13px;color:var(--muted);font-size:12px;border-top:1px solid var(--border)}.toast{position:fixed;bottom:20px;right:20px;background:#194f39;color:#fff;padding:11px 16px;border-radius:9px;box-shadow:0 5px 20px #0003;display:none;z-index:9}.hide{display:none!important}button:focus-visible{outline:3px solid #8cb8ea}@media(max-width:750px){.top{padding:17px}.top h1{font-size:19px}.container{padding:9px}.stat{min-width:95px;flex:1;padding:10px}.stat strong{font-size:23px}.bar{align-items:stretch}.tools{width:100%}#search{flex:1}.scroll{max-height:none}.top-actions{width:100%}.top button{flex:1}.note{line-height:1.6}}
+
+/* 73G-inspired compact layout */
+:root{--bg:#f4f7fb}
+body{font-size:13px;background:#f4f7fb}
+.top{padding:14px max(16px,calc((100vw - 1620px)/2));gap:10px}
+.top h1{font-size:21px;margin-bottom:4px}.top p{font-size:11px}
+.top button{padding:8px 11px;font-size:12px}
+.container{max-width:1700px;padding:11px 12px 28px}
+.stats{gap:8px;margin-bottom:10px}.stat{min-width:145px;border-radius:10px;padding:9px 14px}.stat strong{font-size:23px}
+.panel{border-radius:12px}.bar{padding:9px 11px}.bar button{padding:8px 11px}
+.scroll{max-height:72vh;overflow:auto}
+table{table-layout:fixed;width:max-content;min-width:100%;border-spacing:0}
+thead th{font-size:12.5px;padding:10px 8px;height:48px;background:#204b83}
+thead th:nth-child(1){width:45px}thead th:nth-child(2){width:115px}thead th:nth-child(3){width:155px}thead th:nth-child(4){width:140px}
+thead th:last-child{width:120px}
+thead th.project-column{width:142px;min-width:142px;max-width:142px}
+td{padding:5px 7px;height:51px}td.car{font-size:14px}
+td select,td input{height:34px;font-size:12px;padding:6px 7px}
+td.status{min-width:0;width:142px;padding:5px 6px}
+.state{width:106px;max-width:100%;font-size:11.5px;border-radius:9px;padding:7px 5px;white-space:nowrap}
+.project-head{gap:2px}.project-head span{white-space:nowrap;text-overflow:ellipsis;overflow:hidden;min-width:0}
+.project-head button{flex-shrink:0}
+.note,.footer-note{font-size:11.5px}
+#search{width:248px}
+@media(max-width:750px){table{min-width:0}.scroll{max-height:75vh}.top{padding:14px}.stats{gap:6px}.stat{min-width:100px}.stat strong{font-size:21px}thead th.project-column{width:124px;min-width:124px;max-width:124px}td.status{width:124px}.state{width:100px}}
+
+/* 73G layout alignment / readability revision */
+:root{--bg:#f4f7fb;--ink:#102c55;--border:#dce5f0}
+body{font-family:"Segoe UI","Microsoft JhengHei UI","Microsoft JhengHei",Arial,sans-serif!important;color:var(--ink);font-size:13px}
+.top{background:linear-gradient(110deg,#14366c,#204c86);padding:15px 20px;min-height:81px;box-shadow:0 4px 16px #173b7017}
+.top h1{font-size:22px;font-weight:850;margin-bottom:7px;letter-spacing:.12px}
+.top .en-sub{font-size:12px;font-weight:450;color:#cedbf0;margin-left:10px}
+.top p{font-size:12px;color:#d4e0f0;font-weight:500}
+.top-actions{gap:7px}.top button{font-size:12px;font-weight:700;padding:9px 12px;border-radius:10px}
+.container{max-width:1850px;margin:auto;padding:10px 13px 32px}
+.stats{align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+.stat{min-width:160px;min-height:70px;border:1px solid #d8e3f0;border-radius:13px;background:#fff;padding:10px 14px;box-shadow:0 2px 6px #1c457609}
+.stat span{font-size:11px;color:#637c9c;font-weight:650;white-space:nowrap}
+.stat strong{font-size:25px;line-height:1.1;color:#123e76;font-weight:850;margin-top:5px}
+.stat.green strong{color:#137449}.stat.orange strong{color:#a46c0e}
+.panel{border-radius:13px;border:1px solid #d8e3ee;box-shadow:0 3px 17px #18396a08}
+.bar{padding:10px 12px;gap:10px;align-items:center}
+.tools{gap:8px;flex-wrap:wrap}
+.bar select,.bar input{height:42px;border-radius:10px;background:#fff;border:1px solid #cfdbeb;font-size:13px;font-weight:600;color:#163c6b;padding:7px 12px}
+#search{width:345px;max-width:100%;font-weight:500}
+#unitFilter{width:215px;max-width:100%;font-weight:750}
+#filter{width:190px;max-width:100%}
+.bar button{height:42px;padding:0 14px;border-radius:10px;font-weight:700}
+.note{font-size:11px;line-height:1.4;color:#7187a5;font-weight:550}
+.scroll{overflow:auto;max-height:calc(100vh - 300px);min-height:260px}
+table{table-layout:fixed;border-spacing:0;width:max-content;min-width:100%;}
+thead th{height:61px;position:sticky;top:0;z-index:3;background:#204c83;color:white;font-size:13px!important;font-weight:800!important;line-height:1.2;padding:10px 10px;border-right:1px solid #ffffff18;text-align:left}
+thead th small{display:block;color:#d2def0;font-size:10px;font-weight:500;margin-top:5px}
+thead th:nth-child(1){width:48px;text-align:center}
+thead th:nth-child(2){width:130px}
+thead th:nth-child(3){width:165px}
+thead th:nth-child(4){width:145px}
+thead th.project-column{width:138px!important;min-width:138px!important;max-width:138px!important}
+thead th:last-child{width:132px}
+.project-head{justify-content:space-between}.project-head span{font-size:12.5px;font-weight:800}.project-head span small{display:block;font-size:9.5px;font-weight:450;color:#c5d5eb;margin-top:5px}
+.project-head button{font-size:17px;padding:1px 4px;opacity:.8}
+tbody tr:nth-child(odd){background:#fff}tbody tr:nth-child(even){background:#f8fafd}tbody tr:hover{background:#edf4fc}
+td{height:58px;padding:7px 9px;border-bottom:1px solid #e5ebf4;font-size:12px}
+td.num{text-align:center;color:#8399b6;font-size:12px;font-weight:650}
+td select,td input{height:37px;border-radius:10px;background:#fff;border:1px solid #cfdaea;color:#173e6f;font-size:12.5px;font-weight:600;padding:6px 9px}
+td.car{white-space:nowrap;color:#123e77;font-size:14px;font-weight:850}
+td.car b{display:inline-block;background:#1e477f;color:#fff;font-size:13px;font-weight:850;border-radius:8px;padding:9px 11px;letter-spacing:.1px}
+td.status{min-width:0!important;width:138px!important;text-align:center;padding:6px 8px}
+.state{display:inline-flex;align-items:center;justify-content:center;min-height:34px;width:108px!important;font-size:11.5px;font-weight:750;line-height:1.15;border-radius:10px;padding:6px 8px;color:#627d9b;background:#f0f5fa;border:1px solid #c9d9ea}
+.state.done{color:#116f46;background:#eaf7ef;border-color:#9dd8b6}.state.no{color:#ae2f3d;background:#fff0f1;border-color:#edbbc0}
+.footer-note{font-size:11px;color:#7b8fa9;padding:8px 12px}
+@media(max-width:1050px){.note{width:100%}.scroll{max-height:70vh}}
+@media(max-width:680px){.top{padding:14px}.top h1{font-size:19px}.top .en-sub{display:block;margin:3px 0}.container{padding:8px}.bar{padding:9px}.tools{display:grid;grid-template-columns:1fr 1fr;width:100%}#search{width:100%;grid-column:1/-1}#unitFilter,#filter{width:100%}.tools #addCar{grid-column:1/-1}.stats{display:grid;grid-template-columns:1fr 1fr}.stat{min-width:0;min-height:64px}.stat strong{font-size:23px}.scroll{max-height:68vh}thead th.project-column{width:128px!important;min-width:128px!important;max-width:128px!important}td.status{width:128px!important}}
+
+/* Fixed-size columns and high-contrast states (field-use readability) */
+#progressTable{table-layout:fixed!important;min-width:0!important;max-width:none!important;border-collapse:separate;border-spacing:0}
+#progressTable th,#progressTable td{box-sizing:border-box!important;overflow:hidden;text-overflow:ellipsis}
+#progressTable thead th:nth-child(1),#progressTable tbody td:nth-child(1){width:48px!important;min-width:48px!important;max-width:48px!important}
+#progressTable thead th:nth-child(2),#progressTable tbody td:nth-child(2){width:132px!important;min-width:132px!important;max-width:132px!important}
+#progressTable thead th:nth-child(3),#progressTable tbody td:nth-child(3){width:184px!important;min-width:184px!important;max-width:184px!important}
+#progressTable thead th:nth-child(4),#progressTable tbody td:nth-child(4){width:154px!important;min-width:154px!important;max-width:154px!important}
+#progressTable thead th.project-column,#progressTable td.status:not(:last-child){width:145px!important;min-width:145px!important;max-width:145px!important}
+#progressTable thead th:last-child,#progressTable tbody td:last-child{width:152px!important;min-width:152px!important;max-width:152px!important}
+#progressTable .state{width:122px!important;min-height:37px!important;display:inline-flex!important;gap:7px;align-items:center;justify-content:center;padding:6px 7px!important;border:1px solid #b9c9db!important;background:#edf2f8!important;color:#526986!important;font-size:12px!important;font-weight:800!important;line-height:1!important;border-radius:9px;box-shadow:none}
+#progressTable .state-icon{display:inline-grid;place-items:center;flex:0 0 21px;width:21px;height:21px;border-radius:6px;background:#d7e2ef;color:#526986;font-family:Arial,sans-serif;font-size:15px;font-weight:900;line-height:1}
+#progressTable .state.done{background:#15804d!important;border-color:#15804d!important;color:#fff!important;box-shadow:0 2px 5px #1469431c}
+#progressTable .state.done .state-icon{background:#fff;color:#117343}
+#progressTable .state.no{background:#b72e3b!important;border-color:#b72e3b!important;color:#fff!important;box-shadow:0 2px 5px #9c1c2b20}
+#progressTable .state.no .state-icon{background:#fff;color:#a71d30}
+#progressTable .state.overall{width:130px!important;font-size:11.5px!important;cursor:default}
+#progressTable button.state:hover{filter:brightness(.93)!important;transform:translateY(-1px)}
+#progressTable td.status{padding:6px 7px!important;text-align:center}
+#progressTable td select,#progressTable td input{width:100%;height:36px}
+#progressTable tbody td.car b{white-space:nowrap;padding:8px 7px;font-size:13px}
+@media(max-width:680px){#progressTable{min-width:0!important}#progressTable .state{width:122px!important}}
+
+/* 73G reference: clean rounded-rectangle controls, consistent corners */
+.bar{background:#fff;gap:10px;padding:12px 14px;border-bottom:1px solid #dce6f2}
+.tools{display:flex;gap:10px;align-items:center}
+.bar #search,.bar #unitFilter,.bar #filter,.bar #addCar{
+  height:48px!important;border:1px solid #d5e1ef!important;
+  border-radius:14px!important;background:#fff!important;
+  box-shadow:none!important;color:#173d70!important;
+  font:650 14px "Segoe UI","Microsoft JhengHei",sans-serif!important;
+  outline-offset:2px;
+}
+.bar #search{width:350px;min-width:220px;padding:0 17px!important;font-weight:500!important}
+.bar #unitFilter{width:230px;padding:0 16px!important}
+.bar #filter{width:210px;padding:0 16px!important}
+.bar #addCar{padding:0 16px!important;white-space:nowrap}
+.bar #search:focus,.bar #unitFilter:focus,.bar #filter:focus{border-color:#8cb2db!important;outline:2px solid #deebfb}
+#progressTable td input,#progressTable td select{border-radius:12px!important}
+#progressTable .state{border-radius:12px!important}
+@media(max-width:760px){
+  .tools{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);width:100%}
+  .bar #search{grid-column:1/-1;width:100%;min-width:0}
+  .bar #unitFilter,.bar #filter{width:100%}
+  .bar #addCar{grid-column:1/-1}
+}
+
+/* 2026-10 UI：固定識別欄、剩餘空間分配給更新欄 */
+.container{max-width:none;width:100%;padding:12px 16px 24px}
+.stats{gap:9px}.stat{min-width:176px;min-height:69px}
+.scroll{width:100%;overflow:auto;max-height:calc(100vh - 285px);scrollbar-gutter:stable}
+#progressTable{border-spacing:0;table-layout:fixed!important;min-width:100%!important}
+#progressTable thead th{height:56px;font-size:13px!important}
+#progressTable tbody td{height:56px}
+#progressTable .state{width:min(132px,calc(100% - 4px))!important}
+#progressTable .state.overall{width:min(142px,calc(100% - 4px))!important}
+#progressTable .project-column{width:auto!important;min-width:145px!important;max-width:none!important}
+#progressTable td.status:not(:last-child){width:auto!important;min-width:145px!important;max-width:none!important}
+#progressTable td:nth-child(1),#progressTable th:nth-child(1){width:48px!important}
+#progressTable td:nth-child(2),#progressTable th:nth-child(2){width:132px!important}
+#progressTable td:nth-child(3),#progressTable th:nth-child(3){width:184px!important}
+#progressTable td:nth-child(4),#progressTable th:nth-child(4){width:154px!important}
+#progressTable th:last-child,#progressTable td:last-child{width:auto!important;min-width:152px!important;max-width:none!important}
+#progressTable .vehicle-select{font-size:12.5px;font-weight:700;background:#fff;color:#163d71;cursor:pointer}
+#progressTable .state.done{background:#12804b!important;color:#fff!important}
+#progressTable .state.no{background:#b52b3b!important;color:#fff!important}
+#progressTable .car b{border-radius:9px}
+@media(max-width:750px){.container{padding:9px}.scroll{max-height:70vh}#progressTable{min-width:0!important}}
+
+/* ===== CN 操作表格 UI 最終整理：三區色彩、精準對齊與固定基本欄 ===== */
+:root{--identity:#193e73;--update:#2c598d;--overall:#17644f}
+.top{background:linear-gradient(110deg,#15386e,#244e84)}
+.stats .stat{min-height:72px}
+.scroll{max-height:calc(100vh - 292px);overflow:auto;scrollbar-gutter:stable;background:#fff}
+#progressTable{table-layout:fixed!important;border-collapse:separate;border-spacing:0;width:max-content;min-width:100%!important}
+#progressTable thead th{height:64px!important;padding:9px 12px!important;vertical-align:middle!important;border-right:1px solid rgba(255,255,255,.13)!important;line-height:1.2!important;font-size:15px!important;font-weight:700!important}
+#progressTable thead th.identity-head{background:var(--identity)!important}
+#progressTable thead th.project-column{background:var(--update)!important;min-width:0!important;max-width:none!important;width:auto!important}
+#progressTable thead th.overall-head{background:var(--overall)!important;min-width:0!important;max-width:none!important;width:auto!important}
+#progressTable thead th small{font-size:11px!important;line-height:1.1!important;font-weight:500!important;margin-top:5px!important;opacity:.9}
+#progressTable thead th:nth-child(1){text-align:center!important}
+#progressTable tbody td{height:62px!important;padding:7px 10px!important;vertical-align:middle!important}
+#progressTable tbody td:nth-child(2){text-align:center}
+#progressTable tbody td:nth-child(3){text-align:left}
+#progressTable tbody td:nth-child(4){text-align:center}
+#progressTable tbody td.status{min-width:0!important;width:auto!important;max-width:none!important;text-align:center!important;padding:7px 6px!important}
+#progressTable td select,#progressTable td input{height:38px!important;font-size:14px!important;font-weight:600!important;border-radius:9px!important}
+#progressTable td.car b{font-size:14px!important;font-weight:800!important;letter-spacing:.12px;padding:9px 10px!important}
+#progressTable .state{display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:7px!important;width:124px!important;max-width:calc(100% - 8px)!important;height:36px!important;padding:5px 8px!important;font-size:13px!important;font-weight:750!important;border-radius:10px!important;white-space:nowrap!important;box-shadow:none!important}
+#progressTable .state.done{background:#137d50!important;border:1px solid #137d50!important;color:white!important}
+#progressTable .state.no{background:#b52d3e!important;border:1px solid #b52d3e!important;color:white!important}
+#progressTable .state:not(.done):not(.no){background:#ecf2f8!important;border:1px solid #c9d7e7!important;color:#607894!important}
+#progressTable .state-icon{display:inline-grid!important;place-items:center!important;width:21px!important;height:21px!important;flex:0 0 21px!important;border-radius:5px!important;line-height:1!important;font-size:15px!important;font-weight:900!important}
+#progressTable .state.done .state-icon{color:#137d50!important;background:#fff!important}
+#progressTable .state.no .state-icon{color:#b52d3e!important;background:#fff!important}
+#progressTable .state.overall{width:136px!important;max-width:calc(100% - 8px)!important}
+#progressTable .project-head{display:flex!important;align-items:center!important;gap:7px!important;width:100%;min-width:0}
+#progressTable .project-head .project-title{min-width:0;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:center;font-size:15px!important;font-weight:700!important}
+#progressTable .project-head .project-title small{display:block!important;text-overflow:ellipsis;overflow:hidden;white-space:nowrap;font-size:11px!important;font-weight:500!important}
+#progressTable .project-head button{width:25px;height:25px;flex:0 0 25px;display:grid;place-items:center;padding:0!important;border-radius:6px;font-size:16px!important;opacity:.75}
+#progressTable .project-head button:hover{background:#ffffff2b;opacity:1}
+#progressTable tbody tr:nth-child(odd){background:#fff!important}
+#progressTable tbody tr:nth-child(even){background:#f5f8fc!important}
+#progressTable tbody tr:hover{background:#eaf2fb!important}
+@media(max-width:760px){.scroll{max-height:70vh}.container{padding:8px}#progressTable thead th{font-size:13px!important}#progressTable .state{width:120px!important}}
+
+/* Commercial usability refinements — 2026 */
+:root{--ui-identity:#1b3f72;--ui-project:#2a5586;--ui-overall:#17624e}
+html{scrollbar-gutter:stable}body{background:#f1f5f9!important}
+.top{box-shadow:0 3px 14px #12326320!important}.top h1{line-height:1.35}.top button{min-height:38px;transition:background .15s,transform .15s}
+.top button:active,button:active{transform:scale(.985)}
+.container{max-width:none!important;padding:12px 18px 30px!important}
+.stats{gap:10px!important}.stat{min-width:172px!important;min-height:73px!important;flex:0 1 215px;box-shadow:0 2px 9px #18396a08!important}
+.panel{overflow:hidden!important;border-radius:14px!important}.bar{padding:12px 14px!important;background:#fff}
+.bar input,.bar select,.bar button{min-height:42px}
+.scroll{position:relative;overflow:auto!important;max-height:min(72vh,780px)!important;overscroll-behavior:contain;background:#fff}
+#progressTable{border-collapse:separate;border-spacing:0}
+#progressTable thead th{height:65px!important;vertical-align:middle!important;font-weight:750!important;letter-spacing:.08px;box-shadow:inset 0 -1px #ffffff1c}
+#progressTable thead th.identity-head{background:var(--ui-identity)!important;text-align:left!important}
+#progressTable thead th:nth-child(1){text-align:center!important}
+#progressTable thead th.project-column{background:var(--ui-project)!important}
+#progressTable thead th.overall-head{background:var(--ui-overall)!important;text-align:center!important}
+#progressTable thead th small{font-size:10.5px!important;opacity:.85!important}
+#progressTable tbody td{height:58px!important;border-bottom:1px solid #e4eaf2;vertical-align:middle!important}
+#progressTable td.status{text-align:center!important}
+#progressTable tbody tr:nth-child(even){background:#f5f8fc!important}
+#progressTable tbody tr:hover{background:#eaf3fc!important}
+#progressTable td select{height:38px!important;font-size:13px!important}
+#progressTable .project-head{position:relative;padding-right:26px;justify-content:center!important}
+#progressTable .project-title{display:block!important;overflow:hidden!important;text-overflow:ellipsis;text-align:center!important}
+#progressTable .project-head button{position:absolute;right:0;top:50%;transform:translateY(-50%);border-radius:7px;opacity:.65}
+#progressTable .project-head button:hover{opacity:1;background:#ffffff2a}
+#progressTable td.car b{padding:9px 11px!important;border-radius:9px!important}
+#progressTable .state{width:124px!important;height:37px!important;border-radius:9px!important;transition:filter .15s,box-shadow .15s}
+#progressTable button.state:hover{filter:brightness(.93);box-shadow:0 2px 7px #0002!important}
+#progressTable .state.done{background:#137b51!important;border-color:#137b51!important;color:#fff!important}
+#progressTable .state.no{background:#b32d41!important;border-color:#b32d41!important;color:#fff!important}
+#progressTable .state:not(.done):not(.no){background:#eaf0f6!important;border-color:#bfd0e3!important;color:#536b86!important}
+#progressTable .state-icon{font-size:17px!important;font-weight:900!important}
+#progressTable .state.done .state-icon,#progressTable .state.no .state-icon{width:23px!important;height:23px!important;line-height:23px!important;color:#137b51!important;background:white!important;border-radius:6px}
+#progressTable .state.no .state-icon{color:#b32d41!important}
+#progressTable .state.overall{cursor:default;width:145px!important;max-width:100%!important}
+#progressTable th:nth-child(-n+4),#progressTable td:nth-child(-n+4){position:sticky;background:inherit}
+#progressTable thead th:nth-child(1){left:0;z-index:7!important}
+#progressTable thead th:nth-child(2){left:55px;z-index:7!important}
+#progressTable thead th:nth-child(3){left:180px;z-index:7!important}
+#progressTable thead th:nth-child(4){left:365px;z-index:7!important;border-right:2px solid #9cb9da!important}
+#progressTable tbody td:nth-child(1){left:0;z-index:2;background:#fff}
+#progressTable tbody td:nth-child(2){left:55px;z-index:2;background:#fff}
+#progressTable tbody td:nth-child(3){left:180px;z-index:2;background:#fff}
+#progressTable tbody td:nth-child(4){left:365px;z-index:2;background:#fff;border-right:2px solid #d0dfef!important}
+#progressTable tbody tr:nth-child(even) td:nth-child(-n+4){background:#f5f8fc!important}
+#progressTable tbody tr:hover td:nth-child(-n+4){background:#eaf3fc!important}
+.footer-note{line-height:1.65}
+.save-indicator{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:700;color:#19734d;background:#effaf4;border:1px solid #c8e7d5;border-radius:9px;padding:8px 11px;white-space:nowrap}
+.save-indicator::before{content:'●';font-size:9px}
+.undo-bar{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#123a66;color:#fff;border-radius:12px;box-shadow:0 10px 30px #0004;padding:10px 13px;display:none;align-items:center;gap:14px;z-index:999}
+.undo-bar.show{display:flex}.undo-bar button{background:#fff;color:#123a66;border:0;padding:7px 12px}
+@media(max-width:760px){
+ .container{padding:9px!important}.top{padding:14px!important}.top-actions{gap:6px!important}.top-actions button{flex:1 1 auto}
+ .stats{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important}.stat{min-width:0!important;min-height:68px!important;padding:10px!important}
+ .bar .tools{display:grid!important;grid-template-columns:1fr 1fr!important;width:100%;gap:8px}.bar #search{grid-column:1/-1;width:100%!important}.bar #unitFilter,.bar #filter{width:100%!important}.bar #addCar{grid-column:1/-1}.bar .note{width:100%;line-height:1.5}
+ .scroll{max-height:none!important;overflow:visible!important;padding:9px;background:#f1f5f9}
+ #progressTable{display:block!important;min-width:0!important;width:100%!important;table-layout:auto!important}
+ #progressTable colgroup,#progressTable thead{display:none!important}
+ #progressTable tbody{display:grid;gap:10px}
+ #progressTable tbody tr{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;background:#fff!important;border:1px solid #dce5ef;border-radius:12px;padding:12px;box-shadow:0 2px 8px #1232630b}
+ #progressTable tbody tr:nth-child(even){background:#fff!important}
+ #progressTable tbody td{display:flex!important;position:static!important;left:auto!important;z-index:auto!important;min-width:0!important;width:auto!important;max-width:100%!important;min-height:0!important;height:auto!important;border:0!important;background:transparent!important;padding:0!important;flex-direction:column;gap:4px;text-align:left!important}
+ #progressTable tbody tr:nth-child(even) td:nth-child(-n+4),#progressTable tbody tr:hover td:nth-child(-n+4){background:transparent!important}
+ #progressTable tbody td:nth-child(4){border-right:0!important}
+ #progressTable tbody td::before{content:attr(data-label);display:block;color:#6b7f99;font-size:11px;font-weight:700;text-align:left}
+ #progressTable tbody td.num{grid-column:1/-1;display:none!important}
+ #progressTable tbody td:nth-child(3),#progressTable tbody td:nth-child(4){grid-column:auto}
+ #progressTable tbody td:nth-child(4) b{align-self:start}
+ #progressTable tbody td.status{align-items:stretch!important;background:#f7fafd!important;padding:8px!important;border:1px solid #e6eef6!important;border-radius:9px}
+ #progressTable .state,#progressTable .state.overall{width:100%!important;max-width:100%!important}
+ #progressTable td select{width:100%!important}
+ #progressTable tbody td:last-child{grid-column:1/-1}
+ #progressTable tbody td:last-child .overall{width:100%!important}
+ #progressTable tbody tr td[colspan]{grid-column:1/-1}
+ .save-indicator{font-size:11px}.undo-bar{width:calc(100% - 26px);justify-content:space-between}
+}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;scroll-behavior:auto!important}}
+
+/* UI correction: remove intrusive freeze-column divider; retain sticky columns. */
+#progressTable thead th:nth-child(4),
+#progressTable tbody td:nth-child(4){
+  border-right:0 !important;
+  box-shadow:none !important;
+}
+/* Gentle horizontal rhythm instead of a vertical separator. */
+#progressTable tbody td{border-bottom:1px solid #e7edf5 !important;}
+#progressTable thead th:nth-child(4){border-right:0 !important;}
+@media (max-width:760px){
+  #progressTable tbody td{border-bottom:0 !important;}
+}
+
+/* Compact state controls — fixed-size, consistent alignment */
+@media (min-width:761px){
+  #progressTable tbody td{height:64px!important;padding-top:7px!important;padding-bottom:7px!important}
+  #progressTable thead th.project-column{width:180px!important;min-width:180px!important;max-width:180px!important}
+  #progressTable td.status{padding-left:8px!important;padding-right:8px!important}
+  #progressTable .state,#progressTable .state.overall{width:132px!important;min-width:132px!important;max-width:132px!important;height:40px!important;min-height:40px!important;box-sizing:border-box!important;padding:4px 8px!important;border-radius:9px!important;font-size:14px!important;font-weight:750!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:8px!important;white-space:nowrap!important}
+  #progressTable .state-icon{width:22px!important;height:22px!important;min-width:22px!important;line-height:22px!important;font-size:17px!important;display:inline-flex!important;align-items:center!important;justify-content:center!important}
+  #progressTable .state.done .state-icon,#progressTable .state.no .state-icon{width:22px!important;height:22px!important;line-height:22px!important}
+}
+@media (max-width:760px){
+  #progressTable .state,#progressTable .state.overall{min-height:40px!important;height:40px!important;font-size:14px!important;display:flex!important;align-items:center!important;justify-content:center!important;gap:8px!important}
+}
+</style>
+<style>
+.project-summary{display:flex;gap:10px;padding:10px 16px;overflow-x:auto;background:#f7fafd;border-top:1px solid #e4ecf5;border-bottom:1px solid #e4ecf5}
+.project-card{flex:1 0 175px;max-width:300px;background:#fff;border:1px solid #dce6f2;border-radius:10px;padding:9px 12px;min-width:175px}
+.project-line{display:flex;align-items:center;justify-content:space-between;gap:9px;font-size:12px;color:#56708f;white-space:nowrap}.project-line strong{overflow:hidden;text-overflow:ellipsis;color:#123967;font-size:13px}.project-line b{color:#137d50}
+.progress-track{height:6px;background:#e5edf5;border-radius:20px;overflow:hidden;margin-top:8px}.progress-track div{background:#168052;height:100%;border-radius:20px}
+.batch-toolbar{display:flex;align-items:center;gap:9px;flex-wrap:wrap;padding:10px 16px;background:#fff;border-bottom:1px solid #e3ebf4}
+.batch-toolbar select,.batch-toolbar button{height:36px;border-radius:8px;border:1px solid #cbd9eb;background:#fff;color:#123d70;font-size:12px;font-weight:700;padding:0 10px;width:auto;max-width:220px}
+.batch-toolbar #applyBatch{background:#1e5189;color:#fff;border-color:#1e5189}.batch-toolbar #applyBatch:disabled{opacity:.45;cursor:not-allowed}
+.batch-toolbar .select-all{display:inline-flex;align-items:center;gap:7px;white-space:nowrap;font-size:12px;font-weight:700;color:#355b83}
+.batch-toolbar input[type=checkbox],.row-check input{width:16px;height:16px;accent-color:#1d568b;cursor:pointer}
+#selectedCount{color:#58738f;font-size:12px;margin-right:auto}
+.row-check{display:flex;align-items:center;justify-content:center;gap:4px;font-size:11px}
+.history-dialog{width:min(850px,calc(100vw - 28px));max-height:85vh;border:1px solid #d4e1ee;border-radius:14px;padding:20px;color:#133760;box-shadow:0 18px 70px #0a254a40}
+.history-dialog::backdrop{background:#091c35a0}.history-header{display:flex;justify-content:space-between;align-items:center;gap:20px}.history-header h2{font-size:20px;margin:0}.history-header button,.history-bottom button{padding:9px 14px;border-radius:8px;background:#eef4fa;border:1px solid #cad9e9;color:#174474;font-weight:700;cursor:pointer}
+.history-list{max-height:52vh;overflow:auto;border:1px solid #e1eaf4;border-radius:9px}.history-entry{display:grid;grid-template-columns:145px 110px 1fr 155px 75px;gap:10px;padding:10px 12px;border-bottom:1px solid #e8eef6;align-items:center;font-size:12px}.history-entry:nth-child(even){background:#f5f9fd}.history-entry time,.history-entry small{color:#6e829b}.history-bottom{padding-top:12px}
+body.compact-density #progressTable tbody td{height:50px!important;padding-top:4px!important;padding-bottom:4px!important}
+body.compact-density #progressTable .state,body.compact-density #progressTable .state.overall{height:34px!important;min-height:34px!important}
+body.compact-density #progressTable tbody select{height:36px!important}
+.bar .tools{flex-wrap:wrap}#itemFilter,#itemStatusFilter{min-width:155px;max-width:220px}
+@media(max-width:760px){.batch-toolbar{padding:10px;gap:6px}.batch-toolbar select{flex:1 1 42%;max-width:none}.batch-toolbar #applyBatch{flex:1 1 100%}.project-summary{padding:9px}.history-entry{grid-template-columns:1fr 1fr;gap:5px}.history-entry time{grid-column:1/-1}.row-check{justify-content:start}.bar .tools #itemFilter,.bar .tools #itemStatusFilter{width:100%;max-width:none}body.compact-density #progressTable tbody td{height:auto!important}}
+</style>
+<style>
+
+/* Compact, non-redundant filters: search, unit, item, item status, add carriage */
+@media (min-width:1200px){
+ .panel>.bar{display:block!important;padding:9px 12px 7px!important;}
+ .panel>.bar .tools{display:grid!important;grid-template-columns:minmax(220px,1.7fr) minmax(170px,1fr) minmax(175px,1fr) minmax(180px,1fr) 130px!important;gap:8px!important;width:100%!important;align-items:center!important;}
+ .panel>.bar .tools>*{width:100%!important;min-width:0!important;max-width:none!important;height:42px!important;min-height:42px!important;box-sizing:border-box!important;border-radius:10px!important;margin:0!important;}
+ .panel>.bar .tools #search{padding:0 12px!important;}
+ .panel>.bar .tools #addCar{padding:0 9px!important;white-space:nowrap!important;}
+ .panel>.bar .note{display:block!important;width:auto!important;margin:5px 0 0!important;font-size:10.5px!important;line-height:1.3!important;white-space:nowrap;}
+}
+@media (min-width:761px) and (max-width:1199px){
+ .panel>.bar{display:block!important;padding:9px 12px!important;}
+ .panel>.bar .tools{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;width:100%!important;gap:7px!important;}
+ .panel>.bar .tools>*{width:100%!important;min-width:0!important;max-width:none!important;height:39px!important;box-sizing:border-box!important;}
+ .panel>.bar .note{display:block!important;margin-top:4px!important;font-size:10.5px!important;line-height:1.3!important}
+}
+@media (max-width:760px){
+ .panel>.bar{padding:8px!important;gap:4px!important}
+ .panel>.bar .tools{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:6px!important;}
+ .panel>.bar .tools>*{height:39px!important;min-width:0!important;width:100%!important;max-width:none!important;}
+ .panel>.bar #search{grid-column:1/-1!important}
+ .panel>.bar .note{margin:2px 0 0!important;font-size:10px!important;line-height:1.3!important}
+}
+.project-summary{padding:7px 12px!important;gap:8px!important;min-height:0!important}
+.project-summary .project-card{padding:7px 10px!important;min-width:155px!important;flex-basis:165px!important;max-width:255px!important;border-radius:9px!important}
+.project-summary .project-line{font-size:11.5px!important}
+.project-summary .project-line strong{font-size:12px!important}
+.project-summary .progress-track{margin-top:6px!important;height:5px!important}
+.batch-toolbar{padding:7px 12px!important;gap:7px!important;min-height:49px!important}
+.batch-toolbar select,.batch-toolbar button{height:34px!important}
+@media(min-width:1200px){.batch-toolbar{flex-wrap:nowrap!important}.batch-toolbar .select-all{white-space:nowrap!important}}
+
+</style><style>
+
+/* Final compact desktop header — keep data and interactions unchanged */
+.save-indicator,.bar .note{display:none!important}
+@media(min-width:1100px){
+ .top{padding:10px 18px!important;min-height:66px!important;gap:10px!important}
+ .top h1{font-size:23px!important;margin:0!important;line-height:1.25!important}
+ .top p{font-size:11px!important;margin:3px 0 0!important;line-height:1.25!important}
+ .top-actions{gap:6px!important}
+ .top-actions button{padding:8px 11px!important;min-height:34px!important;font-size:12px!important}
+ .container{padding-top:9px!important}
+ .stats{gap:9px!important;margin:0 0 8px!important}
+ .stat{padding:9px 13px!important;min-height:73px!important;border-radius:12px!important}
+ .stat span{font-size:12px!important;line-height:1.2!important}
+ .stat strong{font-size:26px!important;line-height:1.1!important;margin-top:3px!important}
+ .panel>.bar{padding:7px 10px!important;margin:0!important;min-height:0!important}
+ .panel>.bar .tools{gap:7px!important}
+ .panel>.bar .tools>*{height:36px!important;min-height:36px!important;font-size:12.5px!important}
+ .project-summary{padding:5px 10px!important;gap:7px!important}
+ .project-summary .project-card{padding:5px 9px!important;min-height:45px!important}
+ .project-summary .project-line{line-height:1.2!important}
+ .project-summary .progress-track{margin-top:5px!important;height:4px!important}
+ .batch-toolbar{padding:5px 10px!important;min-height:43px!important;gap:6px!important}
+ .batch-toolbar button,.batch-toolbar select{height:32px!important;min-height:32px!important;font-size:12px!important}
+ #progressTable thead th{height:60px!important;padding-top:9px!important;padding-bottom:9px!important}
+}
+@media(min-width:761px) and (max-width:1099px){
+ .stats{margin-bottom:8px!important}
+ .stat{padding:9px 12px!important}
+ .panel>.bar{padding:7px 10px!important}
+ .project-summary{padding:6px 10px!important}
+ .batch-toolbar{padding:6px 10px!important}
+}
+@media(max-width:760px){
+ .bar .note,.save-indicator{display:none!important}
+ .project-summary{padding:5px 8px!important}
+ .batch-toolbar{padding:6px 8px!important}
+}
+
+</style></head><body><header class="top"><div><h1>▣ CN 車廂更新進度管理 <span class="en-sub">CN Carriage Update Status</span></h1><p>車廂更新狀態管理</p></div><div class="top-actions"><button id="addProject">＋ 新增項目</button><button id="import73g" title="從 73G 的 JSON 備份匯入單位與車號，不會覆蓋更新狀態">匯入資料</button><input id="source73g" type="file" accept=".json,application/json" hidden><button id="historyBtn" type="button">操作紀錄</button><button id="downloadCsv" title="下載 CSV，可用 Excel 開啟">匯出 Excel</button><button id="downloadJson">備份資料</button><button id="uploadJson" title="匯入本系統備份，將覆蓋目前資料">匯入備份</button><input type="file" accept="application/json,.json" id="file" hidden></div></header><main class="container"><section class="stats"><div class="stat"><span>車廂數量 / Total</span><strong id="total">0</strong></div><div class="stat green"><span>已完成車廂 / Completed</span><strong id="done">0</strong></div><div class="stat orange"><span>未完成車廂 / Pending</span><strong id="todo">0</strong></div><div class="stat"><span>項目完成率 / Progress</span><strong id="rate">0%</strong></div></section><section class="panel"><div class="bar"><div class="tools"><input id="search" placeholder="🔎 搜尋單位、車號、車廂"><select id="unitFilter" aria-label="依單位篩選"><option value="all">全部單位 / All Units</option></select><select id="itemFilter" aria-label="更新項目"><option value="all">全部更新項目</option></select><select id="itemStatusFilter" aria-label="項目狀態"><option value="all">全部完成狀態</option><option value="done">已完成</option><option value="no">未完成</option><option value="empty">未記錄</option><option value="pending">尚未完成（含未記錄）</option></select><button id="addCar">＋ 新增車廂</button></div></div><section class="project-summary" id="projectSummary" aria-label="各更新項目完成進度"></section><div class="batch-toolbar"><label class="select-all"><input type="checkbox" id="selectAllVisible"> 勾選目前篩選車廂</label><span id="selectedCount">已選 0 台</span><select id="batchProject" aria-label="批次更新項目"></select><select id="batchStatus" aria-label="批次狀態"><option value="done">✓ 已完成</option><option value="no">✕ 未完成</option><option value="">— 未記錄</option></select><button id="applyBatch" type="button">套用到勾選車廂</button><button id="clearSelection" type="button">清除勾選</button><button id="densityToggle" type="button">緊湊模式</button></div><div class="scroll"><table id="progressTable"><colgroup id="columnWidths"></colgroup><thead id="thead"></thead><tbody id="tbody"></tbody></table></div></section></main><div class="toast" id="toast"></div><dialog id="historyDialog" class="history-dialog"><div class="history-header"><h2>操作歷史紀錄</h2><button id="closeHistory" type="button">關閉 ×</button></div><p>記錄車廂更新狀態的修改，資料儲存在目前瀏覽器中。</p><div id="historyList" class="history-list"></div><div class="history-bottom"><button id="exportHistory" type="button">匯出操作紀錄 CSV</button></div></dialog><datalist id="vehicle-list"></datalist><script>
+const UNIT_OPTIONS=["1C","2C","3C","4C","73G-HC","HQ","STC"];
+const VEHICLE_OPTIONS=["軍2-24467", "軍2-24481", "軍2-24485", "軍2-24486", "軍2-24493", "軍2-24580", "軍2-24584", "軍2-24585", "軍2-24586", "軍2-24588", "軍2-24594", "軍2-24596", "軍2-24641", "軍2-24587", "軍2-24590", "軍2-24591", "軍2-24477", "軍2-24480", "軍2-24581", "軍2-22988", "軍2-24640", "軍2-22712", "軍2-24582", "軍2-22777", "軍2-24495", "軍2-24497", "軍2-24441", "軍2-22711", "軍2-24483", "軍2-24597", "軍2-24489", "軍2-24577", "軍2-24479", "軍2-24544", "軍2-24474", "軍2-24445", "軍2-24554", "軍2-24556", "軍2-24446", "軍2-24502", "軍2-24434", "軍2-24567", "軍2-24563", "軍2-24452", "軍2-24454", "軍2-24589", "軍2-24620", "軍2-24424", "軍2-24612", "軍2-24656", "軍2-24605", "軍2-24659", "軍2-24490", "軍2-24642", "軍2-24655", "軍2-24606", "軍2-24664", "軍2-24460", "軍2-24651", "軍2-24645", "軍2-24458", "軍2-22747", "軍2-24595", "軍2-24653", "軍2-24662", "軍2-24647", "軍2-24633", "軍2-24637", "軍2-22717", "軍2-23826", "軍2-24629", "軍2-24631", "軍2-22740", "軍2-24630", "軍2-24507", "軍2-22834", "軍2-24592", "軍2-24593", "軍2-24583", "軍2-24498", "軍2-24602", "軍2-22705", "軍2-24636", "軍2-24450"];
+const CARS=["CN-D-301",...Array.from({length:77},(_,i)=>`CN-B-${302+i}`),"NMS-381","NMS-382","NMS-383","NMS-384","SSS-391","SSS-392","SSS-393","SSS-394"];
+const KEY='cn_simple_checklist_v1';
+const $=id=>document.getElementById(id);
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function read73G(){try{const u=JSON.parse(localStorage.getItem('cn_fault_units')||'{}');const v=JSON.parse(localStorage.getItem('cn_fault_vehicle_numbers')||'{}');return {units:u||{},vehicles:v||{}}}catch{return {units:{},vehicles:{}}}}
+const stored73G=read73G();
+const defaultData=()=>({customVehicles:[],projects:['MOPS更新','組態更新'],cars:CARS.map(id=>({id,unit:stored73G.units[id]||'',vehicle:stored73G.vehicles[id]||'',states:{}}))});
+let data;try{const raw=JSON.parse(localStorage.getItem(KEY));data=raw&&Array.isArray(raw.cars)&&Array.isArray(raw.projects)?raw:defaultData()}catch{data=defaultData()}
+data.history=Array.isArray(data.history)?data.history:[];
+for(const c of data.cars){if(!c.unit&&stored73G.units[c.id])c.unit=stored73G.units[c.id];if(!c.vehicle&&stored73G.vehicles[c.id])c.vehicle=stored73G.vehicles[c.id]}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(data))}catch{alert('瀏覽器儲存失敗，請嘗試備份資料。')}}
+// 統計與表格共用同一組篩選條件，避免選取單位後數字仍是全車廂。
+const selectedCars=new Set();
+function matchesFilters(c){
+ const q=$('search').value.trim().toLowerCase();
+ const unit=$('unitFilter').value;
+ const completed=data.projects.length>0&&data.projects.every(p=>c.states[p]==='done');
+ const item=$('itemFilter').value, itemState=$('itemStatusFilter').value;
+ const state=item==='all'?'':(c.states[item]||'');
+ const itemOk=item==='all'||itemState==='all'||(itemState==='pending'?state!=='done':itemState==='empty'?state==='':state===itemState);
+ return itemOk&&(!q||[c.id,c.unit,c.vehicle].join(' ').toLowerCase().includes(q))
+   &&(unit==='all'||c.unit===unit)
+;
+}
+function filteredCars(){return data.cars.filter(matchesFilters)}
+function stats(){
+ const cars=filteredCars(),total=cars.length;
+ const completed=cars.filter(c=>data.projects.length>0&&data.projects.every(p=>c.states[p]==='done')).length;
+ let all=0,ok=0;
+ for(const c of cars)for(const p of data.projects){all++;if(c.states[p]==='done')ok++}
+ $('total').textContent=total;
+ $('done').textContent=completed;
+ $('todo').textContent=total-completed;
+ $('rate').textContent=all?Math.round(ok/all*100)+'%':'—';
+ if(typeof renderProjectSummary==='function')renderProjectSummary(cars);
+}
+function renderHead(){
+  // 左側識別欄固定像素寬度；更新欄只使用剩餘空間，新增後不會擠壓左側。
+  const left=[55,125,185,155],projectMin=180,overallMin=165;
+  const count=data.projects.length;
+  const container=$('progressTable').parentElement;
+  const available=Math.max(0,container.clientWidth-17);
+  const reserved=left.reduce((a,b)=>a+b,0)+overallMin;
+  const projectTotal=count*projectMin;
+  const widths=[...left,...data.projects.map(()=>projectMin),overallMin];
+  const total=widths.reduce((a,b)=>a+b,0);
+  $('columnWidths').innerHTML=widths.map(w=>`<col style="width:${w}px">`).join('');
+  $('progressTable').style.width=total+'px';
+  $('thead').innerHTML='<tr><th class="identity-head">#<small>選取</small></th><th class="identity-head">單位<small>Unit</small></th><th class="identity-head">車號<small>Vehicle No.</small></th><th class="identity-head">車廂編號<small>Carriage No.</small></th>'+
+  data.projects.map((p,i)=>`<th class="project-column"><div class="project-head"><span class="project-title" title="${esc(p)}">${esc(p)}<small>Update Status</small></span><button type="button" data-remove="${i}" title="刪除項目：${esc(p)}" aria-label="刪除 ${esc(p)}">×</button></div></th>`).join('')+
+  '<th class="overall-head">車廂進度<small>Overall</small></th></tr>';
+}
+
+function vehicleOptions(current){
+ const items=[...new Set([...VEHICLE_OPTIONS,...(data.customVehicles||[]),...data.cars.map(c=>c.vehicle).filter(Boolean)])];
+ return '<option value="">選擇車號</option>'+items.map(v=>`<option value="${esc(v)}" ${current===v?'selected':''}>${esc(v)}</option>`).join('')+'<option value="__custom__">＋ 手動新增車號…</option>';
+}
+function stateButton(state){return `<button type="button" class="state ${state==='done'?'done':state==='no'?'no':''}" data-state-button aria-label="${state==='done'?'已完成，點選切換未完成':state==='no'?'未完成，點選切換未記錄':'未記錄，點選切換已完成'}"><span class="state-icon" aria-hidden="true">${state==='done'?'✓':state==='no'?'✕':'—'}</span><span>${state==='done'?'已完成':state==='no'?'未完成':'未記錄'}</span></button>`}
+function renderBody(){const q=$('search').value.trim().toLowerCase(),unitFilter=$('unitFilter').value;let buf='';data.cars.forEach((c,i)=>{const completed=data.projects.length>0&&data.projects.every(p=>c.states[p]==='done');if(!matchesFilters(c))return;buf+=`<tr data-index="${i}"><td class="num"><label class="row-check"><input class="car-check" type="checkbox" data-car-id="${esc(c.id)}" ${selectedCars.has(c.id)?'checked':''}><span>${i+1}</span></label></td><td><select data-field="unit"><option value="">選擇單位</option>${UNIT_OPTIONS.map(u=>`<option value="${esc(u)}" ${c.unit===u?'selected':''}>${esc(u)}</option>`).join('')}</select></td><td><select class="vehicle-select" data-field="vehicle">${vehicleOptions(c.vehicle)}</select></td><td class="car"><b>${esc(c.id)}</b></td>${data.projects.map((p,j)=>`<td class="status" data-project="${j}">${stateButton(c.states[p]||'')}</td>`).join('')}<td class="status"><span class="state overall ${completed?'done':''}"><span class="state-icon">${completed?'✓':'—'}</span>${completed?'全部完成':'尚未完成'}</span></td></tr>`});$('tbody').innerHTML=buf||'<tr><td colspan="'+(5+data.projects.length)+'" style="text-align:center;padding:32px;color:#8495ac">沒有符合條件的車廂</td></tr>'}
+function refreshUnits(){const el=$('unitFilter'),before=el.value;const items=[...new Set([...UNIT_OPTIONS,...data.cars.map(c=>c.unit).filter(Boolean)])];el.innerHTML='<option value="all">全部單位 / All Units</option>'+items.map(u=>`<option value="${esc(u)}">${esc(u)}</option>`).join('');el.value=items.includes(before)?before:'all'}
+function render(){refreshUnits();renderHead();renderBody();stats()}
+function toast(msg){$('toast').textContent=msg;$('toast').style.display='block';clearTimeout(window.toastTimer);window.toastTimer=setTimeout(()=>$('toast').style.display='none',2200)}
+$('vehicle-list').innerHTML=VEHICLE_OPTIONS.map(v=>`<option value="${esc(v)}"></option>`).join('');
+$('tbody').addEventListener('click',e=>{const b=e.target.closest('[data-state-button]');if(!b)return;const tr=b.closest('tr'),td=b.closest('[data-project]');const car=data.cars[+tr.dataset.index],key=data.projects[+td.dataset.project];car.states[key]=car.states[key]==='done'?'no':car.states[key]==='no'?'':'done';save();renderBody();stats()});
+$('tbody').addEventListener('change',e=>{const el=e.target.closest('[data-field]');if(!el)return;const car=data.cars[+el.closest('tr').dataset.index];let value=el.value;
+ if(el.dataset.field==='vehicle'&&value==='__custom__'){
+   const added=prompt('請輸入新車號（新增後可於所有車廂選單中使用）');
+   if(added===null||!added.trim()){renderBody();return}
+   value=added.trim();data.customVehicles=data.customVehicles||[];
+   if(!VEHICLE_OPTIONS.includes(value)&&!data.customVehicles.includes(value))data.customVehicles.push(value);
+ }
+ car[el.dataset.field]=value;save();refreshUnits();renderBody();stats()});
+$('thead').addEventListener('click',e=>{const b=e.target.closest('[data-remove]');if(!b)return;let i=+b.dataset.remove,p=data.projects[i];if(!confirm(`確定刪除「${p}」項目？該項目的完成狀態也會移除。`))return;data.projects.splice(i,1);for(const c of data.cars)delete c.states[p];save();render();toast('已刪除項目')});
+$('import73g').onclick=()=>$('source73g').click();
+$('source73g').onchange=async e=>{const file=e.target.files[0];if(!file)return;try{const obj=JSON.parse(await file.text());if(!obj||(!obj.units&&!obj.vehicleNumbers&&!obj.vehicleNos&&!Array.isArray(obj.records)))throw Error('不是有效的 73G JSON 備份');const units=obj.units||{},vehicles=obj.vehicleNumbers||obj.vehicleNos||{};for(const r of obj.records||[]){if(!r||!r.car)continue;if(r.unit&&!units[r.car])units[r.car]=r.unit;if((r.vehicleNo||r.vehicle_no)&&!vehicles[r.car])vehicles[r.car]=r.vehicleNo||r.vehicle_no}let found=0;for(const c of data.cars){if(units[c.id]||vehicles[c.id])found++}if(!found){alert('備份中找不到可配對的車廂資料');return}if(!confirm(`找到 ${found} 個車廂的單位或車號配對。匯入後將更新這些車廂的配對，但不會更動更新進度，確定繼續？`))return;for(const c of data.cars){if(units[c.id])c.unit=String(units[c.id]);if(vehicles[c.id])c.vehicle=String(vehicles[c.id])}save();render();toast(`已匯入 ${found} 個車廂的配對資料`)}catch(err){alert('匯入失敗：'+err.message)}finally{e.target.value=''}};
+$('addProject').onclick=()=>{let p=prompt('輸入新項目名稱（例如：韌體更新）');if(p===null)return;p=p.trim();if(!p)return alert('請輸入項目名稱');if(data.projects.includes(p))return alert('這個項目已存在');if(data.projects.length>=25)return alert('最多 25 個項目');data.projects.push(p);save();render();toast('已新增：'+p)};
+$('addCar').onclick=()=>{let id=prompt('輸入新車廂編號');if(id===null)return;id=id.trim();if(!id)return;if(data.cars.some(c=>c.id===id))return alert('車廂已存在');data.cars.push({id,unit:'',vehicle:'',states:{}});save();render();toast('已新增車廂')};
+window.addEventListener('resize',()=>renderHead());$('search').oninput=()=>{renderBody();stats()};$('unitFilter').onchange=()=>{renderBody();stats()};
+function download(name,text,type){const a=document.createElement('a'),url=URL.createObjectURL(new Blob(['\ufeff',text],{type}));a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),3000)}
+$('downloadCsv').onclick=()=>{const csv=[['單位','車號','車廂編號',...data.projects,'車廂進度'],...data.cars.map(c=>[c.unit,c.vehicle,c.id,...data.projects.map(p=>c.states[p]==='done'?'已完成':c.states[p]==='no'?'未完成':'未記錄'),data.projects.length&&data.projects.every(p=>c.states[p]==='done')?'全部完成':'尚未完成'])].map(row=>row.map(x=>'"'+String(x??'').replace(/"/g,'""')+'"').join(',')).join('\r\n');download('CN車廂更新進度.csv',csv,'text/csv;charset=utf-8')};
+$('downloadJson').onclick=()=>download('CN車廂更新紀錄備份.json',JSON.stringify(data,null,2),'application/json;charset=utf-8');$('uploadJson').onclick=()=>$('file').click();
+$('file').onchange=async e=>{const file=e.target.files[0];if(!file)return;try{const x=JSON.parse(await file.text());if(!Array.isArray(x.projects)||!Array.isArray(x.cars)||!x.projects.every(p=>typeof p==='string')||!x.cars.every(c=>c&&typeof c.id==='string'&&typeof c.states==='object'&&c.states!==null))throw Error('格式錯誤');if(!confirm('匯入備份將覆蓋目前的全部車廂狀態，確定繼續？'))return;data={projects:x.projects,customVehicles:Array.isArray(x.customVehicles)?x.customVehicles:[],history:Array.isArray(x.history)?x.history:[],cars:x.cars.map(c=>({id:c.id,unit:String(c.unit||''),vehicle:String(c.vehicle||''),states:c.states}))};save();render();toast('已匯入備份')}catch(err){alert('無法匯入：'+err.message)}finally{e.target.value=''}};
+render();
+</script>
+<script>
+/* Responsive table labels, without save or undo popups. */
+(function(){
+ const oldRenderBody=renderBody;
+ renderBody=function(){
+   oldRenderBody();
+   document.querySelectorAll('#tbody tr[data-index]').forEach(tr=>{
+     const tds=tr.querySelectorAll(':scope > td');
+     const fixed=['編號','單位','車號','車廂編號'];
+     tds.forEach((td,j)=>td.dataset.label=j<4?fixed[j]:j===tds.length-1?'車廂進度':data.projects[j-4]||'更新項目');
+   });
+ };
+ renderBody();
+})();
+</script>
+<script>
+
+function addHistory(car,project,previous,next,source){
+ if(previous===next)return;
+ data.history.push({time:new Date().toISOString(),car,project,from:previous||'',to:next||'',source});
+ if(data.history.length>3000)data.history.splice(0,data.history.length-3000);
+}
+function stateName(s){return s==='done'?'已完成':s==='no'?'未完成':'未記錄'}
+function renderProjectSummary(cars){
+ $('projectSummary').innerHTML=data.projects.map(p=>{
+  const complete=cars.filter(c=>(c.states[p]||'')==='done').length;
+  const percent=cars.length?Math.round(complete/cars.length*100):0;
+  return `<div class="project-card"><div class="project-line"><strong title="${esc(p)}">${esc(p)}</strong><span>${complete} / ${cars.length} 台 <b>${percent}%</b></span></div><div class="progress-track"><div style="width:${percent}%"></div></div></div>`;
+ }).join('')||'<span class="empty-summary">尚未建立更新項目</span>';
+}
+function refreshProjectFilter(){
+ const select=$('itemFilter'),old=select.value;
+ select.innerHTML='<option value="all">全部更新項目</option>'+data.projects.map(p=>`<option value="${esc(p)}">${esc(p)}</option>`).join('');
+ select.value=data.projects.includes(old)?old:'all';
+ const batch=$('batchProject'),prev=batch.value;
+ batch.innerHTML=data.projects.map(p=>`<option value="${esc(p)}">${esc(p)}</option>`).join('');
+ if(data.projects.includes(prev))batch.value=prev;
+ $('applyBatch').disabled=!data.projects.length;
+}
+function updateSelection(){
+ const visible=filteredCars(),ids=new Set(visible.map(c=>c.id));
+ const count=[...selectedCars].filter(id=>data.cars.some(c=>c.id===id)).length;
+ $('selectedCount').textContent=`已選 ${count} 台`;
+ $('selectAllVisible').checked=visible.length>0&&visible.every(c=>selectedCars.has(c.id));
+ $('selectAllVisible').indeterminate=visible.some(c=>selectedCars.has(c.id))&&!$('selectAllVisible').checked;
+ $('applyBatch').disabled=count===0||!data.projects.length;
+}
+function historyCsv(){
+ const rows=[['時間','車廂編號','更新項目','原狀態','新狀態','操作'],...data.history.map(h=>[new Date(h.time).toLocaleString('zh-TW'),h.car,h.project,stateName(h.from),stateName(h.to),h.source])];
+ return rows.map(row=>row.map(x=>'"'+String(x??'').replace(/"/g,'""')+'"').join(',')).join('\r\n');
+}
+function showHistory(){
+ $('historyList').innerHTML=data.history.length?data.history.slice().reverse().slice(0,300).map(h=>`<div class="history-entry"><time>${esc(new Date(h.time).toLocaleString('zh-TW'))}</time><strong>${esc(h.car)}</strong><span>${esc(h.project)}</span><span>${stateName(h.from)} → <b>${stateName(h.to)}</b></span><small>${esc(h.source)}</small></div>`).join(''):'<p>目前沒有操作紀錄</p>';
+ $('historyDialog').showModal();
+}
+$('historyBtn').addEventListener('click',showHistory);
+$('closeHistory').onclick=()=>$('historyDialog').close();
+$('exportHistory').onclick=()=>download('CN操作歷史紀錄.csv',historyCsv(),'text/csv;charset=utf-8');
+$('tbody').addEventListener('click',e=>{
+ const button=e.target.closest('[data-state-button]');if(!button)return;
+ const tr=button.closest('tr'),td=button.closest('[data-project]');if(!tr||!td)return;
+ const car=data.cars[Number(tr.dataset.index)],project=data.projects[Number(td.dataset.project)];
+ const old=car.states[project]||'',next=old==='done'?'no':old==='no'?'':'done';
+ addHistory(car.id,project,old,next,'單筆更新');
+},true);
+$('tbody').addEventListener('change',e=>{
+ const cb=e.target.closest('.car-check');if(!cb)return;
+ cb.checked?selectedCars.add(cb.dataset.carId):selectedCars.delete(cb.dataset.carId);
+ updateSelection();
+});
+$('selectAllVisible').onchange=e=>{
+ filteredCars().forEach(c=>e.target.checked?selectedCars.add(c.id):selectedCars.delete(c.id));
+ renderBody();updateSelection();
+};
+$('clearSelection').onclick=()=>{selectedCars.clear();renderBody();updateSelection()};
+$('applyBatch').onclick=()=>{
+ const project=$('batchProject').value,next=$('batchStatus').value;
+ const cars=data.cars.filter(c=>selectedCars.has(c.id));
+ if(!cars.length||!data.projects.includes(project))return;
+ const changes=cars.filter(c=>(c.states[project]||'')!==next);
+ if(!changes.length)return;
+ if(!confirm(`確定將 ${changes.length} 台車廂的「${project}」設定為「${stateName(next)}」？\n此操作會寫入歷史紀錄。`))return;
+ for(const c of changes){addHistory(c.id,project,c.states[project]||'',next,'批次更新');c.states[project]=next;}
+ save();renderBody();stats();updateSelection();toast(`已批次更新 ${changes.length} 台車廂`);
+};
+$('itemFilter').onchange=()=>{renderBody();stats();updateSelection()};
+$('itemStatusFilter').onchange=()=>{renderBody();stats();updateSelection()};
+$('densityToggle').onclick=()=>{
+ const compact=document.body.classList.toggle('compact-density');
+ $('densityToggle').textContent=compact?'一般模式':'緊湊模式';
+ try{localStorage.setItem('cn_density_pref',compact?'compact':'normal')}catch{}
+};
+if((()=>{try{return localStorage.getItem('cn_density_pref')==='compact'}catch{return false}})()){
+ document.body.classList.add('compact-density');$('densityToggle').textContent='一般模式';
+}
+// Enhance existing rendering without changing the data model or existing storage key.
+const baselineRender=render;
+render=function(){refreshProjectFilter();baselineRender();updateSelection()};
+const baselineBody=renderBody;
+renderBody=function(){baselineBody();updateSelection()};
+const originalCsvClick=$('downloadCsv').onclick;
+$('downloadCsv').onclick=()=>{
+ const choice=confirm('是否只匯出目前篩選結果？\n「確定」＝僅匯出目前篩選車廂\n「取消」＝匯出全部車廂');
+ if(!choice)return originalCsvClick();
+ const rows=[['單位','車號','車廂編號',...data.projects,'車廂進度'],...filteredCars().map(c=>[c.unit,c.vehicle,c.id,...data.projects.map(p=>stateName(c.states[p]||'')),data.projects.length&&data.projects.every(p=>c.states[p]==='done')?'全部完成':'尚未完成'])];
+ const csv=rows.map(row=>row.map(x=>'"'+String(x??'').replace(/"/g,'""')+'"').join(',')).join('\r\n');
+ download('CN車廂更新進度_篩選結果.csv',csv,'text/csv;charset=utf-8');
+};
+// Original backup imports the core data fields only. Restore optional history from the JSON backup.
+refreshProjectFilter();render();
+
+</script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+/* FICS_UPDATE cloud synchronization adapter. Original UI and handlers remain unchanged. */
+(function(){
+'use strict';
+const URL='https://jyjgbduvmfmzlhhciylc.supabase.co';
+const PUBLIC_KEY='sb_publishable_TKfm5-U3zR5Qj2uQ5itMBQ_JUKGopEg';
+const DOC_ID='FICS_UPDATE';
+const deep=o=>JSON.parse(JSON.stringify(o));
+let client=null,revision=0,base=null,ready=false,uploading=false,dirty=false,timer=null,busy=false,lastError='';
+const strip=o=>({customVehicles:Array.isArray(o.customVehicles)?o.customVehicles:[],projects:o.projects||[],cars:o.cars||[],history:o.history||[]});
+const getLocal=()=>strip(deep(data));
+const eq=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
+const banner=document.createElement('div');banner.id='syncBanner';
+banner.style.cssText='display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:8px 16px;background:#eaf4ff;border-bottom:1px solid #aac9eb;color:#173e6b;font:600 12px Segoe UI,Microsoft JhengHei,Arial,sans-serif;';
+banner.innerHTML='<span id="syncLabel">雲端同步：連線中…</span><button id="syncRetry" type="button" style="display:none">重新連線</button><button id="syncSeed" type="button" style="display:none">將本機資料上傳至雲端</button>';
+document.querySelector('header.top').insertAdjacentElement('afterend',banner);
+const label=document.getElementById('syncLabel'),retry=document.getElementById('syncRetry'),seed=document.getElementById('syncSeed');
+const show=(message,state='info')=>{label.textContent='雲端同步：'+message;banner.style.background=state==='error'?'#fff0ee':state==='ok'?'#eaf8f0':'#eaf4ff';banner.style.color=state==='error'?'#9a2932':'#174d71';retry.style.display=state==='error'?'inline-block':'none';};
+const lock=locked=>{document.querySelector('main').style.pointerEvents=locked?'none':'';document.querySelector('main').style.opacity=locked?'.65':'';document.querySelectorAll('.top-actions button').forEach(x=>x.disabled=locked);};
+const originalSave=save;
+function queue(){dirty=true;show('本機變更待上傳');clearTimeout(timer);timer=setTimeout(flush,350)}
+save=function(){originalSave();if(ready)queue();};
+function merge(baseObj,localObj,remoteObj){
+ const out=strip(deep(remoteObj));
+ // Per-car/field merge: different carriage or project edits do not overwrite one another.
+ const oldCars=new Map((baseObj.cars||[]).map(c=>[c.id,c]));
+ const newCars=new Map((localObj.cars||[]).map(c=>[c.id,c]));
+ const mergedCars=new Map(out.cars.map(c=>[c.id,c]));
+ for(const [id,old] of oldCars){if(!newCars.has(id))mergedCars.delete(id);}
+ for(const [id,car] of newCars){
+  const old=oldCars.get(id),target=mergedCars.get(id);
+  if(!old){mergedCars.set(id,deep(car));continue;}
+  if(!target){if(!eq(old,car))mergedCars.set(id,deep(car));continue;}
+  for(const key of ['unit','vehicle'])if(!eq(old[key]||'',car[key]||''))target[key]=car[key]||'';
+  target.states=target.states||{};
+  const allKeys=new Set([...Object.keys(old.states||{}),...Object.keys(car.states||{})]);
+  for(const key of allKeys){
+   if(!eq((old.states||{})[key]||'',(car.states||{})[key]||'')){
+    if(Object.prototype.hasOwnProperty.call(car.states||{},key))target.states[key]=car.states[key];
+    else delete target.states[key];
+   }
+  }
+ }
+ out.cars=[...mergedCars.values()];
+ // Project list: retain remote additions unless the local user explicitly removed a project.
+ const removed=new Set((baseObj.projects||[]).filter(x=>!(localObj.projects||[]).includes(x)));
+ out.projects=out.projects.filter(x=>!removed.has(x));
+ for(const x of localObj.projects||[])if(!out.projects.includes(x))out.projects.push(x);
+ for(const c of out.cars)for(const p of removed)delete c.states[p];
+ const oldVehicleList=new Set(baseObj.customVehicles||[]);
+ const removedVehicles=new Set([...oldVehicleList].filter(x=>!localObj.customVehicles.includes(x)));
+ out.customVehicles=[...new Set([...out.customVehicles.filter(x=>!removedVehicles.has(x)),...localObj.customVehicles])];
+ // Append only history records added since the last synchronized copy.
+ const baseCounts=new Map();for(const h of baseObj.history||[]){const k=JSON.stringify(h);baseCounts.set(k,(baseCounts.get(k)||0)+1);}
+ const appended=[];for(const h of localObj.history||[]){const k=JSON.stringify(h),n=baseCounts.get(k)||0;if(n)baseCounts.set(k,n-1);else appended.push(h);}
+ const seen=new Set(out.history.map(x=>JSON.stringify(x)));
+ for(const h of appended){const k=JSON.stringify(h);if(!seen.has(k)){out.history.push(h);seen.add(k);}}
+ if(out.history.length>3000)out.history=out.history.slice(-3000);
+ return out;
+}
+function replaceContent(next){
+ data=strip(deep(next));selectedCars.clear();originalSave();render();
+}
+async function fetchCloud(){
+ const {data:record,error}=await client.from('fics_update_state').select('revision,payload').eq('id',DOC_ID).single();
+ if(error)throw new Error(error.message+'（請先執行附帶的 Supabase SQL）');
+ return {revision:Number(record.revision),payload:record.payload};
+}
+async function flush(){
+ if(!ready||busy||!dirty)return;
+ busy=true;clearTimeout(timer);
+ try{
+  for(let tries=0;tries<6;tries++){
+   const snapshot=getLocal();
+   const remote=await fetchCloud();
+   if(!remote.payload){show('雲端尚未初始化，請使用「將本機資料上傳至雲端」');seed.style.display='inline-block';return;}
+   const target=merge(base,snapshot,remote.payload);
+   // Nothing to upload: keep local UI in sync with latest cloud data.
+   if(eq(target,remote.payload)){revision=remote.revision;base=deep(remote.payload);dirty=false;replaceContent(remote.payload);show('已同步','ok');return;}
+   const {data:result,error}=await client.rpc('fics_update_compare_and_swap',{p_expected:remote.revision,p_payload:target});
+   if(error)throw new Error(error.message);
+   if(result===true){revision=remote.revision+1;base=deep(target);
+    // Preserve new edits made during asynchronous network request.
+    const current=getLocal();
+    if(eq(current,snapshot)){dirty=false;replaceContent(target);}else{dirty=true;data=merge(snapshot,current,target);originalSave();render();}
+    show('已同步','ok');if(dirty)queue();return;
+   }
+  }
+  throw new Error('同時修改過於頻繁，請稍後重試');
+ }catch(e){lastError=e.message;show('儲存失敗：'+e.message,'error');console.error(e);}
+ finally{busy=false;}
+}
+async function syncDown(){
+ if(!ready||busy||uploading)return;
+ try{
+  const remote=await fetchCloud();
+  if(!remote.payload){seed.style.display='inline-block';show('雲端尚未初始化，請先選擇原始資料來源');return;}
+  if(remote.revision===revision)return;
+  if(dirty){queue();return;}
+  revision=remote.revision;base=deep(remote.payload);replaceContent(remote.payload);show('已取得最新資料','ok');
+ }catch(e){show('讀取失敗：'+e.message,'error');}
+}
+async function seedCloud(){
+ if(uploading||busy)return;
+ const count=data.cars.length;
+ if(!confirm(`將此裝置的 ${count} 台車廂資料設為雲端初始資料？\n請先備份兩台裝置的 JSON，並確認以哪一台為主。`))return;
+ uploading=true;try{
+  const remote=await fetchCloud();if(remote.payload){alert('雲端已有資料，為避免覆蓋，請先重新連線。');await syncDown();return;}
+  const snapshot=getLocal();
+  const {data:ok,error}=await client.rpc('fics_update_compare_and_swap',{p_expected:remote.revision,p_payload:snapshot});
+  if(error)throw new Error(error.message);
+  if(!ok){alert('其他裝置已先初始化，現在會載入最新資料');await syncDown();return;}
+  revision=remote.revision+1;base=deep(snapshot);dirty=false;seed.style.display='none';show('初始資料已上傳','ok');
+ }catch(e){show('初始化失敗：'+e.message,'error');}finally{uploading=false;}
+}
+seed.addEventListener('click',seedCloud);
+retry.addEventListener('click',async()=>{if(!ready)await init();else{if(dirty)await flush();else await syncDown();}});
+async function init(){
+ lock(true);show('正在連接雲端');
+ try{
+  if(!window.supabase)throw new Error('Supabase 函式庫無法載入，請檢查網路');
+  if(!client)client=window.supabase.createClient(URL,PUBLIC_KEY,{auth:{persistSession:false,autoRefreshToken:false}});
+  const remote=await fetchCloud();revision=remote.revision;
+  if(remote.payload){base=deep(remote.payload);replaceContent(remote.payload);seed.style.display='none';show('已同步','ok');}
+  else{base=getLocal();seed.style.display='inline-block';show('雲端尚無資料，請備份後上傳主要裝置資料');}
+  ready=true;lock(false);
+  if(!window.__ficsRealtimeStarted){window.__ficsRealtimeStarted=true;
+   client.channel('fics-update-live').on('postgres_changes',{event:'UPDATE',schema:'public',table:'fics_update_state',filter:'id=eq.FICS_UPDATE'},()=>syncDown()).subscribe();
+   setInterval(()=>{if(document.visibilityState==='visible'){if(dirty)flush();else syncDown();}},10000);
+   document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')syncDown()});
+   window.addEventListener('online',()=>{if(dirty)flush();else syncDown()});
+  }
+ }catch(e){lastError=e.message;show('連線失敗：'+e.message,'error');console.error(e);/* Leave edits disabled while cloud unavailable to prevent divergent writes. */}
+}
+init();
+})();
+</script></body></html>
