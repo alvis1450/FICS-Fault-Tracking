@@ -575,4 +575,141 @@ $('downloadCsv').onclick=()=>{
 // Original backup imports the core data fields only. Restore optional history from the JSON backup.
 refreshProjectFilter();render();
 
+</script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+/* FICS_UPDATE cloud synchronization adapter. Original UI and handlers remain unchanged. */
+(function(){
+'use strict';
+const URL='https://jyjgbduvmfmzlhhciylc.supabase.co';
+const PUBLIC_KEY='sb_publishable_TKfm5-U3zR5Qj2uQ5itMBQ_JUKGopEg';
+const DOC_ID='FICS_UPDATE';
+const deep=o=>JSON.parse(JSON.stringify(o));
+let client=null,revision=0,base=null,ready=false,uploading=false,dirty=false,timer=null,busy=false,lastError='';
+const strip=o=>({customVehicles:Array.isArray(o.customVehicles)?o.customVehicles:[],projects:o.projects||[],cars:o.cars||[],history:o.history||[]});
+const getLocal=()=>strip(deep(data));
+const eq=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
+const banner=document.createElement('div');banner.id='syncBanner';
+banner.style.cssText='display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:8px 16px;background:#eaf4ff;border-bottom:1px solid #aac9eb;color:#173e6b;font:600 12px Segoe UI,Microsoft JhengHei,Arial,sans-serif;';
+banner.innerHTML='<span id="syncLabel">雲端同步：連線中…</span><button id="syncRetry" type="button" style="display:none">重新連線</button><button id="syncSeed" type="button" style="display:none">將本機資料上傳至雲端</button>';
+document.querySelector('header.top').insertAdjacentElement('afterend',banner);
+const label=document.getElementById('syncLabel'),retry=document.getElementById('syncRetry'),seed=document.getElementById('syncSeed');
+const show=(message,state='info')=>{label.textContent='雲端同步：'+message;banner.style.background=state==='error'?'#fff0ee':state==='ok'?'#eaf8f0':'#eaf4ff';banner.style.color=state==='error'?'#9a2932':'#174d71';retry.style.display=state==='error'?'inline-block':'none';};
+const lock=locked=>{document.querySelector('main').style.pointerEvents=locked?'none':'';document.querySelector('main').style.opacity=locked?'.65':'';document.querySelectorAll('.top-actions button').forEach(x=>x.disabled=locked);};
+const originalSave=save;
+function queue(){dirty=true;show('本機變更待上傳');clearTimeout(timer);timer=setTimeout(flush,350)}
+save=function(){originalSave();if(ready)queue();};
+function merge(baseObj,localObj,remoteObj){
+ const out=strip(deep(remoteObj));
+ // Per-car/field merge: different carriage or project edits do not overwrite one another.
+ const oldCars=new Map((baseObj.cars||[]).map(c=>[c.id,c]));
+ const newCars=new Map((localObj.cars||[]).map(c=>[c.id,c]));
+ const mergedCars=new Map(out.cars.map(c=>[c.id,c]));
+ for(const [id,old] of oldCars){if(!newCars.has(id))mergedCars.delete(id);}
+ for(const [id,car] of newCars){
+  const old=oldCars.get(id),target=mergedCars.get(id);
+  if(!old){mergedCars.set(id,deep(car));continue;}
+  if(!target){if(!eq(old,car))mergedCars.set(id,deep(car));continue;}
+  for(const key of ['unit','vehicle'])if(!eq(old[key]||'',car[key]||''))target[key]=car[key]||'';
+  target.states=target.states||{};
+  const allKeys=new Set([...Object.keys(old.states||{}),...Object.keys(car.states||{})]);
+  for(const key of allKeys){
+   if(!eq((old.states||{})[key]||'',(car.states||{})[key]||'')){
+    if(Object.prototype.hasOwnProperty.call(car.states||{},key))target.states[key]=car.states[key];
+    else delete target.states[key];
+   }
+  }
+ }
+ out.cars=[...mergedCars.values()];
+ // Project list: retain remote additions unless the local user explicitly removed a project.
+ const removed=new Set((baseObj.projects||[]).filter(x=>!(localObj.projects||[]).includes(x)));
+ out.projects=out.projects.filter(x=>!removed.has(x));
+ for(const x of localObj.projects||[])if(!out.projects.includes(x))out.projects.push(x);
+ for(const c of out.cars)for(const p of removed)delete c.states[p];
+ const oldVehicleList=new Set(baseObj.customVehicles||[]);
+ const removedVehicles=new Set([...oldVehicleList].filter(x=>!localObj.customVehicles.includes(x)));
+ out.customVehicles=[...new Set([...out.customVehicles.filter(x=>!removedVehicles.has(x)),...localObj.customVehicles])];
+ // Append only history records added since the last synchronized copy.
+ const baseCounts=new Map();for(const h of baseObj.history||[]){const k=JSON.stringify(h);baseCounts.set(k,(baseCounts.get(k)||0)+1);}
+ const appended=[];for(const h of localObj.history||[]){const k=JSON.stringify(h),n=baseCounts.get(k)||0;if(n)baseCounts.set(k,n-1);else appended.push(h);}
+ const seen=new Set(out.history.map(x=>JSON.stringify(x)));
+ for(const h of appended){const k=JSON.stringify(h);if(!seen.has(k)){out.history.push(h);seen.add(k);}}
+ if(out.history.length>3000)out.history=out.history.slice(-3000);
+ return out;
+}
+function replaceContent(next){
+ data=strip(deep(next));selectedCars.clear();originalSave();render();
+}
+async function fetchCloud(){
+ const {data:record,error}=await client.from('fics_update_state').select('revision,payload').eq('id',DOC_ID).single();
+ if(error)throw new Error(error.message+'（請先執行附帶的 Supabase SQL）');
+ return {revision:Number(record.revision),payload:record.payload};
+}
+async function flush(){
+ if(!ready||busy||!dirty)return;
+ busy=true;clearTimeout(timer);
+ try{
+  for(let tries=0;tries<6;tries++){
+   const snapshot=getLocal();
+   const remote=await fetchCloud();
+   if(!remote.payload){show('雲端尚未初始化，請使用「將本機資料上傳至雲端」');seed.style.display='inline-block';return;}
+   const target=merge(base,snapshot,remote.payload);
+   // Nothing to upload: keep local UI in sync with latest cloud data.
+   if(eq(target,remote.payload)){revision=remote.revision;base=deep(remote.payload);dirty=false;replaceContent(remote.payload);show('已同步','ok');return;}
+   const {data:result,error}=await client.rpc('fics_update_compare_and_swap',{p_expected:remote.revision,p_payload:target});
+   if(error)throw new Error(error.message);
+   if(result===true){revision=remote.revision+1;base=deep(target);
+    // Preserve new edits made during asynchronous network request.
+    const current=getLocal();
+    if(eq(current,snapshot)){dirty=false;replaceContent(target);}else{dirty=true;data=merge(snapshot,current,target);originalSave();render();}
+    show('已同步','ok');if(dirty)queue();return;
+   }
+  }
+  throw new Error('同時修改過於頻繁，請稍後重試');
+ }catch(e){lastError=e.message;show('儲存失敗：'+e.message,'error');console.error(e);}
+ finally{busy=false;}
+}
+async function syncDown(){
+ if(!ready||busy||uploading)return;
+ try{
+  const remote=await fetchCloud();
+  if(!remote.payload){seed.style.display='inline-block';show('雲端尚未初始化，請先選擇原始資料來源');return;}
+  if(remote.revision===revision)return;
+  if(dirty){queue();return;}
+  revision=remote.revision;base=deep(remote.payload);replaceContent(remote.payload);show('已取得最新資料','ok');
+ }catch(e){show('讀取失敗：'+e.message,'error');}
+}
+async function seedCloud(){
+ if(uploading||busy)return;
+ const count=data.cars.length;
+ if(!confirm(`將此裝置的 ${count} 台車廂資料設為雲端初始資料？\n請先備份兩台裝置的 JSON，並確認以哪一台為主。`))return;
+ uploading=true;try{
+  const remote=await fetchCloud();if(remote.payload){alert('雲端已有資料，為避免覆蓋，請先重新連線。');await syncDown();return;}
+  const snapshot=getLocal();
+  const {data:ok,error}=await client.rpc('fics_update_compare_and_swap',{p_expected:remote.revision,p_payload:snapshot});
+  if(error)throw new Error(error.message);
+  if(!ok){alert('其他裝置已先初始化，現在會載入最新資料');await syncDown();return;}
+  revision=remote.revision+1;base=deep(snapshot);dirty=false;seed.style.display='none';show('初始資料已上傳','ok');
+ }catch(e){show('初始化失敗：'+e.message,'error');}finally{uploading=false;}
+}
+seed.addEventListener('click',seedCloud);
+retry.addEventListener('click',async()=>{if(!ready)await init();else{if(dirty)await flush();else await syncDown();}});
+async function init(){
+ lock(true);show('正在連接雲端');
+ try{
+  if(!window.supabase)throw new Error('Supabase 函式庫無法載入，請檢查網路');
+  if(!client)client=window.supabase.createClient(URL,PUBLIC_KEY,{auth:{persistSession:false,autoRefreshToken:false}});
+  const remote=await fetchCloud();revision=remote.revision;
+  if(remote.payload){base=deep(remote.payload);replaceContent(remote.payload);seed.style.display='none';show('已同步','ok');}
+  else{base=getLocal();seed.style.display='inline-block';show('雲端尚無資料，請備份後上傳主要裝置資料');}
+  ready=true;lock(false);
+  if(!window.__ficsRealtimeStarted){window.__ficsRealtimeStarted=true;
+   client.channel('fics-update-live').on('postgres_changes',{event:'UPDATE',schema:'public',table:'fics_update_state',filter:'id=eq.FICS_UPDATE'},()=>syncDown()).subscribe();
+   setInterval(()=>{if(document.visibilityState==='visible'){if(dirty)flush();else syncDown();}},10000);
+   document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')syncDown()});
+   window.addEventListener('online',()=>{if(dirty)flush();else syncDown()});
+  }
+ }catch(e){lastError=e.message;show('連線失敗：'+e.message,'error');console.error(e);/* Leave edits disabled while cloud unavailable to prevent divergent writes. */}
+}
+init();
+})();
 </script></body></html>
